@@ -1,99 +1,42 @@
-<!doctype html><html lang="zh-CN"><head>
+<!doctype html>
+<html lang="zh-CN">
+<head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>未读 MIDOKU V3</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<title>明日交换所 — 极简试玩 Demo</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#09090b;color:#f4f4f5;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;min-height:100vh}
-.wrap{max-width:760px;margin:auto;padding:28px 18px 70px}.head{display:flex;justify-content:space-between;align-items:start;gap:12px}.logo{font-weight:900;letter-spacing:.18em;font-size:24px}.muted{color:#96969f;font-size:13px}.card{margin-top:22px;background:#151518;border:1px solid #303036;border-radius:20px;padding:24px;box-shadow:0 24px 70px #0008}
-.private{margin:20px 0;padding:17px;border:1px solid #675d45;background:#211f19;border-radius:13px}.story{line-height:1.85;white-space:pre-line}.options{display:grid;gap:11px;margin-top:18px}.opt,.btn,input{padding:15px;border-radius:12px;border:1px solid #444;background:#202025;color:#fff;font-size:15px}.opt,.btn{cursor:pointer;text-align:left}.opt:hover{border-color:#aaa}.primary{background:#eee;color:#111;font-weight:800;text-align:center}.sel{outline:2px solid #eee}.status{padding:14px;background:#101013;border-radius:11px;margin-top:15px;line-height:1.65}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.dots{letter-spacing:5px}.off{opacity:.2}.glitch{animation:g .12s 4}@keyframes g{50%{transform:translateX(3px);opacity:.4}}input{width:100%;margin:10px 0;background:#111}.big{font-size:27px;margin:16px 0}.danger{border-color:#705757;background:#231919}@media(max-width:560px){.two{grid-template-columns:1fr}.card{padding:19px}}
-</style></head><body><div class="wrap"><div class="head"><div><div class="logo">未读 MIDOKU</div><div class="muted">V3 · 双人实时原型</div></div><div id="who" class="muted"></div></div><div id="app" class="card"></div></div>
+:root{--bg:#0b0b0d;--panel:#151519;--line:#34343d;--text:#f4f4f5;--muted:#9b9ba5;--accent:#f0d58a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#24242b,#0b0b0d 42%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans SC",sans-serif;min-height:100vh}
+.wrap{max-width:900px;margin:auto;padding:28px 18px 70px}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:18px}.logo{font-size:23px;font-weight:850;letter-spacing:.12em}.muted{color:var(--muted);font-size:13px}.badge{border:1px solid var(--line);padding:8px 12px;border-radius:999px;background:#111}
+.progress{height:5px;background:#202027;border-radius:99px;overflow:hidden;margin-bottom:18px}.progress i{display:block;height:100%;background:#ddd;transition:.4s}
+.card{background:rgba(21,21,25,.97);border:1px solid var(--line);border-radius:20px;padding:25px;box-shadow:0 22px 60px #0008;margin-bottom:14px}
+.kicker{font-size:12px;letter-spacing:.16em;color:var(--accent);font-weight:800}.tomorrow{font-size:29px;font-weight:850;line-height:1.35;margin:10px 0 8px}.note{line-height:1.75;color:#c7c7cc}.players{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}.p{border:1px solid var(--line);border-radius:14px;padding:14px;background:#101014}.p b{display:block;margin-bottom:7px}.pack{font-size:13px;color:#cfcfd5;line-height:1.65;min-height:64px}
+.trade{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}input{width:100%;border:1px solid #41414b;border-radius:11px;background:#101014;color:white;padding:14px;font-size:15px;outline:none}input:focus{border-color:#8b8b96}.help{font-size:12px;color:var(--muted);margin-top:9px;line-height:1.6}.actions{display:flex;gap:10px;margin-top:13px}.btn{flex:1;padding:14px;border-radius:11px;border:1px solid #444;background:#222229;color:white;font-weight:800;cursor:pointer}.btn.primary{background:#eee;color:#111;border-color:#eee}
+.log{margin-top:15px;border-top:1px solid #303038;padding-top:12px}.logitem{font-size:14px;line-height:1.65;padding:8px 0;border-bottom:1px dashed #2b2b32}.reveal{display:none}.resultTitle{font-size:26px;font-weight:850;margin:8px 0 14px}.world{white-space:pre-line;line-height:1.9;font-size:16px;border-left:2px solid #555;padding-left:15px}.nextPreview{margin-top:18px;padding:15px;border:1px solid #48484f;border-radius:12px;background:#101014}.end{font-size:18px;line-height:1.9}
+@media(max-width:650px){.players{grid-template-columns:1fr}.trade{grid-template-columns:1fr}.tomorrow{font-size:24px}.card{padding:19px}}
+</style></head>
+<body><div class="wrap">
+<div class="top"><div><div class="logo">明日交换所</div><div class="muted">极简机制试玩：知道事件，不知道结果</div></div><div class="badge" id="badge"></div></div>
+<div class="progress"><i id="prog"></i></div><div id="game"></div></div>
 <script>
-const SUPABASE_URL="https://ifmhbjrhlecksnyjcczq.supabase.co";
-const SUPABASE_KEY="sb_publishable_yeJtFDUCSeUxpfCyWrClgg_TUAUcI5k";
-const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-const chapters=[{"title": "储物柜里的蛋", "public": "放学后，你们在旧体育仓库发现一颗正在发热的黑色蛋。屏幕显示：距离孵化 02:14:37。", "p1": "扫描结果：该生物可能具有攻击性。不要让它接触其他学生。", "p2": "扫描结果：没有检测到攻击性。它似乎正在寻找可以信任的人。", "o1": ["立刻告诉老师", "先把蛋藏起来"], "o2": ["先把蛋藏起来", "交给老师处理"]}, {"title": "孵化", "public": "第二天，蛋已经裂开。里面的小生物睁开眼睛，并开始模仿你们说话。", "p1": "它第一次模仿的是玩家2昨晚说过的一句话。", "p2": "系统提示：玩家1曾在你不在场时接触过它。", "o1": ["继续照顾它", "把它转移出去"], "o2": ["让它继续留下", "要求立刻转移"]}, {"title": "不一致的记录", "public": "学校监控显示昨晚有人进入仓库，但画面只剩下模糊的人影。", "p1": "系统记录：玩家2在23:14进入过仓库。", "p2": "你的定位记录显示：昨晚23:14你一直在家。", "o1": ["相信系统记录", "相信玩家2的解释"], "o2": ["公开自己的定位记录", "暂时隐瞒记录"]}, {"title": "只有一人收到的消息", "public": "午休时，公共屏幕突然黑了一秒，然后恢复正常。", "p1": "你没有收到额外信息。", "p2": "【私人消息】不要告诉玩家1：它真正害怕的不是老师，而是玩家1。", "o1": ["继续原计划", "要求交换彼此看到的信息"], "o2": ["把消息告诉玩家1", "按照消息保持沉默"]}, {"title": "谁改变了选择", "public": "系统宣布：昨晚有人改变了决定，但拒绝显示是谁。", "p1": "系统私下告诉你：『玩家2改变过选择。』", "p2": "系统记录显示：你没有改变任何选择。", "o1": ["直接质问玩家2", "先观察，不揭穿系统"], "o2": ["主动说明自己没改", "等待玩家1先开口"]}, {"title": "第二个出口", "public": "小生物带你们来到学校地下。这里出现两扇从未见过的门。", "p1": "左门上写着：只有一个人可以安全通过。", "p2": "右门上写着：两个人一起进入才会打开。", "o1": ["选择左门", "选择右门"], "o2": ["选择右门", "选择左门"]}, {"title": "被删除的十分钟", "public": "你们同时发现，手机记录中有十分钟完全空白。", "p1": "你的相册里多出一张玩家2站在控制台前的照片。", "p2": "你的相册里多出一张玩家1站在控制台前的照片。", "o1": ["立刻展示照片", "先问对方记不记得"], "o2": ["展示照片", "先隐藏照片"]}, {"title": "系统的条件", "public": "系统提出交易：只要其中一人退出，另一人就能看到全部真相。", "p1": "附加提示：玩家2已经同意退出。（真实性未知）", "p2": "附加提示：玩家1尚未作出决定。（真实性未知）", "o1": ["接受交易", "拒绝交易"], "o2": ["拒绝交易", "接受交易"]}, {"title": "它开始说话", "public": "小生物第一次用自己的声音说：『你们为什么一直相信屏幕？』", "p1": "它告诉你：系统从第三章开始就在修改信息。", "p2": "它告诉你：系统从第一章开始就在测试你们。", "o1": ["相信它", "仍然相信系统"], "o2": ["相信小生物", "要求系统证明自己"]}, {"title": "最后一次选择", "public": "出口已经打开。系统要求你们分别做出最后决定。屏幕上没有显示任何规则。", "p1": "最后一条私人信息：『如果你们选择不同，只有你能离开。』", "p2": "最后一条私人信息：『如果你们选择相同，两个人都能离开。』", "o1": ["和对方商量后决定", "不透露信息，独自决定"], "o2": ["把信息全部告诉对方", "保留最后的秘密"]}];
-const qs=new URLSearchParams(location.search);
-let room=(qs.get("room")||"").toUpperCase(), player=qs.get("player")||"", state=null, selected=null, channel=null;
-const app=document.getElementById("app"), who=document.getElementById("who");
-const col=(base)=>base.replace("X",player);
-function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
-function tokens(n){return [0,1,2].map(i=>`<span class="${i<n?'':'off'}">●</span>`).join("")}
-function joinScreen(){who.textContent="";app.innerHTML=`<h2>进入同一局《未读》</h2><p class="muted">两台设备输入同一个房间码，然后分别选择玩家1和玩家2。</p><input id="room" maxlength="12" placeholder="例如 DRAGON" value="${esc(room)}"><div class="two"><button class="btn primary" onclick="joinGame('1')">我是玩家1</button><button class="btn primary" onclick="joinGame('2')">我是玩家2</button></div>`}
-async function ensureRoom(code){
- let {data,error}=await sb.from("midoku_rooms").select("*").eq("room_code",code).maybeSingle();
- if(error) throw error;
- if(!data){let r=await sb.from("midoku_rooms").insert({room_code:code}).select().single();if(r.error)throw r.error;data=r.data}
- return data;
-}
-window.joinGame=async p=>{
- try{
-  room=(document.getElementById("room").value.trim()||"MIDOKU").toUpperCase();player=p;
-  history.replaceState(null,"",`?room=${encodeURIComponent(room)}&player=${player}`);
-  await ensureRoom(room);
-  await sb.from("midoku_rooms").update({[`player${player}_joined`]:true}).eq("room_code",room);
-  subscribe(); await refresh();
- }catch(e){app.innerHTML=`<div class="status danger"><b>连接失败</b><br>${esc(e.message)}</div>`}
-}
-async function refresh(){const {data,error}=await sb.from("midoku_rooms").select("*").eq("room_code",room).single();if(error)throw error;state=data;render()}
-function subscribe(){
- if(channel)sb.removeChannel(channel);
- channel=sb.channel("midoku-"+room).on("postgres_changes",{event:"UPDATE",schema:"public",table:"midoku_rooms",filter:`room_code=eq.${room}`},payload=>{state=payload.new;render()}).subscribe();
-}
+const days=[
+ {preview:"明天进行数学考试。",event:"数学考试",base:"第一节课，数学考试如期开始。",next:"明天班级要重新排座位。"},
+ {preview:"明天班级要重新排座位。",event:"重新排座位",base:"班主任拿着新的座位表走进教室。",next:"明天下午举行班级接力赛。"},
+ {preview:"明天下午举行班级接力赛。",event:"班级接力赛",base:"下午，全班来到操场，接力赛准备开始。",next:"明天公布文化祭各班的活动方案。"},
+ {preview:"明天公布文化祭各班的活动方案。",event:"文化祭方案公布",base:"午休前，文化祭方案被贴在教室后面的公告栏上。",next:"明天是学期最后一天。"},
+ {preview:"明天是学期最后一天。",event:"学期最后一天",base:"放学铃响起，这是这个学期最后一次全班一起离开教室。",next:null}
+];
+let day=0,trades=[],packs=[["手机","数学笔记","和B的友谊","3000円","周末时间"],["自行车","运动鞋","和A的秘密","5000円","游戏账号"],["相机","学生证","老师的信任","2000円","社团时间"]];
+const $=id=>document.getElementById(id);
+function esc(s){return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
 function render(){
- const ch=chapters[state.chapter]||chapters[9], me=player==="1"?1:2, other=me===1?2:1;
- const joined=state[`player${other}_joined`], changes=state[`player${me}_changes`], myChoice=state[`player${me}_choice`], otherChoice=state[`player${other}_choice`], myFinal=state[`player${me}_final`], otherFinal=state[`player${other}_final`];
- who.textContent=`${room} · 玩家${player}`;
- let h=`<div class="head"><span>第 ${state.chapter+1}/10 章</span><span>改变机会 <span class="dots">${tokens(changes)}</span></span></div><div class="big">${esc(ch.title)}</div><div class="story">${esc(ch.public)}</div><div class="private"><b>只有你看到的信息</b><div class="story">${esc(me===1?ch.p1:ch.p2)}</div></div>`;
- if(!joined){app.innerHTML=h+`<div class="status">已进入房间。正在等待另一名玩家……</div>`;return}
- if(state.phase==="first"){
-   if(myChoice===null){
-    const ops=me===1?ch.o1:ch.o2;
-    h+=`<p><b>先不要讨论，独立作出第一次决定。</b></p><div class="options">${ops.map((x,i)=>`<button class="opt" onclick="selectOpt(${i},this)">${esc(x)}</button>`).join("")}</div><div id="confirm"></div>`;
-   }else h+=`<div class="status">你的第一次决定已提交。${otherChoice===null?"等待对方……":"正在同步……"}</div>`;
- } else if(state.phase==="discuss"){
-   const ops=me===1?ch.o1:ch.o2;
-   h+=`<div class="status glitch"><b>现在请抬头和对方交流。</b><br>不要交换设备。直接告诉对方你愿意告诉他的内容。</div><p>你的第一次决定：<b>${esc(ops[myChoice])}</b></p>`;
-   if(myFinal===null)h+=`<div class="two"><button class="btn primary" onclick="finalize(false)">保持原决定</button><button class="btn" onclick="finalize(true)" ${changes<=0?"disabled":""}>改变决定（剩余 ${changes} 次）</button></div>`;
-   else h+=`<div class="status">最终决定已提交。${otherFinal===null?"等待对方……":"正在计算结果……"}</div>`;
- } else if(state.phase==="result"){
-   const same=state.player1_final===state.player2_final;
-   let result=state.chapter===9?(same?"你们最终作出了相同编号的选择。出口同时亮起。系统没有解释这是不是正确答案。":"你们最终作出了不同编号的选择。出口没有关闭，系统却突然停止回应。"):(same?"两个人的决定在这一章汇合了。系统记录了这个结果。":"你们没有作出相同编号的决定。系统记录了这道分歧。");
-   h+=`<div class="status"><b>本章结束</b><div class="story">${result}</div></div>`;
-   if(state.chapter<9)h+=`<button class="btn primary" style="width:100%;margin-top:14px" onclick="nextChapter()">进入下一章</button>`;
-   else h+=`<div class="private"><b>连接结束。</b><div class="story">从哪一章开始，你第一次怀疑屏幕？
-你更相信系统，还是坐在你面前的人？</div></div>`;
- }
- app.innerHTML=h;
+ $("badge").textContent="DAY "+(day+1)+" / "+days.length;$("prog").style.width=((day+1)/days.length*100)+"%";let d=days[day];
+ $("game").innerHTML='<section class="card" id="tradeCard"><div class="kicker">明日预告</div><div class="tomorrow">'+d.preview+'</div><div class="note">你只知道这件事一定会发生。考试几分、座位在哪、比赛输赢——这些结果现在都不知道。</div><div class="players">'+packs.map((p,i)=>'<div class="p"><b>'+(i===0?"你":"玩家"+(i+1))+'的包裹</b><div class="pack">'+p.map(x=>"· "+esc(x)).join("<br>")+'</div></div>').join("")+'</div><div class="trade"><input id="sell" placeholder="卖掉什么？例如：数学老师"><input id="buy" placeholder="想换来什么？例如：考试答案"></div><div class="help">没有强制次数。你可以连续交易，也可以今天什么都不做。Demo 中你代表玩家1操作；玩家2、3会做简单的独立行动。</div><div class="actions"><button class="btn" id="add">进行一次交易</button><button class="btn primary" id="finish">结束今天</button></div><div class="log">'+(trades.length?trades.map(t=>'<div class="logitem">'+esc(t.who)+'：卖掉「'+esc(t.sell)+'」 → 得到「'+esc(t.buy)+'」</div>').join(""):'<div class="muted">今天还没有发生交易。</div>')+'</div></section><section class="card reveal" id="reveal"></section>';
+ $("add").onclick=addTrade;$("finish").onclick=finishDay;
 }
-window.selectOpt=(i,el)=>{selected=i;document.querySelectorAll(".opt").forEach(x=>x.classList.remove("sel"));el.classList.add("sel");document.getElementById("confirm").innerHTML=`<button class="btn primary" style="width:100%;margin-top:12px" onclick="submitFirst()">确认第一次决定</button>`}
-window.submitFirst=async()=>{
- const patch={[`player${player}_choice`]:selected};
- const other=player==="1"?"2":"1";
- if(state[`player${other}_choice`]!==null)patch.phase="discuss";
- await sb.from("midoku_rooms").update(patch).eq("room_code",room);await refresh();
- // race-safe second check
- const {data}=await sb.from("midoku_rooms").select("*").eq("room_code",room).single();
- if(data.player1_choice!==null&&data.player2_choice!==null&&data.phase==="first")await sb.from("midoku_rooms").update({phase:"discuss"}).eq("room_code",room);
-}
-window.finalize=async changed=>{
- if(state[`player${player}_final`]!==null)return;
- const first=state[`player${player}_choice`], final=changed?(first===0?1:0):first;
- let patch={[`player${player}_final`]:final};
- if(changed)patch[`player${player}_changes`]=Math.max(0,state[`player${player}_changes`]-1);
- const other=player==="1"?"2":"1";
- if(state[`player${other}_final`]!==null)patch.phase="result";
- await sb.from("midoku_rooms").update(patch).eq("room_code",room);await refresh();
- const {data}=await sb.from("midoku_rooms").select("*").eq("room_code",room).single();
- if(data.player1_final!==null&&data.player2_final!==null&&data.phase==="discuss"){
-   const hist=[...(data.history||[]),{chapter:data.chapter,p1:data.player1_final,p2:data.player2_final}];
-   await sb.from("midoku_rooms").update({phase:"result",history:hist}).eq("room_code",room);
- }
-}
-window.nextChapter=async()=>{
- if(state.phase!=="result"||state.chapter>=9)return;
- await sb.from("midoku_rooms").update({chapter:state.chapter+1,phase:"first",player1_choice:null,player2_choice:null,player1_final:null,player2_final:null}).eq("room_code",room);
-}
-async function boot(){
- if(room&&(player==="1"||player==="2")){try{await ensureRoom(room);await sb.from("midoku_rooms").update({[`player${player}_joined`]:true}).eq("room_code",room);subscribe();await refresh()}catch(e){app.innerHTML=`<div class="status danger">${esc(e.message)}</div>`}}else joinScreen()
-} boot();
+function addTrade(){let sell=$("sell").value.trim(),buy=$("buy").value.trim();if(!sell&&!buy)return;trades.push({who:"你",sell:sell||"无",buy:buy||"无"});render()}
+function aiTrades(){const opts=[[["午休时间","老师的提示"],["手机","更好的运动鞋"],["和朋友的秘密","优先选择座位"],["零花钱","文化祭需要的材料"]],[["游戏时间","复习时间"],["自行车","更快的跑步速度"],["老师的信任","一次自由选择"],["相机","更多的假期时间"]]];return opts.map((arr,i)=>{let x=arr[(day+i)%arr.length];return {who:"玩家"+(i+2),sell:x[0],buy:x[1]}})}
+function consequence(all){let d=days[day],lines=[d.base,""],txt=all.map(t=>t.sell+" "+t.buy).join(" ");if(/数学老师/.test(txt))lines.push("但数学老师没有出现。学校临时安排了代课老师，考试仍然举行。");if(/考试答案/.test(txt))lines.push("你提前得到了一份“考试答案”，但试卷在早上临时换了版本。答案只有一部分还能用。");if(/数学笔记/.test(txt))lines.push("有人已经不再拥有自己的数学笔记。");if(/友谊|朋友/.test(txt))lines.push("有一段关系被交易改变了。今天需要帮助时，对方的反应和以前不一样。");if(/运动鞋|跑步速度/.test(txt))lines.push("有人为了明天的行动能力提前做了交换，这在今天产生了明显效果。");if(/座位/.test(txt))lines.push("座位表公布时，有人的交换改变了原本的安排。");if(/文化祭|材料/.test(txt))lines.push("文化祭准备中，多出来的材料让一个原本做不到的方案成为可能。");if(/假期时间|周末时间|午休时间|游戏时间|复习时间/.test(txt))lines.push("被卖掉的时间真的从生活里消失了；得到的时间则出现在最需要它的地方。");if(lines.length===2)lines.push("昨天的交易没有直接阻止今天的事件，但世界已经记住了这些改变。");lines.push("","昨天买卖的东西不会自动恢复。");return lines.join("\n")}
+function finishDay(){let all=[...trades,...aiTrades()],d=days[day];$("tradeCard").style.display="none";let r=$("reveal");r.style.display="block";r.innerHTML='<div class="kicker">DAY '+(day+1)+' · 今天发生了</div><div class="resultTitle">'+d.event+'</div><div class="world">'+esc(consequence(all))+'</div><div class="log"><b>昨天三个人的交易</b>'+all.map(t=>'<div class="logitem">'+esc(t.who)+'：卖掉「'+esc(t.sell)+'」 → 得到「'+esc(t.buy)+'」</div>').join("")+'</div>'+(d.next?'<div class="nextPreview"><div class="kicker">新的明日预告</div><div style="font-size:20px;font-weight:800;margin-top:7px">'+d.next+'</div></div>':'')+'<button class="btn primary" style="width:100%;margin-top:16px" id="next">'+(day===days.length-1?"结束试玩":"进入下一天")+'</button>';$("next").onclick=next}
+function next(){if(day===days.length-1){$("game").innerHTML='<section class="card"><div class="kicker">试玩结束</div><div class="resultTitle">你改变了什么？</div><div class="end">这个版本没有积分、没有胜负、没有多数少数，也没有“正确选择”。<br><br>唯一测试的事情是：<b>当你知道明天会发生什么时，你愿意为了它卖掉什么，又想买来什么？</b></div></section>';return}day++;trades=[];render()}
+render();
 </script></body></html>

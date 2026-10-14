@@ -1,42 +1,46 @@
-<!doctype html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>明日交换所 — 极简试玩 Demo</title>
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>コトノハ町 Demo</title>
 <style>
-:root{--bg:#0b0b0d;--panel:#151519;--line:#34343d;--text:#f4f4f5;--muted:#9b9ba5;--accent:#f0d58a}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% -10%,#24242b,#0b0b0d 42%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans SC",sans-serif;min-height:100vh}
-.wrap{max-width:900px;margin:auto;padding:28px 18px 70px}.top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:18px}.logo{font-size:23px;font-weight:850;letter-spacing:.12em}.muted{color:var(--muted);font-size:13px}.badge{border:1px solid var(--line);padding:8px 12px;border-radius:999px;background:#111}
-.progress{height:5px;background:#202027;border-radius:99px;overflow:hidden;margin-bottom:18px}.progress i{display:block;height:100%;background:#ddd;transition:.4s}
-.card{background:rgba(21,21,25,.97);border:1px solid var(--line);border-radius:20px;padding:25px;box-shadow:0 22px 60px #0008;margin-bottom:14px}
-.kicker{font-size:12px;letter-spacing:.16em;color:var(--accent);font-weight:800}.tomorrow{font-size:29px;font-weight:850;line-height:1.35;margin:10px 0 8px}.note{line-height:1.75;color:#c7c7cc}.players{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}.p{border:1px solid var(--line);border-radius:14px;padding:14px;background:#101014}.p b{display:block;margin-bottom:7px}.pack{font-size:13px;color:#cfcfd5;line-height:1.65;min-height:64px}
-.trade{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}input{width:100%;border:1px solid #41414b;border-radius:11px;background:#101014;color:white;padding:14px;font-size:15px;outline:none}input:focus{border-color:#8b8b96}.help{font-size:12px;color:var(--muted);margin-top:9px;line-height:1.6}.actions{display:flex;gap:10px;margin-top:13px}.btn{flex:1;padding:14px;border-radius:11px;border:1px solid #444;background:#222229;color:white;font-weight:800;cursor:pointer}.btn.primary{background:#eee;color:#111;border-color:#eee}
-.log{margin-top:15px;border-top:1px solid #303038;padding-top:12px}.logitem{font-size:14px;line-height:1.65;padding:8px 0;border-bottom:1px dashed #2b2b32}.reveal{display:none}.resultTitle{font-size:26px;font-weight:850;margin:8px 0 14px}.world{white-space:pre-line;line-height:1.9;font-size:16px;border-left:2px solid #555;padding-left:15px}.nextPreview{margin-top:18px;padding:15px;border:1px solid #48484f;border-radius:12px;background:#101014}.end{font-size:18px;line-height:1.9}
-@media(max-width:650px){.players{grid-template-columns:1fr}.trade{grid-template-columns:1fr}.tomorrow{font-size:24px}.card{padding:19px}}
-</style></head>
-<body><div class="wrap">
-<div class="top"><div><div class="logo">明日交换所</div><div class="muted">极简机制试玩：知道事件，不知道结果</div></div><div class="badge" id="badge"></div></div>
-<div class="progress"><i id="prog"></i></div><div id="game"></div></div>
+*{box-sizing:border-box}body{margin:0;background:#101116;color:#f6f3eb;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif;min-height:100vh}.wrap{max-width:920px;margin:auto;padding:24px 18px 70px}.top{display:flex;justify-content:space-between;align-items:end;margin-bottom:14px}.title{font-size:25px;font-weight:900;letter-spacing:.08em}.sub,.muted{color:#a9a9b2;font-size:13px}.day{border:1px solid #3a3b44;border-radius:99px;padding:8px 12px}.card{background:#191a20;border:1px solid #343640;border-radius:20px;padding:22px;margin:12px 0;box-shadow:0 20px 55px #0006}.scene{font-size:22px;font-weight:850;margin:7px 0 8px}.story{color:#d1d1d5;line-height:1.75}.rumor{font-size:26px;font-weight:900;line-height:1.55;padding:18px;border:1px solid #555864;border-radius:15px;background:#111218;margin:15px 0}.slots{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.slot{background:#111218;border:1px solid #343640;border-radius:15px;padding:14px}.slot h3{font-size:13px;margin:0 0 10px;color:#d7bd78}.choices{display:grid;gap:7px}.choice{border:1px solid #3b3d47;background:#202128;color:#eee;border-radius:10px;padding:10px;cursor:pointer;text-align:left}.choice:hover{border-color:#777}.choice.sel{background:#eee;color:#111;border-color:#eee}.hiddenPick{font-size:14px;color:#aaa;padding:8px 0}.btn{width:100%;padding:14px;border:0;border-radius:12px;font-weight:850;font-size:15px;cursor:pointer;background:#eee;color:#111;margin-top:14px}.btn.secondary{background:#292a32;color:#eee;border:1px solid #444}.btn:disabled{opacity:.35}.tag{font-size:12px;color:#d7bd78;font-weight:800;letter-spacing:.12em}.effect{white-space:pre-line;line-height:1.85;border-left:2px solid #777;padding-left:14px}.history{font-size:14px;line-height:1.7;border-bottom:1px dashed #333;padding:8px 0}.talk{background:#121319;border-radius:12px;padding:12px;margin:10px 0;color:#ddd}.warn{color:#f1c97b}.ending{font-size:18px;line-height:1.9}
+@media(max-width:680px){.slots{grid-template-columns:1fr}.rumor{font-size:21px}.scene{font-size:19px}}
+</style></head><body><div class="wrap"><div class="top"><div><div class="title">コトノハ町</div><div class="sub">三个人只能控制一句传闻的一部分。</div></div><div class="day" id="day"></div></div><div id="app"></div></div>
 <script>
-const days=[
- {preview:"明天进行数学考试。",event:"数学考试",base:"第一节课，数学考试如期开始。",next:"明天班级要重新排座位。"},
- {preview:"明天班级要重新排座位。",event:"重新排座位",base:"班主任拿着新的座位表走进教室。",next:"明天下午举行班级接力赛。"},
- {preview:"明天下午举行班级接力赛。",event:"班级接力赛",base:"下午，全班来到操场，接力赛准备开始。",next:"明天公布文化祭各班的活动方案。"},
- {preview:"明天公布文化祭各班的活动方案。",event:"文化祭方案公布",base:"午休前，文化祭方案被贴在教室后面的公告栏上。",next:"明天是学期最后一天。"},
- {preview:"明天是学期最后一天。",event:"学期最后一天",base:"放学铃响起，这是这个学期最后一次全班一起离开教室。",next:null}
+const rounds=[
+{scene:"放学后的旧车站",story:"你、玩家2、玩家3误入了コトノハ町。Mio说：这里奇怪的传闻，只要被人相信，第二天就可能成为现实。你们决定先试一次。",tpl:"听说，【主语】【谓语】【宾语】。",p1:["校长","学校里的黑猫","数学老师"],p2:["会变成","会偷偷吃掉","会开始寻找"],p3:["一条龙","所有人的作业","藏在学校里的星星"]},
+{scene:"第一条传闻成真之后",story:"昨天那句话真的改变了小镇。今天大家已经开始谈论它。你知道：今天拼出来的东西，明天也会留下。",tpl:"听说，【主语】【谓语】【宾语】。",p1:["会说话的黑猫","龙校长","旧车站"],p2:["会带着大家找到","会在午夜出现","会吞掉"],p3:["回家的路","一辆银色列车","所有考试卷"]},
+{scene:"关于回家的传闻",story:"你们开始认真利用规则。目标很明确：制造一条能够带你们回家的传闻。但每个人依然只知道自己能出的那一部分。",tpl:"听说，【主语】【谓语】【宾语】。",p1:["午夜列车","旧车站的钟","拿着最重要东西的人"],p2:["会带着","会打开","会回到"],p3:["乘客回到最想去的地方","通往另一个世界的门","自己真正的家"]},
+{scene:"午夜",story:"列车真的出现了。你们坐了上去——却没有回到真正的世界。你们看到的是镇民根据传闻想象出来的“家”。只好乘车返回。",tpl:"回到镇上以后，人们都在说：【主语】【谓语】【宾语】。",p1:["森林里的巨人","广场的许愿泉","会飞的面包"],p2:["会实现","会吃掉","会让所有人忘记"],p3:["任何愿望","进入森林的孩子","自己最讨厌的事情"]},
+{scene:"失控的コトノハ町",story:"你们回来时，小镇已经乱了套。所有人都学会了制造传闻。现在你们必须用新的传闻修正旧的现实，才能再次尝试回家。",tpl:"为了修复小镇，你们创造：【主语】【谓语】【宾语】。",p1:["森林里的巨人","广场的许愿泉","所有会说话的动物"],p2:["只会帮助","必须归还","会一起保护"],p3:["迷路的人","实现愿望得到的东西","这座小镇"]},
+{scene:"第二次来到旧车站",story:"小镇终于安静下来。Mio问：『这一次，你们还要让所有人替你们决定“家”是什么吗？』",tpl:"最后的传闻：【主语】【谓语】【宾语】。",p1:["我们三个人","午夜列车","真正的家"],p2:["只相信","会沿着","存在于"],p3:["自己亲身经历过的记忆","我们自己的记忆前进","不需要别人证明的地方"]}
 ];
-let day=0,trades=[],packs=[["手机","数学笔记","和B的友谊","3000円","周末时间"],["自行车","运动鞋","和A的秘密","5000円","游戏账号"],["相机","学生证","老师的信任","2000円","社团时间"]];
-const $=id=>document.getElementById(id);
-function esc(s){return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+let r=0,pick=null,history=[],revealed=false;
+const $=x=>document.getElementById(x); const esc=s=>s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+function ai(arr,offset){return arr[(r+offset)%arr.length]}
 function render(){
- $("badge").textContent="DAY "+(day+1)+" / "+days.length;$("prog").style.width=((day+1)/days.length*100)+"%";let d=days[day];
- $("game").innerHTML='<section class="card" id="tradeCard"><div class="kicker">明日预告</div><div class="tomorrow">'+d.preview+'</div><div class="note">你只知道这件事一定会发生。考试几分、座位在哪、比赛输赢——这些结果现在都不知道。</div><div class="players">'+packs.map((p,i)=>'<div class="p"><b>'+(i===0?"你":"玩家"+(i+1))+'的包裹</b><div class="pack">'+p.map(x=>"· "+esc(x)).join("<br>")+'</div></div>').join("")+'</div><div class="trade"><input id="sell" placeholder="卖掉什么？例如：数学老师"><input id="buy" placeholder="想换来什么？例如：考试答案"></div><div class="help">没有强制次数。你可以连续交易，也可以今天什么都不做。Demo 中你代表玩家1操作；玩家2、3会做简单的独立行动。</div><div class="actions"><button class="btn" id="add">进行一次交易</button><button class="btn primary" id="finish">结束今天</button></div><div class="log">'+(trades.length?trades.map(t=>'<div class="logitem">'+esc(t.who)+'：卖掉「'+esc(t.sell)+'」 → 得到「'+esc(t.buy)+'」</div>').join(""):'<div class="muted">今天还没有发生交易。</div>')+'</div></section><section class="card reveal" id="reveal"></section>';
- $("add").onclick=addTrade;$("finish").onclick=finishDay;
+ $("day").textContent="DAY "+(r+1)+" / "+rounds.length;let x=rounds[r];
+ $("app").innerHTML='<section class="card"><div class="tag">'+(r<3?"传闻实验":r===3?"转折":r===4?"修复":"最后一次")+'</div><div class="scene">'+x.scene+'</div><div class="story">'+x.story+'</div></section>'+
+ '<section class="card"><div class="muted">今天的句型</div><div class="rumor">'+x.tpl+'</div><div class="slots">'+
+ '<div class="slot"><h3>玩家1 · 你负责【主语】</h3><div class="choices">'+x.p1.map((v,i)=>'<button class="choice '+(pick===i?"sel":"")+'" data-i="'+i+'">'+v+'</button>').join("")+'</div></div>'+
+ '<div class="slot"><h3>玩家2 · 【谓语】</h3><div class="hiddenPick">🔒 已经秘密选择</div><div class="muted">揭晓前你不知道TA选了什么。</div></div>'+
+ '<div class="slot"><h3>玩家3 · 【宾语】</h3><div class="hiddenPick">🔒 已经秘密选择</div><div class="muted">揭晓前你不知道TA选了什么。</div></div></div>'+
+ '<div class="talk">💬 你可以猜他们会选什么，但这一版 Demo 中不能直接看到答案。先根据当前世界，选你想放进去的词。</div>'+
+ '<button class="btn" id="reveal" '+(pick===null?"disabled":"")+'>三人同时揭晓</button></section>'+
+ (history.length?'<section class="card"><div class="tag">这个世界已经记住</div>'+history.map(h=>'<div class="history">DAY '+h.day+'　'+esc(h.text)+'</div>').join("")+'</section>':'');
+ document.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{pick=+b.dataset.i;render()});$("reveal").onclick=reveal;
 }
-function addTrade(){let sell=$("sell").value.trim(),buy=$("buy").value.trim();if(!sell&&!buy)return;trades.push({who:"你",sell:sell||"无",buy:buy||"无"});render()}
-function aiTrades(){const opts=[[["午休时间","老师的提示"],["手机","更好的运动鞋"],["和朋友的秘密","优先选择座位"],["零花钱","文化祭需要的材料"]],[["游戏时间","复习时间"],["自行车","更快的跑步速度"],["老师的信任","一次自由选择"],["相机","更多的假期时间"]]];return opts.map((arr,i)=>{let x=arr[(day+i)%arr.length];return {who:"玩家"+(i+2),sell:x[0],buy:x[1]}})}
-function consequence(all){let d=days[day],lines=[d.base,""],txt=all.map(t=>t.sell+" "+t.buy).join(" ");if(/数学老师/.test(txt))lines.push("但数学老师没有出现。学校临时安排了代课老师，考试仍然举行。");if(/考试答案/.test(txt))lines.push("你提前得到了一份“考试答案”，但试卷在早上临时换了版本。答案只有一部分还能用。");if(/数学笔记/.test(txt))lines.push("有人已经不再拥有自己的数学笔记。");if(/友谊|朋友/.test(txt))lines.push("有一段关系被交易改变了。今天需要帮助时，对方的反应和以前不一样。");if(/运动鞋|跑步速度/.test(txt))lines.push("有人为了明天的行动能力提前做了交换，这在今天产生了明显效果。");if(/座位/.test(txt))lines.push("座位表公布时，有人的交换改变了原本的安排。");if(/文化祭|材料/.test(txt))lines.push("文化祭准备中，多出来的材料让一个原本做不到的方案成为可能。");if(/假期时间|周末时间|午休时间|游戏时间|复习时间/.test(txt))lines.push("被卖掉的时间真的从生活里消失了；得到的时间则出现在最需要它的地方。");if(lines.length===2)lines.push("昨天的交易没有直接阻止今天的事件，但世界已经记住了这些改变。");lines.push("","昨天买卖的东西不会自动恢复。");return lines.join("\n")}
-function finishDay(){let all=[...trades,...aiTrades()],d=days[day];$("tradeCard").style.display="none";let r=$("reveal");r.style.display="block";r.innerHTML='<div class="kicker">DAY '+(day+1)+' · 今天发生了</div><div class="resultTitle">'+d.event+'</div><div class="world">'+esc(consequence(all))+'</div><div class="log"><b>昨天三个人的交易</b>'+all.map(t=>'<div class="logitem">'+esc(t.who)+'：卖掉「'+esc(t.sell)+'」 → 得到「'+esc(t.buy)+'」</div>').join("")+'</div>'+(d.next?'<div class="nextPreview"><div class="kicker">新的明日预告</div><div style="font-size:20px;font-weight:800;margin-top:7px">'+d.next+'</div></div>':'')+'<button class="btn primary" style="width:100%;margin-top:16px" id="next">'+(day===days.length-1?"结束试玩":"进入下一天")+'</button>';$("next").onclick=next}
-function next(){if(day===days.length-1){$("game").innerHTML='<section class="card"><div class="kicker">试玩结束</div><div class="resultTitle">你改变了什么？</div><div class="end">这个版本没有积分、没有胜负、没有多数少数，也没有“正确选择”。<br><br>唯一测试的事情是：<b>当你知道明天会发生什么时，你愿意为了它卖掉什么，又想买来什么？</b></div></section>';return}day++;trades=[];render()}
+function makeEffect(text){
+ if(r===0)return "夜里，镇上的人开始重复这句话。\n\n第二天早上——它真的发生了。\n\nMio看着你们：『所以……传闻真的会改变这里。』";
+ if(r===1)return "第二天，这条传闻成为了小镇的一部分。\n\n昨天创造的现实没有消失。新的传闻直接叠在旧世界上。";
+ if(r===2)return "午夜十二点，旧铁轨开始震动。\n\n你们拼出来的传闻真的创造了回家的办法。银色列车停在月台前。\n\n三个人决定上车。";
+ if(r===3)return "当你们再次返回コトノハ町，这条新传闻也已经开始现实化。\n\n街上到处都是别人的传闻：会飞的房子、倒着流的河、突然消失的道路……\n\n你们终于意识到：这里的每个人都在试图让自己的故事成为现实。";
+ if(r===4)return "新的传闻覆盖了部分失控的现实。\n\n但你们没有把小镇恢复成最初的样子——有些奇怪而美好的东西被保留了下来。";
+ return "午夜列车再次来到旧车站。\n\n这一次，没有全镇的人替你们描述“家”。\n\n列车沿着三个人真正拥有的记忆前进。";
+}
+function reveal(){
+ let x=rounds[r],a=x.p1[pick],b=ai(x.p2,1),c=ai(x.p3,2),text=a+b+c;history.push({day:r+1,text});
+ $("app").innerHTML='<section class="card"><div class="tag">三人同时揭晓</div><div class="slots"><div class="slot"><h3>玩家1</h3>'+a+'</div><div class="slot"><h3>玩家2</h3>'+b+'</div><div class="slot"><h3>玩家3</h3>'+c+'</div></div><div class="rumor">「'+text+'。」</div><div class="muted">没有任何一个人单独写出这句话，但从现在开始，它属于整个小镇。</div></section>'+
+ '<section class="card"><div class="tag">第二天 · 现实化</div><div class="effect">'+makeEffect(text)+'</div><button class="btn" id="next">'+(r===rounds.length-1?"查看结局":"进入第二天")+'</button></section>';
+ $("next").onclick=next;
+}
+function next(){if(r===rounds.length-1){$("day").textContent="END";$("app").innerHTML='<section class="card"><div class="tag">DEMO END</div><div class="scene">这一次，列车没有走错。</div><div class="ending">三个孩子回到了真正的世界。<br><br>这一局里，你每次只控制一句话的一部分，但你和另外两个人共同创造的句子，连续六天改变了整个世界。<br><br><b>你控制的是自己的词，却控制不了它最后会和什么组合，也控制不了它成为现实之后会发生什么。</b><br><br><span class="warn">这就是这个 Demo 现在唯一想测试的核心乐趣。</span></div></section><section class="card"><div class="tag">本局生成的传闻</div>'+history.map(h=>'<div class="history">DAY '+h.day+'　'+esc(h.text)+'</div>').join("")+'<button class="btn secondary" onclick="location.reload()">再玩一次</button></section>';return}r++;pick=null;render()}
 render();
 </script></body></html>

@@ -1,14 +1,14 @@
 <!doctype html>
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>未读 MIDOKU｜第一章 demo</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <style>
 *{box-sizing:border-box}body{margin:0;min-height:100vh;background:#080909;color:#e8e6df;font-family:"Songti SC","Noto Serif SC",serif;background-image:radial-gradient(circle at 50% -20%,#342d2444,transparent 48%),linear-gradient(#090a09,#11100e)}
 .wrap{max-width:760px;margin:auto;padding:30px 18px 80px}.logo{letter-spacing:.28em;font-weight:800;font-size:22px}.sub,.muted{color:#8e8a80;font:13px -apple-system,BlinkMacSystemFont,sans-serif}.card{margin-top:22px;padding:26px;border:1px solid #3c3931;border-radius:3px;background:#11110fdd;box-shadow:0 30px 80px #000a}.line{height:1px;background:#3b372f;margin:22px 0}.title{font-size:29px;letter-spacing:.12em;margin:12px 0}.story{line-height:2;white-space:pre-line}.btn,input{width:100%;border:1px solid #555044;background:#181713;color:#eee9dc;padding:15px 16px;font-size:15px}.btn{cursor:pointer;text-align:left;margin-top:10px}.btn:hover{background:#252119}.primary{text-align:center;background:#ded8c9;color:#171612;font-weight:800}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}.tag{font:12px -apple-system,sans-serif;letter-spacing:.15em;color:#b9ad91}.secret{border-left:2px solid #75674a;padding:4px 0 4px 17px;margin:22px 0}.status{font-family:-apple-system,sans-serif;padding:14px;border:1px solid #403c33;margin-top:16px;color:#bbb4a4}.glitch{animation:g .09s 5}@keyframes g{25%{transform:translateX(4px)}60%{transform:translateX(-3px);filter:blur(.4px)}}.blood{color:#b16f62}.hide{display:none}@media(max-width:560px){.two{grid-template-columns:1fr}.card{padding:20px}.title{font-size:24px}}
 </style></head><body><main class="wrap"><div class="logo">未读 MIDOKU</div><div class="sub">第一章试作 · 黄泉比良坂</div><section id="app" class="card"></section></main>
 <script>
 window.addEventListener("error",e=>{const a=document.querySelector("#app");if(a)a.innerHTML=`<div class="title blood">启动错误</div><div class="story">${String(e.message)}\n${String(e.filename||"")} : ${e.lineno||""}</div>`});
-const URL="https://ifmhbjrhlecksnyjcczq.supabase.co",KEY="sb_publishable_yeJtFDUCSeUxpfCyWrClgg_TUAUcI5k",sb=supabase.createClient(URL,KEY);
+let sb=null;
 let S=null,room="",slot=0,name="",ch=null;const app=document.querySelector("#app");
 const esc=x=>String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 function lobby(){app.innerHTML='<div class="tag">SESSION SETUP</div><div class="title">黄泉比良坂</div><div class="story">人数を選び、名を記せ。\n今夜、山を越える者の名を。</div><div class="line"></div><label class="muted">游玩人数</label><div class="two"><button class="btn" onclick="players=2;drawNames()">2 人</button><button class="btn" onclick="players=3;drawNames()">3 人</button></div><div id="names"></div>'}
@@ -30,4 +30,5 @@ window.begin=async()=>{await sb.from("midoku_rooms").update({phase:"choice",play
 window.vote=async v=>{await sb.from("midoku_rooms").update({["player"+slot+"_choice"]:v}).eq("room_code",room);let r=await sb.from("midoku_rooms").select("*").eq("room_code",room).single(),d=r.data,c=d.player_count||2,a=[d.player1_choice,d.player2_choice,d.player3_choice].slice(0,c);if(a.every(x=>x!==null))await sb.from("midoku_rooms").update({phase:"omen"}).eq("room_code",room);else{app.innerHTML='<div class="tag">选择已刻下</div><div class="title">等待</div><div class="story">你的纸灯熄灭了一瞬。\n其他人还没有全部作出决定。</div>'}}
 window.finish=async()=>await sb.from("midoku_rooms").update({phase:"chapter1_end"}).eq("room_code",room)
 try{lobby()}catch(e){app.innerHTML=`<div class="title blood">初始化失败</div><div class="story">${esc(e.message)}</div>`}
+const sdk=document.createElement("script");sdk.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";sdk.onload=()=>{sb=window.supabase.createClient("https://ifmhbjrhlecksnyjcczq.supabase.co","sb_publishable_yeJtFDUCSeUxpfCyWrClgg_TUAUcI5k")};sdk.onerror=()=>console.warn("Supabase SDK unavailable; lobby remains usable.");document.body.appendChild(sdk);
 </script></body></html>

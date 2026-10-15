@@ -1,21 +1,89 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>コトノハ町</title><style>
-*{box-sizing:border-box}body{margin:0;background:#f6f2e8;color:#24231f;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}.wrap{max-width:790px;margin:auto;padding:34px 20px 80px}.head{display:flex;justify-content:space-between;align-items:end;border-bottom:1px solid #393832;padding-bottom:10px;margin-bottom:30px}.logo{font:25px Georgia,serif;letter-spacing:.12em}.meta,.eyebrow{font-size:11px;color:#77736a;letter-spacing:.11em}.title{font:25px/1.5 Georgia,"Noto Serif SC",serif;margin:8px 0 14px}.story{font-size:15px;line-height:1.9}.dialogue{font:16px/1.9 Georgia,"Noto Serif SC",serif;margin:18px 0;padding-left:15px;border-left:2px solid #aaa59a}.box{border-top:1px solid #aaa59a;margin-top:30px;padding-top:20px}.choices{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.choice{border:1px solid #99948a;background:transparent;padding:13px;text-align:left;cursor:pointer;font-size:14px;min-height:48px}.choice:hover,.choice.sel{background:#282722;color:#fff}.btn{border:1px solid #282722;background:#282722;color:#fff;padding:12px 19px;margin-top:20px;cursor:pointer}.btn:disabled{opacity:.3}.btn.alt{background:transparent;color:#282722}.note{font-size:12px;color:#817d74;margin-top:12px;line-height:1.7}.reveal{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0}.word{border-top:1px solid #817d74;padding-top:8px;font-size:14px}.word small{display:block;color:#88837a;font-size:11px;margin-bottom:5px}.sentence{font:25px/1.65 Georgia,"Noto Serif SC",serif;margin:25px 0}.after{border-top:1px solid #aaa59a;border-bottom:1px solid #aaa59a;padding:18px 0;margin:22px 0;font-size:15px;line-height:1.9}.speaker{font-size:12px;color:#77736a;margin-bottom:6px}.echo{margin-top:16px;padding:14px 16px;background:#ece7dc;font-size:14px;line-height:1.8}.chapter{font:29px/1.7 Georgia,"Noto Serif SC",serif;margin:35px 0}.end{font-size:16px;line-height:2}@media(max-width:620px){.choices{grid-template-columns:1fr}.reveal{grid-template-columns:1fr}.title{font-size:22px}.sentence{font-size:21px}}
-</style></head><body><main class="wrap"><header class="head"><div class="logo">コトノハ町</div><div class="meta" id="meta">PROTOTYPE 09 OVERHEARD</div></header><div id="app"></div></main><script>
-const scenes=[
-{kind:"story",d:0,p:"星期五・放学后",t:"本来只是坐错了一班车。",x:"部活拖堂了。你们四个背着书包和运动包冲上站台，平时那班电车正好在眼前关门。有人还咬着刚从NewDays买的ツナマヨおにぎり，另一个人掏出Suica看了眼余额：下一班，二十分钟。\n\n对面正好停着一辆银色电车。线路图上似乎有你们回家的方向，关门铃又已经响了。四个人互相看了一眼，跑了进去。\n\n前几站都很正常。有人刷LINE，有人拿着ZEBRA DelGuardシャーペン补明天要交的小测订正。后来手机信号从4G掉成一格。再抬头时，车厢里只剩你们四个。\n\n『下一站，终点——コトノハ町。』",dialog:"下车后，银色电车开进雾里。你们走了几分钟又原路跑回来。\n\n站台没了。连铁轨都没了。"},
-{kind:"play",d:1,p:"镇口・傍晚",t:"你们第一次解释刚才发生的事。",x:"杂货店老板看见四个穿外地校服的孩子站在路边。\n\n『迷路了？你们从哪儿来的？』\n\n「不是，我们真的是坐电车来的。」\n「银色的那辆！」\n「下车以后它就——」\n「等一下，站台也没了啊。」\n\n四个人几乎撞在一起说。老板的眼神在你们之间来回转。",dialog:"这是第一次【回答】。你们没有商量，只是在回答同一个问题。",prompt:"老板：『所以，你们刚才到底是怎么来的？』",role:"谓语",opts:["「就那辆银色的啊！」","「我下车的时候还在！」","「后来它钻进雾里了。」","「不是，最怪的是站台也没了。」"],fragments:[{who:"孩子A",label:"时间",text:"刚才"},{who:"孩子B",label:"主语",text:"那辆银色电车"},{who:"你",label:"谓语",pick:true},{who:"孩子D",label:"宾语",text:"我们 / 这里"}],build:m=>m.includes("银色")?"刚才，有一辆银色电车把这四个孩子送到了镇上。":m.includes("还在")?"四个孩子下车以后，那辆银色电车还停在站台上。":m.includes("雾")?"那辆银色电车把四个孩子送到这里以后，开进雾里不见了。":"四个孩子下车以后，电车和站台一起消失了。",npc:"老板把四个人的话听成了一句完整的话。",after:["老板重复了一遍：『银色电车把你们送到这里，然后消失了？』","你们还没来得及纠正，旁边买酱油的佐藤太太已经听见了。"],carry:"四个外地孩子，是被一辆会消失的银色电车送来的。"},
-{kind:"story",d:1,p:"面包店・晚上",t:"一句完整的话，比四句碎片传得更快。",x:"Mio带你们去买晚饭。面包店老板娘一看到你们就问：\n\n『你们就是坐那辆“会消失的电车”来的孩子？』\n\n你们愣了一下。没有人说过“会消失的电车”。你们只说过电车、雾、下车，以及后来找不到站台。",dialog:"但在镇上的人耳中，这些已经是同一个故事。"},
-{kind:"play",d:2,p:"Mio家・早餐",t:"第二天，故事里多出了一个“旧车站”。",x:"Mio妈妈把烤好的吐司和玉子焼き放到桌上：『听说那辆车是从旧车站来的？』\n\nMio皱眉：『谁说是旧车站？』\n\n『佐藤太太说的。她也是听别人讲的。』\n\n你们昨天谁都没有说过“旧”。",dialog:"Mio转向你们：『等等。你们下车的时候，真的看到站名了吗？』",prompt:"Mio：『你们下车以后，手里还剩下什么？』",role:"宾语",opts:["「Suica还在我口袋里。」","「我只摸到一张没见过的切符。」","「学生手帳倒是没丢。」","「便当盒还在，饭团没了。」"],fragments:[{who:"孩子A",label:"时间",text:"下车以后"},{who:"孩子B",label:"主语",text:"我们"},{who:"孩子C",label:"谓语",text:"只找到"},{who:"你",label:"宾语",pick:true}],build:o=>o.includes("Suica")?"下车以后，他们身上只剩一张还能用的Suica。":o.includes("切符")?"他们下车以后，发现身上多了一张陌生的车票。":o.includes("学生手帳")?"他们从那辆车下来时，只确认学生手帳还在。":"他们从那辆车下来以后，只剩下一个空便当盒。",npc:"Mio把四个人断断续续的回答重新整理了一遍。",after:["Mio低声重复了这句话。","中午，一个来找Mio的孩子只听见了后半段。他跑出去时说：『他们从旧车站带回了东西。』"],carry:"那四个孩子从旧车站带回了某样东西。"},
-{kind:"play",d:2,p:"镇中心・下午",t:"传闻开始自己寻找证据。",x:"广场上的孩子围着你们：『从旧车站带回来的东西呢？』\n\n你们解释那只是下车以后还在身上的东西。可大家已经开始猜：车票、交通卡、学生证——到底哪一个能证明旧车站存在？",dialog:"离开人群后，Mio自言自语：『要是真有旧车站，总该留下点什么吧……』",prompt:"这是【自言自语】的时机。四个人看着广场，各自注意到了不同的东西。",role:"主语",opts:["「刚才那个修钟爷爷吧。」","「猫嘴里是不是叼着纸？」","「Mio，你脚边那个什么？」","「旧货店门口有张黄纸。」"],fragments:[{who:"你",label:"主语",pick:true},{who:"孩子B",label:"地点",text:"在广场边"},{who:"孩子C",label:"谓语",text:"捡到了"},{who:"孩子D",label:"宾语",text:"一张旧车票"}],build:s=>s.includes("修钟")?"修钟老人刚才在广场边捡到了一张旧车票。":s.includes("猫")?"广场上的猫叼来了一张像旧车票的纸片。":s.includes("Mio")?"Mio脚边掉着一张旧车票。":"旧货店门口有人发现了一张发黄的旧车票。",npc:"旁边经过的小孩只听到了几个词，却把它们连成了一句话。",after:["『旧车票？！』他停下脚步。","十分钟后，广场另一头已经有人说：『有人捡到旧车站的车票了。』"],carry:"镇上已经有人捡到了旧车站留下的车票。"},
-{kind:"story",d:3,p:"Mio家・早晨",t:"第三天，证据真的出现了。",x:"出门前，你翻开昨天一直带着的课本。\n\n里面夹着一张发黄的小纸片。昨天明明没有。\n\n纸片上只剩半个模糊的『駅』字。\n\nMio盯着它看了很久。\n\n『……这算车票吗？』",dialog:"没人能确定。但你们第一次开始怀疑：到底是传闻追上了事实，还是事实正在追上传闻？"},
-{kind:"play",d:3,p:"河边・下午",t:"河里又捞上来一个“证据”。",x:"钓鱼的大叔捞起一块生锈铁牌，上面也剩着一个『駅』字。围观的人立刻七嘴八舌。\n\n修钟老人却说：『一个字而已，什么也说明不了。』",dialog:"回去的路上，Mio问：『那张纸片现在在哪？』",prompt:"这是一次普通的【提问与回答】。",role:"谓语",opts:["「我夹数学课本里了。」","「刚才好像掉河边了。」","「不是给修钟爷爷看了吗？」","「等等，我书包里找不到了。」"],fragments:[{who:"孩子A",label:"主语",text:"那张纸片"},{who:"你",label:"谓语",pick:true},{who:"孩子C",label:"宾语",text:"我的课本 / 河边 / 修钟老人"},{who:"孩子D",label:"时间",text:"从早上开始 / 刚刚"}],build:v=>v.includes("数学")?"那张写着『駅』的纸片，从早上起就夹在他的数学课本里。":v.includes("河边")?"刚才，那张纸片可能掉在河边了。":v.includes("修钟")?"刚才，他们把那张纸片拿给修钟老人看了。":"刚才，他们发现那张纸片从书包里不见了。",npc:"Mio听见的是一条清楚、完整的信息。",after:["可走在后面的两个孩子只听见了“纸片”“河边”“修钟老人”。","傍晚，新的说法变成：『修钟老人知道旧车站的事。』"],carry:"修钟老人知道旧车站在哪里。"},
-{kind:"play",d:4,p:"修钟店・上午",t:"你们去问一个本来什么都没承认的人。",x:"因为镇上都在说“修钟老人知道旧车站”，你们也开始觉得，也许应该问问他。\n\n老人听完沉默很久：『我只说过，一个“駅”字什么也证明不了。』\n\n门外却已经有人等着答案。",dialog:"离开店门时，有人问：『老人是不是告诉你们位置了？』",prompt:"这是【被追问】的时机。四个人都想否认，但说出的碎片并不一样。",role:"宾语",opts:["「他就往森林那边看了一眼。」","「河上游？我没说在那里啊。」","「山顶是Mio猜的吧。」","「他根本什么地方都没说！」"],fragments:[{who:"孩子A",label:"主语",text:"修钟老人"},{who:"孩子B",label:"谓语",text:"提到了"},{who:"你",label:"宾语",pick:true},{who:"孩子D",label:"时间",text:"刚才谈话的时候"}],build:o=>o.includes("森林")?"修钟老人刚才朝森林的方向看了一眼。":o.includes("河上游")?"刚才有人提到了河的上游。":o.includes("山顶")?"刚才谈话时，有人猜旧车站可能在山顶附近。":"修钟老人刚才根本没有说旧车站在哪里。",npc:"提问的人没有听见你们完整的否认，只记住了地点。",after:["他点点头：『原来如此。』","当天傍晚，镇上的孩子已经开始往那个方向找“旧车站”。"],carry:"旧车站就在那个方向。"},
-{kind:"story",d:5,p:"森林・黄昏",t:"第五天，本来不存在的地点有了形状。",x:"你们跟着人群走进森林。\n\n昨天还只有草和泥的地方，多了两根生锈的铁轨。再往前，是一块歪斜的站牌。\n\n站牌上写着：コトノハ町。\n\nMio站在原地：『这里昨天真的什么都没有。』\n\n身后的老人却很自然地说：『你们怎么跑到旧站来了？』",dialog:"没有人知道第一句“旧车站”是谁说的。现在，也已经没人觉得它不存在。"}
-];
-let i=0,pick=null;const $=x=>document.getElementById(x),E=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-function render(){let s=scenes[i];$("meta").textContent=(s.d?"DAY "+s.d:"PROLOGUE")+" · "+(i+1)+"/"+scenes.length;let base='<div class="eyebrow">'+s.p+'</div><h1 class="title">'+s.t+'</h1><div class="story">'+s.x.replace(/\n/g,"<br>")+'</div><div class="dialogue">'+s.dialog.replace(/\n/g,"<br>")+'</div>';if(s.kind==="story"){$("app").innerHTML=base+'<button class="btn" id="next">'+(i===scenes.length-1?"继续":"翻页")+'</button>';$("next").onclick=next;return}$("app").innerHTML=base+'<section class="box"><div class="eyebrow">'+E(s.prompt)+'</div><div class="speaker">轮到你了。别想“正确答案”——选一句你当时真的会脱口而出的话。</div><div class="choices">'+s.opts.map((v,n)=>'<button class="choice '+(pick===n?"sel":"")+'" data-n="'+n+'">'+E(v)+'</button>').join("")+'</div><div class="note">你只管说自己的。旁边三个人也在抢着解释。至于听的人最后听成什么，是另一回事。</div><button class="btn" id="go" '+(pick===null?"disabled":"")+'>说出口</button></section>';document.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{pick=+b.dataset.n;render()});$("go").onclick=()=>reveal(s)}
-function reveal(s){let me=s.opts[pick],fs=s.fragments.map(f=>({...f,text:f.pick?me:f.text}));let q=s.build(me);$("app").innerHTML='<div class="eyebrow">'+s.p+' · 四个人的碎片</div><div class="reveal">'+fs.map(f=>'<div class="word"><small>'+E(f.who)+'</small>'+E(f.text)+'</div>').join("")+'</div><div class="note">你们当时其实是这样七嘴八舌说的。</div><div class="echo">'+E(s.npc)+'</div><div class="sentence">「'+E(q)+'」</div><div class="after">'+s.after.map(E).join("<br><br>")+'</div><div class="echo"><b>后来，镇上传成了：</b><br>'+E(s.carry)+'</div><button class="btn" id="next">看它接下来变成什么</button>';$("next").onclick=next}
-function next(){if(i===scenes.length-1)return end();i++;pick=null;render()}
-function end(){$("meta").textContent="第一阶段 · END";$("app").innerHTML='<div class="eyebrow">旧车站・黄昏</div><div class="chapter">五天前，这里只有草。<br>现在，所有人都知道这里有一座旧车站。</div><div class="end">没有一个孩子完整说过“这里有一座旧车站”。<br><br>没有一个大人承认自己编造了它。<br><br>每个人都只是记住了一部分，又把自己理解的那部分告诉了下一个人。<br><br><b>最后，一个没有任何人真正完整说过的故事，成了所有人都知道的“事实”。</b></div><button class="btn alt" onclick="location.reload()">重新开始</button>'}
-render();
+*{box-sizing:border-box}body{margin:0;background:#f6f2e8;color:#24231f;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}.wrap{max-width:790px;margin:auto;padding:34px 20px 80px}.head{display:flex;justify-content:space-between;align-items:end;border-bottom:1px solid #393832;padding-bottom:10px;margin-bottom:30px}.logo{font:25px Georgia,serif;letter-spacing:.12em}.meta,.place{font-size:11px;color:#77736a;letter-spacing:.11em}.title{font:25px/1.5 Georgia,"Noto Serif SC",serif;margin:8px 0 14px}.story{font-size:15px;line-height:2}.dialogue{font:16px/2 Georgia,"Noto Serif SC",serif;margin:18px 0;padding-left:15px;border-left:2px solid #aaa59a}.choices{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:22px}.choice{border:1px solid #99948a;background:transparent;padding:14px;text-align:left;cursor:pointer;font-size:14px;line-height:1.65;min-height:55px}.choice:hover{background:#282722;color:#fff}.btn{border:1px solid #282722;background:#282722;color:#fff;padding:12px 19px;margin-top:22px;cursor:pointer}.btn.alt{background:transparent;color:#282722}.line{font:16px/2 Georgia,"Noto Serif SC",serif;margin:8px 0}.heard{font:22px/1.75 Georgia,"Noto Serif SC",serif;margin:24px 0;padding:20px 0;border-top:1px solid #aaa59a;border-bottom:1px solid #aaa59a}.small{font-size:13px;color:#6f6b63;line-height:1.8}.end{font-size:16px;line-height:2}.chapter{font:28px/1.7 Georgia,"Noto Serif SC",serif;margin:30px 0}@media(max-width:620px){.choices{grid-template-columns:1fr}.title{font-size:22px}.heard{font-size:20px}}
+</style></head><body><main class="wrap"><header class="head"><div class="logo">コトノハ町</div><div class="meta" id="meta">PROTOTYPE 10</div></header><div id="app"></div></main><script>
+const S={day:0,rumors:new Set(),last:"",route:""};
+const $=x=>document.getElementById(x),E=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+function page(place,title,body,dialogue,choices){$("meta").textContent="DAY "+S.day;$("app").innerHTML='<div class="place">'+place+'</div><h1 class="title">'+title+'</h1><div class="story">'+body.replace(/\n/g,"<br>")+'</div>'+(dialogue?'<div class="dialogue">'+dialogue.replace(/\n/g,"<br>")+'</div>':'')+(choices?'<div class="choices">'+choices.map((c,i)=>'<button class="choice" data-i="'+i+'">'+c.t+'</button>').join("")+'</div>':'');if(choices)document.querySelectorAll(".choice").forEach(b=>b.onclick=()=>choices[+b.dataset.i].go())}
+function next(label,fn){return '<button class="btn" id="n">'+label+'</button>'}
+function bind(fn){$("n").onclick=fn}
+function prologue(){S.day=0;page("星期五・放学后","差一点就赶上了。","部活结束得比平时晚。你们四个跑上站台时，平时坐的电车正好关门。\n\n「啊——差一点。」\n\n有人还叼着便利店买的饭团。你摸出Suica看了一眼。下一班，二十分钟。\n\n「真的假的。」\n\n对面站台停着一辆没见过的银色电车。线路图上似乎也有回家的方向。关门铃已经响了。","「坐这个不也一样？」\n\n四个人跑了进去。\n\n前几站都很正常。有人看手机，有人拿自动铅笔补明天要交的数学订正。后来信号只剩一格。\n\n再抬头时，车厢里只剩你们四个。\n\n『下一站，终点——コトノハ町。』",null);$("app").innerHTML+=next("下车",town);bind(town)}
+function town(){S.day=1;page("镇口・傍晚","站台不见了。","银色电车开进雾里。你们沿原路跑回来，刚才下车的地方只剩一片草。\n\n「……这里对吗？」\n「不可能吧。」\n\n路边杂货店的老板探出头。\n\n「你们几个，迷路了？」","「我们刚才从那边的车站——」\n「那边？」老板往你们身后看了一眼，「那边哪有车站。」\n\n「不是，我们真的是坐电车来的。」\n「银色的那辆。」\n「等一下，重点是站台没了吧！」\n\n老板皱起眉。\n\n「……所以，到底怎么回事？」",[
+{t:"「我下车的时候，电车明明还在。」",go:()=>first("train")},
+{t:"「后来它就钻进雾里了。」",go:()=>first("fog")},
+{t:"「不是，站台整个都没了。」",go:()=>first("platform")},
+{t:"「我Suica都刷过了，真的。」",go:()=>first("suica")}
+])}
+function first(k){S.rumors.add(k);let data={
+train:["你刚说完，旁边的人又插了一句。","「银色的。」\n「我们四个都坐了。」\n「然后就找不到了。」","老板眨了眨眼。\n\n「……一辆银色电车把你们四个送到这里，然后不见了？」"],
+fog:["「对，雾特别大。」\n「车直接开进去了。」\n「站台也——」","老板没等最后一句说完。","「……银色电车开进雾里以后，连车站都不见了？」"],
+platform:["「我说的是站台！」\n「可电车也没了啊。」\n「刚才那里真的有——」","老板探头又看了一眼那片草。","「……你们下车以后，整个车站就消失了？」"],
+suica:["你把Suica从口袋里掏出来。\n「你看，我刚才还刷——」\n「可这里根本没有闸机。」\n「就是啊，所以才奇怪。」","老板接过卡看了两秒，又还给你。","「……你们刷Suica进了一个现在不存在的车站？」"]}[k];
+page("杂货店门口・傍晚","",data[0],data[1]+"\n\n"+data[2],null);$("app").innerHTML+=next("走吧",bakery);bind(bakery)}
+function bakery(){page("面包店・晚上","","Mio带你们去买晚饭。门铃响了一声。\n\n「いらっしゃい——」\n\n老板娘抬头看见你们，手里的纸袋停了一下。","「啊，你们就是那几个孩子？」\n\nMio：「什么？」\n\n老板娘笑了笑：「佐藤さん刚来过。」",[
+{t:"「她说什么了？」",go:()=>bakery2()},
+{t:"「……我们才来多久啊。」",go:()=>bakery2()},
+{t:"「不会已经传开了吧。」",go:()=>bakery2()}
+])}
+function bakery2(){let line=S.rumors.has("suica")?"「她说你们刷Suica进了一个没有站台的车站。」":S.rumors.has("platform")?"「她说你们从一个突然消失的车站过来的。」":S.rumors.has("fog")?"「她说雾里有一辆会消失的电车。」":"「她说你们是坐一辆会消失的银色电车来的。」";page("面包店・晚上","",line+"\n\nMio慢慢转过头看你们。","「……你们刚才是这么说的吗？」",null);$("app").innerHTML+=next("回去",breakfast);bind(breakfast)}
+function breakfast(){S.day=2;page("Mio家・早晨","","桌上是烤吐司、玉子焼き和牛奶。Mio妈妈把果酱推过来。\n\n「昨晚睡得好吗？」\n\n你刚点头，她又像想起什么似的开口。","「对了。听说你们是从旧车站来的？」\n\nMio差点呛到。\n\n「什么旧车站？」\n\n「佐藤太太说的呀。」\n\nMio看向你们。\n\n「你们下车以后，身上到底还剩什么？」",[
+{t:"「Suica还在我口袋里。」",go:()=>item("suica")},
+{t:"「我好像多了一张没见过的车票。」",go:()=>item("ticket")},
+{t:"「学生手帳倒是没丢。」",go:()=>item("student")},
+{t:"「便当盒还在。饭团没了。」",go:()=>item("bento")}
+])}
+function item(k){S.rumors.add(k);let q={suica:["你把Suica放到桌上。","Mio拿起来看了看。\n「普通的Suica啊。」\n\n她妈妈在厨房问：「那张卡是从旧站带出来的？」"],ticket:["你从书包侧袋摸出一张发黄的小纸片。","「昨天有这个吗？」\n「……不知道。」\n\nMio用指尖把它翻过来。背面只有一个模糊的『駅』字。"],student:["你拍了拍书包。","「学生手帳、课本、笔袋……都在。」\nMio：「那不是很正常吗。」\n\n厨房里传来她妈妈的声音：「至少身份还在嘛。」"],bento:["你把空便当盒拿出来。","Mio：「所以你最后记得的是饭团？」\n「饿了不行吗。」\n\n她笑出声，把最后一块吐司丢给你。"]}[k];page("Mio家・早晨","",q[0],q[1],null);$("app").innerHTML+=next("出门",k==="ticket"?squareTicket:k==="suica"?gate:school);bind(k==="ticket"?squareTicket:k==="suica"?gate:school)}
+function squareTicket(){page("商店街・中午","","Mio把那张纸片夹在自己的笔记本里。走到商店街时，一只猫突然从脚边钻过去。\n\n「喂，差点踩到——」\n\n猫嘴里也叼着一小片发黄的纸。","Mio停住了。\n\n「……你看见了吗？」",[
+{t:"「追！」",go:()=>{S.rumors.add("cat");cat()}},
+{t:"「算了，可能只是垃圾。」",go:school},
+{t:"「先看看我们这张。」",go:()=>{S.rumors.add("ticket");clockHint()}}
+])}
+function cat(){page("商店街后巷","","猫钻过自行车棚，跳上矮墙。那张黄纸掉了下来。\n\nMio捡起来。","纸上只有两个字：『上り』。\n\n「……上行？」",null);$("app").innerHTML+=next("收起来",school);bind(school)}
+function gate(){page("商店街・中午","","Mio带你们经过一栋旧商场。入口旁竟然立着一台落灰的简易读卡机。\n\n「这个还能用吗？」\n\n你把Suica贴上去。","ピッ。\n\n屏幕亮了一瞬。\n\n残額 1,284円\n前回利用　——駅",[
+{t:"「刚才那个站名呢？」",go:()=>{S.rumors.add("station");gate2()}},
+{t:"「再刷一次。」",go:()=>{S.rumors.add("station");gate2()}},
+{t:"「走吧，别管了。」",go:school}
+])}
+function gate2(){page("旧商场入口","","屏幕已经黑了。\n\nMio按了几下按钮。没反应。","「——駅。」\n\n「前面那个字没看清。」\n\n身后有人推着自行车经过。\n\n「你们在找车站？」",null);$("app").innerHTML+=next("回学校",school);bind(school)}
+function school(){S.day=2;page("町立中学校・放学后","","Mio把你们暂时带到学校。鞋柜旁贴着文化祭海报，走廊尽头还有没收完的部活招新纸。\n\n放学铃一响，几个学生就围了过来。","「东京来的？」\n「不是啦，他们是昨天突然来的。」\n「我听说是从旧车站。」\n\nMio：「谁跟你说的？」\n\n「不知道。大家都这么说。」",[
+{t:"「旧车站到底在哪？」",go:()=>askPlace()},
+{t:"「我们根本没说过旧车站。」",go:()=>deny()},
+{t:"「算了，回去吧。」",go:()=>quietRoute()}
+])}
+function askPlace(){S.rumors.add("search");page("鞋柜前","","一个男生歪着头想了半天。","「森林那边？我哥好像这么说。」\n\n另一个人马上接话：「不是河边吗？」\n\n「你们到底听谁说的啊。」",[
+{t:"「森林？」",go:()=>route("forest")},
+{t:"「河边？」",go:()=>route("river")},
+{t:"「都不去。」",go:quietRoute}
+])}
+function deny(){page("鞋柜前","","「我们根本没说过旧车站。」\n\n刚才还在换鞋的女生抬起头。","「咦？可是佐藤阿姨说……」\n\nMio：「她也是听别人说的。」\n\n女生系鞋带的手停了一下。\n\n「那最开始是谁说的？」",[
+{t:"「不知道。」",go:quietRoute},
+{t:"「可能是听错了吧。」",go:quietRoute},
+{t:"「先去问佐藤太太。」",go:()=>{S.rumors.add("sato");sato()}}
+])}
+function sato(){S.day=3;page("杂货店前・下午","","佐藤太太正把购物袋挂到自行车车把上。\n\n「旧车站？我可没说是我看见的。」","「昨天老板说你们从车站过来，我就跟面包店的美纪说了一句。后来谁加了个『旧』字，我哪知道。」\n\n她骑出去两米，又回头。\n\n「不过以前河边确实有铁牌。修钟的那位可能知道。」",[
+{t:"「去问修钟老人。」",go:()=>{S.rumors.add("clock");clockHint()}},
+{t:"「先去河边。」",go:()=>route("river")},
+{t:"「算了。」",go:quietRoute}
+])}
+function clockHint(){S.day=3;page("修钟店・下午","","门一推开，十几只钟同时响着。老人戴着放大镜，头也没抬。\n\nMio把那张黄纸放到柜台上。","老人看了一眼。\n\n「一个『駅』字而已。」\n\n「以前这里有车站吗？」\n\n「没有。」\n\n他说得太快了。",[
+{t:"「你认识这张纸？」",go:()=>clock2("paper")},
+{t:"「那你为什么看都没看？」",go:()=>clock2("look")},
+{t:"「走吧。」",go:quietRoute}
+])}
+function clock2(k){let t=k==="paper"?"老人终于摘下放大镜。\n\n「这种纸，河边以前捞上来过。」":"老人抬起眼。\n\n「因为每隔几年，就有人拿差不多的东西来问。」";page("修钟店・下午","",t,"Mio：「从哪里捞的？」\n\n老人没回答，只朝窗外河的方向抬了抬下巴。",[
+{t:"去河边",go:()=>route("river")},
+{t:"不追了",go:quietRoute}
+])}
+function route(r){S.route=r;S.day=4;if(r==="forest")forest();else river()}
+function forest(){page("森林入口・傍晚","","护栏边倒着两辆自行车。再往里，还有几个人拿着手机照明。\n\nMio停下来。\n\n「……他们怎么也来了？」","前面的男生回头。\n\n「你们也来找旧站？」\n\n「谁说在这里的？」\n\n「不是你们问森林吗？」",[
+{t:"继续往里走",go:()=>ending("forest")},
+{t:"回去",go:quietRoute}
+])}
+function river(){page("河堤・傍晚","","河水很浅。桥下堆着被冲来的树枝和塑料瓶。Mio蹲下拨了两下。\n\n「这个。」\n\n泥里露出一小截生锈的铁牌。","你们把它拖出来。\n\n只剩一个还能认出的字：『駅』。",[
+{t:"沿河继续找",go:()=>ending("river")},
+{t:"把铁牌放回去",go:quietRoute}
+])}
+function quietRoute(){S.day=4;page("车站前・傍晚","","第四天，你们没有再去找旧车站。\n\nMio陪你们走到镇口。那片草还是那片草。","她踢了踢路边的小石子。\n\n「所以，那天到底是哪一站？」\n\n「不知道。」\n\n远处传来电车经过的声音。这里却没有铁轨。",null);$("app").innerHTML+=next("再等一会儿",()=>ending("quiet"));bind(()=>ending("quiet"))}
+function ending(r){S.day=5;if(r==="forest")page("森林深处・黄昏","","树越来越密。有人在前面喊了一声。\n\n草下面露出两根生锈的铁条。\n\n再往前，是半块歪着的站牌。","Mio用袖子擦掉上面的泥。\n\nコトノハ町。\n\n身后的男生小声说：「……真的有啊。」",null);else if(r==="river")page("河的上游・黄昏","","铁牌之后，你们又找到一颗旧螺栓、一截埋在草里的枕木。\n\n河道拐弯处，雾里立着一块倾斜的牌子。","Mio走近。\n\nコトノハ町。\n\n「昨天这里有这个吗？」\n\n没人回答。",null);else page("镇口・黄昏","","你们一直等到天快黑。\n\n没有车站，没有铁轨，也没有银色电车。\n\n只有你的Suica还在口袋里。","手机忽然震了一下。\n\n交通卡记录里，多出一条你不认识的站名。\n\nコトノハ町。",null);$("app").innerHTML+=next("结束",end);bind(end)}
+function end(){$("meta").textContent="END";$("app").innerHTML='<div class="place">星期一・早晨</div><div class="chapter">いつもの駅。</div><div class="end">闸机前排着上学的人。<br><br>你把Suica贴上去。<br><br>ピッ。<br><br>身后有人在聊周末的事。你听见自己的名字，回头时，他们已经走远了。</div><button class="btn alt" onclick="location.reload()">重新开始</button>'}
+prologue();
 </script></body></html>

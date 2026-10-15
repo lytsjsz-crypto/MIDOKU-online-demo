@@ -1,45 +1,60 @@
 <!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>コトノハ町</title><style>
-*{box-sizing:border-box}body{margin:0;background:#f6f2e8;color:#24231f;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}.wrap{max-width:800px;margin:auto;padding:34px 20px 80px}.head{display:flex;justify-content:space-between;align-items:end;border-bottom:1px solid #393832;padding-bottom:10px;margin-bottom:30px}.logo{font:25px Georgia,serif;letter-spacing:.12em}.meta,.eyebrow{font-size:11px;color:#77736a;letter-spacing:.11em}.title{font:26px/1.5 Georgia,"Noto Serif SC",serif;margin:8px 0 14px}.story{font-size:15px;line-height:1.95}.dialogue{font:16px/1.9 Georgia,"Noto Serif SC",serif;margin:19px 0;padding-left:15px;border-left:2px solid #aaa59a}.box{border-top:1px solid #aaa59a;margin-top:28px;padding-top:20px}.choices{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.choice,.mode{border:1px solid #99948a;background:transparent;padding:13px;text-align:left;cursor:pointer;font-size:14px}.choice:hover,.choice.sel,.mode:hover{background:#282722;color:#fff}.btn{border:1px solid #282722;background:#282722;color:#fff;padding:12px 19px;margin-top:20px;cursor:pointer}.btn:disabled{opacity:.3}.btn.alt{background:transparent;color:#282722}.note{font-size:12px;color:#817d74;margin-top:12px;line-height:1.7}.reveal{display:grid;gap:10px;margin:20px 0}.reveal.three{grid-template-columns:repeat(3,1fr)}.reveal.four{grid-template-columns:repeat(4,1fr)}.word{border-top:1px solid #817d74;padding-top:8px;font-size:14px}.word small{display:block;color:#88837a;font-size:11px;margin-bottom:5px}.sentence{font:25px/1.65 Georgia,"Noto Serif SC",serif;margin:25px 0}.after{border-top:1px solid #aaa59a;border-bottom:1px solid #aaa59a;padding:18px 0;margin:22px 0;font-size:15px;line-height:1.95}.prompt{font:20px/1.65 Georgia,"Noto Serif SC",serif;margin:12px 0 4px}.modegrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:28px 0}.mode b{display:block;font-size:17px;margin-bottom:7px}.mode span{font-size:12px;color:#77736a;line-height:1.6}.mode:hover span{color:#ddd}.chapter{font:29px/1.7 Georgia,"Noto Serif SC",serif;margin:35px 0}.end{font-size:16px;line-height:2}@media(max-width:620px){.choices,.modegrid{grid-template-columns:1fr}.reveal.four,.reveal.three{grid-template-columns:1fr 1fr}.title{font-size:22px}.sentence{font-size:21px}}
-</style></head><body><main class="wrap"><header class="head"><div class="logo">コトノハ町</div><div class="meta" id="meta">PROTOTYPE 05</div></header><div id="app"></div></main><script>
-let players=4,i=0,pick=null,turn=0,picks={};
+*{box-sizing:border-box}body{margin:0;background:#f6f2e8;color:#24231f;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}.wrap{max-width:790px;margin:auto;padding:34px 20px 80px}.head{display:flex;justify-content:space-between;align-items:end;border-bottom:1px solid #393832;padding-bottom:10px;margin-bottom:30px}.logo{font:25px Georgia,serif;letter-spacing:.12em}.meta,.eyebrow{font-size:11px;color:#77736a;letter-spacing:.11em}.title{font:25px/1.5 Georgia,"Noto Serif SC",serif;margin:8px 0 14px}.story{font-size:15px;line-height:1.9}.dialogue{font:16px/1.9 Georgia,"Noto Serif SC",serif;margin:18px 0;padding-left:15px;border-left:2px solid #aaa59a}.box{border-top:1px solid #aaa59a;margin-top:30px;padding-top:20px}.choices{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.choice{border:1px solid #99948a;background:transparent;padding:13px;text-align:left;cursor:pointer;font-size:14px;min-height:48px}.choice:hover,.choice.sel{background:#282722;color:#fff}.btn{border:1px solid #282722;background:#282722;color:#fff;padding:12px 19px;margin-top:20px;cursor:pointer}.btn:disabled{opacity:.3}.btn.alt{background:transparent;color:#282722}.note{font-size:12px;color:#817d74;margin-top:12px}.reveal{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0}.word{border-top:1px solid #817d74;padding-top:8px;font-size:14px}.word small{display:block;color:#88837a;font-size:11px;margin-bottom:5px}.sentence{font:25px/1.65 Georgia,"Noto Serif SC",serif;margin:25px 0}.after{border-top:1px solid #aaa59a;border-bottom:1px solid #aaa59a;padding:18px 0;margin:22px 0;font-size:15px;line-height:1.9}.prompt{font:20px/1.65 Georgia,"Noto Serif SC",serif;margin:20px 0 8px}.chapter{font:29px/1.7 Georgia,"Noto Serif SC",serif;margin:35px 0}.end{font-size:16px;line-height:2}@media(max-width:620px){.choices{grid-template-columns:1fr}.reveal{grid-template-columns:1fr}.title{font-size:22px}.sentence{font-size:21px}}
+</style></head><body><main class="wrap"><header class="head"><div class="logo">コトノハ町</div><div class="meta" id="meta">PROTOTYPE 07 · 4人测试</div></header><div id="app"></div></main><script>
 const scenes=[
-{kind:"story",d:0,p:"星期五・放学后",t:"本来只是错过了平时坐的电车。",x:"社团活动结束得太晚。你们跑到站台时，只看见熟悉的车尾消失在转弯处。下一班还有二十分钟。\n\n对面正停着一辆银色电车。线路图上有回家的方向，关门铃已经响了。几个人互相看了一眼，跑了进去。\n\n前几站都很正常。窗外有便利店和住宅，也有背着书包下车的学生。后来LINE发不出去，Google Maps也一直转圈。再抬头时，车厢里只剩下你们。\n\n『下一站，终点——コトノハ町。』",dialog:"下车后，银色电车开进雾里。\n\n你们原路跑回去。站台没了，连铁轨都没了。"},
-{kind:"play",d:1,p:"镇口・傍晚",t:"杂货店老板先发现了你们。",x:"几个穿着外地校服的孩子站在路边，举着没信号的iPhone研究地图，想不显眼都难。\n\n老板探出头：『迷路了？你们从哪儿来的？』",prompt:"“所以，你们到底是怎么来到这里的？”",role4:"时间",opts4:["刚才","放学以后","天黑以前","昨天晚上"],role3:"谓语",opts3:["把我们送到了","开进了","突然消失在","绕过了"],fixed:{sub:"那辆银色电车",verb:"把我们送到了",obj:"没有铁轨的地方"},after:["你们几个人说得乱七八糟。老板抬手打断：","『等等。所以——你们是说，{Q}？』","买酱油的阿姨在旁边听完，提着袋子走了。"]},
-{kind:"play",d:1,p:"面包店・晚上",t:"先吃饭.",prompt:"面包店老板娘放下面包：“等等，你们刚才说的那辆银色电车，到底发生了什么？”",role4:"主语",opts4:["那辆银色电车","一个没见过的乘务员","我们几个","我的Suica"],role3:"主语",opts3:["那辆银色电车","一个没见过的乘务员","我们几个","我的Suica"],fixed:{time:"刚才",sub:"那辆银色电车",verb:"开进了",obj:"森林那边"},after:["你们几个人抢着解释，反而越说越乱。","老板娘皱着眉重复了一遍：『所以，你们是说，{Q}？』","隔壁桌的小孩已经把这句话听了个七七八八。"],x:"老板叫来了自己的女儿Mio。她和你们差不多大，看你们不像在开玩笑，先带你们去买吃的。\n\n面包店老板娘多塞了几个小面包。隔壁桌的人看了你们好几眼。\n\n『就是刚才坐银色电车来的孩子？』\n\nMio转头：『这么快？』",dialog:"晚上，你们暂时住进Mio家的阁楼。Suica在这里刷不了，手机也始终没有信号。"},
-{kind:"play",d:2,p:"Mio家・早餐",t:"第二天早上，故事已经变了。",x:"Mio妈妈把煎蛋放下：『你们就是从旧车站来的孩子吧？』\n\nMio：『什么旧车站？』\n\n『佐藤太太说的呀。她也是听别人讲的。』\n\n你们昨天谁也没说过“旧车站”。",prompt:"Mio咬着吐司：“那你们昨天到底看见了什么？”",role4:"宾语",opts4:["一块没有名字的站牌","我的Suica","一盒没吃完的便当","一张便利店小票"],role3:"宾语",opts3:["一块没有名字的站牌","我的Suica","一盒没吃完的便当","一张便利店小票"],fixed:{time:"昨天傍晚",sub:"我们",verb:"在站台附近看见了"},after:["Mio听完，盯着你们看了两秒。","『……你们几个人确定说的是同一件事？』","出门时，Mio妈妈正在LINE上给朋友回消息。"]},
-{kind:"play",d:2,p:"镇中心・下午",t:"Mio带你们逛镇子。",x:"修钟老人的店里挂着十几只时间不同的钟。河边有人卖装在玻璃瓶里的“昨天的雨”。糖果店门口趴着一只胖猫。\n\n广场上的孩子还在争论旧车站到底在哪里。",prompt:"一个小孩跑来拦住你们：“喂，那个旧车站什么时候才会出现？”",role4:"时间",opts4:["午夜以后","下雨的时候","大家都睡着以后","我们来到这里以前"],role3:"主语",opts3:["旧车站","森林里的乌鸦","修钟老人","我的学生证"],fixed:{sub:"旧车站",verb:"会出现在",obj:"森林那边"},after:["小孩听完，眼睛一下亮了。","『我就说在森林！』","他转身就跑。另一个孩子追在后面喊：『等等，他们根本没这么说！』"]},
-{kind:"story",d:3,p:"午休",t:"有些怪话只占生活里很小的一角。",x:"打开便当盒时，里面多了一张发黄的小纸片。\n\nMio凑过来：『你妈妈还会在便当里放这个？』\n\n纸片上只剩半个模糊的『駅』字。\n\n你摸了摸钱包。Suica还在。学生证也还在。\n\n『算了，下午不是还要去河边吗。』",dialog:"纸片被夹进了国语课本。"},
-{kind:"play",d:3,p:"河边・放学后",t:"钓鱼的大叔捞上来一块铁牌。",x:"铁牌锈得厉害，上面也只剩一个『駅』字。围观的人立刻把它和最近的旧车站联系起来。\n\n修钟老人却摆摆手：『一个字而已。你们这群人什么都能编。』",prompt:"老人看向你们：“那你们觉得，这东西原来在哪儿？”",role4:"主语",opts4:["森林里的乌鸦","修钟老人","面包店老板","我的自动铅笔"],role3:"谓语",opts3:["藏起了","捡到了","忘在了","拿去换了"],fixed:{time:"很久以前",sub:"森林里的乌鸦",verb:"捡到了",obj:"这块旧站牌"},after:["老人听完哼了一声。","『乌鸦倒是什么都捡。』","回去的路上，一只乌鸦真的落在电线上，嘴里叼着一小片绿色塑料。你下意识摸了摸自己的Suica。"]},
-{kind:"play",d:4,p:"森林入口",t:"“反正大家都说在森林里。”",x:"Mio背了几瓶汽水。你们决定去看看。\n\n森林一开始没什么特别。半山腰的路标写着『山顶 →』。喝完汽水再抬头，上面却变成了『今天别去山顶 →』。",prompt:"Mio盯着路标：“刚才谁碰过它？”",role4:"时间",opts4:["刚才","昨天","我们来这里以前","下一次钟响的时候"],role3:"宾语",opts3:["这块路标","我的Suica","Mio的手表","一支钢笔"],fixed:{sub:"森林里的乌鸦",verb:"动过",obj:"这块路标"},after:["你们谁也没看见乌鸦碰路标。","可树上传来扑棱一声。","一只乌鸦飞过去，嘴里不知道叼着什么。Mio冲它喊：『喂！至少把东西还回来！』"]},
-{kind:"story",d:4,p:"森林深处",t:"乌鸦会学人说话。",x:"第一只叫的是『面包——』。第二只叫的是『外地孩子——』。\n\n再往前，一排乌鸦站在电线上。\n\n『旧车站——』\n\n远处另一只跟着叫：『旧车站——旧车站——』",dialog:"Mio抬头：『谁教它们的？』"},
-{kind:"play",d:5,p:"森林・空地",t:"草下面露出了两根生锈的铁条。",x:"昨天经过这里时，你们谁也没看见。它们只有十几米长，前后都埋在泥里。\n\nMio把一枚硬币压在旁边：『明天再来。』\n\n回镇路上，你们遇见一个采蘑菇的老人。",prompt:"老人看见你们鞋上的泥：“你们跑哪儿去了？”",role4:"时间",opts4:["今天下午","小时候","三十年前","我们来到这里以前"],role3:"主语",opts3:["我们","Mio","森林里的乌鸦","我的学生证"],fixed:{sub:"我们",verb:"去了",obj:"森林里的旧车站"},after:["老人听完愣了一下。","『旧站？那地方不是一直都在吗。』","Mio停住脚步。『哪里一直都在？』","老人反而被问糊涂了。"]},
-{kind:"story",d:6,p:"森林・黄昏",t:"硬币还在。铁轨却变长了。",x:"铁轨穿过树林。尽头多了一块歪斜站牌。再往前，树后露出长椅、封死的售票窗口和褪色的时刻表。\n\n站牌写着：コトノハ町。\n\nMio站了很久。\n\n『昨天这里什么都没有。』\n\n身后却有老人慢悠悠走过来：『你们怎么跑到旧站来了？』",dialog:"站台的钟停在 00:13。铁轨另一头钻进雾里。"}
+{kind:"story",d:0,p:"星期五・放学后",t:"本来只是坐错了一班车。",x:"社团活动结束得太晚。你们冲上站台时，平时坐的电车刚关门。下一班还有二十分钟。\n\n对面正好停着一辆银色电车。线路图上有你们回家的方向，关门铃又已经响了。四个人互相看了一眼，跑了进去。\n\n前几站都很正常。窗外有便利店，有住宅，还有背着书包下车的学生。后来手机信号只剩一格。再抬头时，车厢里只剩你们四个。\n\n『下一站，终点——コトノハ町。』",dialog:"下车后，银色电车开进雾里。你们走了几分钟又原路跑回来。\n\n站台没了。连铁轨都没了。"},
+{kind:"play",d:1,p:"镇口・傍晚",t:"镇上的人先发现了你们。",x:"四个穿着外地校服的孩子站在路边研究一张加载不出来的地图。杂货店老板探出头：『迷路了？』\n\n你们说自己刚从车站过来。老板往你们身后看了一眼：『那边？那边只有草地啊。』",dialog:"买东西的客人也凑了过来。你们只好再讲一遍。",role:"谓语",opts:["把我们送到了","开进了","落下了","带走了"],others:["那辆银色电车","森林的方向"],after:["老板听完，还是半信半疑。","旁边的阿姨却记住了“银色电车”几个字。她提着酱油离开时，正好碰见两个熟人。"]},
+{kind:"story",d:1,p:"面包店・晚上",t:"先解决肚子的问题。",x:"杂货店老板叫来了自己的女儿Mio。她和你们差不多大。听说你们暂时联系不上家里，她带你们去镇上买吃的。\n\n面包店老板娘多塞了四个小面包。隔壁桌有人认出了你们：『就是坐银色电车来的那几个？』\n\nMio看了你们一眼。\n\n『你们才来多久啊。』",dialog:"晚上，你们暂时住进Mio家的阁楼。"},
+{kind:"play",d:2,p:"Mio家・早餐",t:"第二天，Mio妈妈已经听说了。",x:"『你们就是从旧车站来的三个孩子吧？』\n\nMio差点把牛奶洒出来：『妈妈，什么旧车站？』\n\n『佐藤太太说的呀。她也是听客人讲的。』\n\n你们昨天明明只说了“车站”。",dialog:"吃完早饭，Mio决定带你们逛逛镇子。",role:"宾语",opts:["旧车站","我的学生证","我的Suica","昨天的便当盒"],others:["镇上的孩子","捡到了"],after:["午后，你们经过小广场。几个孩子正围在一起聊天。","其中一个看到你们，马上跑过来：『喂，你们真的见过旧车站吗？』"]},
+{kind:"play",d:2,p:"镇中心・下午",t:"这个镇子比想象中有意思。",x:"修钟老人的店里挂着十几只时间不同的钟。河边有人卖装在玻璃瓶里的“昨天的雨”。糖果店门口趴着一只胖得不想动的猫。\n\n走到广场时，两个孩子还在争论旧车站到底在哪里。",dialog:"『我听说在森林那边。』『胡说，明明是晚上才会出现。』",role:"主语",opts:["Mio","修钟老人","广场上的猫","我的自动铅笔"],others:["藏起了","一张旧车票"],after:["争论突然停了一下。","一个孩子问：『旧车票？谁见过？』另一个已经跑去告诉自己的朋友。"]},
+{kind:"story",d:3,p:"Mio家・早晨",t:"昨天那句怪话，只留下了一点小麻烦。",x:"出门前，你翻笔袋找自动铅笔。\n\n里面多了一张发黄的小纸片。\n\nMio凑过来看。\n\n『这是什么？』\n\n纸片上只有半个模糊的“駅”字。\n\n你们看了几秒，把它夹进课本。今天还要去河边。",dialog:"没人提议调查它。"},
+{kind:"play",d:3,p:"河边",t:"河里又捞上来一个奇怪东西。",x:"钓鱼的大叔捞起一块生锈铁牌，上面同样剩着一个『駅』字。\n\n围观的人立刻七嘴八舌。修钟老人却摆摆手：『一个字而已，什么也说明不了。』",dialog:"Mio把你课本里的那张小纸片掏出来，两样东西摆在一起。",role:"谓语",opts:["一直跟着","被装进了","忘在了","拿去换了"],others:["森林里的乌鸦","我的Suica"],after:["回去的路上，一只乌鸦落在电线上，盯着你们看了很久。","你摸了摸口袋。交通卡还在。Mio笑：『至少今天没丢。』"]},
+{kind:"play",d:4,p:"森林入口",t:"“既然大家都说在森林里，就去看看吧。”",x:"Mio背了几瓶汽水。森林一开始没什么特别，只有路越来越窄。\n\n走到半山腰，一块路标写着『山顶 →』。你们喝完汽水再抬头，上面变成了『今天别去山顶 →』。",dialog:"Mio盯着路标：『……谁改的？』",role:"宾语",opts:["旧车站","我的便当盒","Mio的手表","一支钢笔"],others:["森林里的乌鸦","叼走了"],after:["树上传来扑棱一声。","一只乌鸦飞过头顶，嘴里确实叼着什么。至于是不是你们刚才说的那个东西，谁也没看清。"]},
+{kind:"story",d:4,p:"森林深处",t:"乌鸦也会说镇上的话。",x:"第一只叫的是『面包——』。第二只叫的是『外地孩子——』。\n\n再往前，一排乌鸦站在电线上。\n\n『旧车站——』\n\n远处另一只跟着叫：\n\n『旧车站——旧车站——』\n\nMio抬头：『谁教它们的？』",dialog:"乌鸦当然没有回答。"},
+{kind:"play",d:5,p:"森林・空地",t:"草下面多了两根生锈的铁条。",x:"昨天经过这里时，你们谁也没看见。铁条只有十几米长，前后都埋在泥里。\n\nMio把一枚硬币压在旁边：『明天再来。要是还在，就不是我们眼花。』",dialog:"回镇的时候，你们遇到一个采蘑菇的老人。他看见你们鞋上的泥。",role:"主语",opts:["采蘑菇的老人","Mio","我们三个","我的学生证"],others:["记得","森林里一直有旧车站"],after:["老人听完愣了愣。","『一直有啊。』他说得很自然。Mio转头看你们，没有接话。"]},
+{kind:"story",d:6,p:"森林・黄昏",t:"硬币还在。铁轨却变长了。",x:"它穿过树林，尽头立着一块歪斜的站牌。再往前，树后露出长椅、封死的售票窗口，还有褪色的时刻表。\n\n站牌上写着：コトノハ町。\n\nMio站在原地。\n\n『昨天这里什么都没有。』\n\n身后却有个老人慢悠悠走过来：『你们怎么跑到旧站来了？』",dialog:"站台尽头没有列车。只有一条钻进雾里的铁轨。"}
 ];
-const banks={
-time:["刚才","放学以后","天黑以前","昨天晚上","午夜以后","下雨的时候","我们来到这里以前","小时候"],
-sub:["那辆银色电车","我们几个","Mio","森林里的乌鸦","修钟老人","面包店老板","我的Suica","我的学生证"],
-verb:["把我们送到了","突然消失在","一直跟着","捡到了","藏起了","忘在了","叼走了","好像见过"],
-obj:["这个小镇","没有铁轨的站台","森林那边","旧车站","我的便当盒","一张旧车票","Mio的手表","一支钢笔"]
-};
-function roles(){return ["时间","主语","谓语","宾语"]}
-function keyFor(r){return r==="时间"?"time":r==="主语"?"sub":r==="谓语"?"verb":"obj"}
-function optionsFor(s,r){let specific=[];
- if(r==="时间"&&s.opts4)specific=s.opts4;
- if(r==="主语"&&s.role4==="主语")specific=s.opts4;
- if(r==="主语"&&s.role3==="主语")specific=s.opts3;
- if(r==="谓语"&&s.role4==="谓语")specific=s.opts4;
- if(r==="谓语"&&s.role3==="谓语")specific=s.opts3;
- if(r==="宾语"&&s.role4==="宾语")specific=s.opts4;
- if(r==="宾语"&&s.role3==="宾语")specific=s.opts3;
- let arr=[...specific,...banks[keyFor(r)]];
- return [...new Set(arr)].slice(0,4);
-}
+let i=0,pick=null;
 const $=x=>document.getElementById(x),E=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-function start(){players=4;i=0;turn=0;picks={};pick=null;$("meta").textContent="PROTOTYPE 06 · 4人模式";render()}
-function render(){let s=scenes[i];$("meta").textContent=(s.d?"DAY "+s.d:"PROLOGUE")+" · 4人模式";let base='<div class="eyebrow">'+s.p+'</div><h1 class="title">'+s.t+'</h1><div class="story">'+s.x.replace(/\\n/g,"<br>")+'</div><div class="dialogue">'+s.dialog.replace(/\\n/g,"<br>")+'</div>';if(s.kind==="story"){$("app").innerHTML=base+'<button class="btn" id="next">翻页</button>';$("next").onclick=next;return}renderTurn(s,base)}
-function renderTurn(s,base){let rs=roles(),r=rs[turn],op=optionsFor(s,r);$("app").innerHTML=base+'<section class="box"><div class="prompt">'+s.prompt+'</div><div class="eyebrow" style="margin-top:18px">玩家 '+(turn+1)+'｜【'+r+'】</div><div class="choices">'+op.map((v,n)=>'<button class="choice '+(pick===n?"sel":"")+'" data-n="'+n+'">'+E(v)+'</button>').join("")+'</div><button class="btn" id="go" '+(pick===null?"disabled":"")+'>确定</button></section>';document.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{pick=+b.dataset.n;renderTurn(s,base)});$("go").onclick=()=>{picks[r]=op[pick];pick=null;turn++;if(turn<rs.length)render();else reveal(s)}}
-function reveal(s){let q=picks["时间"]+"，"+picks["主语"]+picks["谓语"]+picks["宾语"];let cards=roles().map(r=>[r,picks[r]]);let after=s.after.map(x=>E(x.replace("{Q}",q))).join("<br><br>");$("app").innerHTML='<div class="eyebrow">'+s.p+'</div><div class="reveal four">'+cards.map(x=>'<div class="word"><small>'+x[0]+'</small>'+E(x[1])+'</div>').join("")+'</div><div class="sentence">「'+E(q)+'。」</div><div class="after">'+after+'</div><button class="btn" id="next">继续</button>';$("next").onclick=next}
-function next(){if(i===scenes.length-1)return end();i++;pick=null;turn=0;picks={};render()}
-function end(){$("meta").textContent="第一阶段 · END";$("app").innerHTML='<div class="eyebrow">旧车站・黄昏</div><div class="chapter">五天前，这里只有草。<br>现在，站台的钟停在 00:13。</div><div class="end">一只乌鸦落到站牌上。<br><br>『旧车站——』<br><br>镇上的人已经有人说，自己小时候来过这里。<br><br><b>如果一座车站可以这样出现，那辆送你们来的银色电车呢？</b></div><button class="btn alt" onclick="start()">重新开始</button>'}
-start();
+const times=["刚才","放学以后","天黑以后","我们来到这里以前","午夜以后","下雨的时候","小时候","明天早上"];
+const subjects=["那辆银色电车","我们四个","Mio","森林里的乌鸦","修钟老人","我的Suica","我的学生证","广场上的猫"];
+const verbs=["把我们送到了","开进了","捡到了","藏起了","叼走了","好像见过","忘在了","一直跟着"];
+const objects=["这个小镇","没有铁轨的站台","森林那边","旧车站","我的便当盒","一张旧车票","Mio的手表","一支钢笔"];
+const prompts={
+1:"杂货店老板皱着眉：『等等，你们到底是怎么到这里来的？』",
+3:"Mio咬着吐司：『所以，你们昨天到底看见了什么？』",
+4:"广场上的孩子追过来：『那个旧车站到底在哪里？』",
+6:"修钟老人看着铁牌：『那你们觉得，这东西原来在哪儿？』",
+7:"Mio盯着路标：『刚才到底是谁动过它？』",
+9:"采蘑菇的老人看着你们鞋上的泥：『你们跑哪儿去了？』"
+};
+function sample(arr,n){return arr[(n*3+i*2)%arr.length]}
+function contextOpts(s,role){
+ let base=role==="时间"?times:role==="主语"?subjects:role==="谓语"?verbs:objects;
+ let own=(role===s.role?s.opts:[]);
+ return [...new Set([...own,...base])].slice(0,4);
+}
+function generated(s,role){
+ if(role==="时间")return sample(times,1);
+ if(role==="主语"){if(s.role==="主语")return null;return s.others&&s.role==="谓语"?s.others[0]:sample(subjects,2)}
+ if(role==="谓语"){if(s.role==="谓语")return null;return s.others&&s.role!=="谓语"?s.others[0]:sample(verbs,3)}
+ if(role==="宾语"){if(s.role==="宾语")return null;return s.others?s.others[1]:sample(objects,4)}
+}
+function render(){let s=scenes[i];$("meta").textContent=(s.d?"DAY "+s.d:"PROLOGUE")+" · "+(i+1)+"/"+scenes.length;let base='<div class="eyebrow">'+s.p+'</div><h1 class="title">'+s.t+'</h1><div class="story">'+s.x.replace(/\n/g,"<br>")+'</div><div class="dialogue">'+s.dialog.replace(/\n/g,"<br>")+'</div>';if(s.kind==="story"){$("app").innerHTML=base+'<button class="btn" id="next">翻页</button>';$("next").onclick=next;return}
+ let roles=["时间","主语","谓语","宾语"]; let testRole=roles[i%4]; let op=contextOpts(s,testRole);
+ $("app").innerHTML=base+'<section class="box"><div class="prompt">'+(prompts[i]||"Mio看向你们：『所以，到底发生了什么？』")+'</div><div class="eyebrow">测试时你只负责【'+testRole+'】</div><div class="choices">'+op.map((v,n)=>'<button class="choice '+(pick===n?"sel":"")+'" data-n="'+n+'">'+E(v)+'</button>').join("")+'</div><div class="note">另外三个人的词会自动生成。正式游戏中由四名玩家分别选择：时间 × 主语 × 谓语 × 宾语。</div><button class="btn" id="go" '+(pick===null?"disabled":"")+'>成句</button></section>';
+ document.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{pick=+b.dataset.n;render()});$("go").onclick=()=>reveal(s,testRole,op[pick])
+}
+function reveal(s,testRole,me){
+ let vals={};
+ ["时间","主语","谓语","宾语"].forEach(r=>vals[r]=r===testRole?me:generated(s,r));
+ if(!vals["主语"]) vals["主语"]=sample(subjects,2);
+ if(!vals["谓语"]) vals["谓语"]=sample(verbs,3);
+ if(!vals["宾语"]) vals["宾语"]=sample(objects,4);
+ let q=vals["时间"]+"，"+vals["主语"]+vals["谓语"]+vals["宾语"];
+ $("app").innerHTML='<div class="eyebrow">'+s.p+' · 成句</div><div class="reveal">'+["时间","主语","谓语","宾语"].map(r=>'<div class="word"><small>'+r+'</small>'+E(vals[r])+'</div>').join("")+'</div><div class="sentence">「'+E(q)+'。」</div><div class="after">'+s.after.map(E).join("<br><br>")+'</div><button class="btn" id="next">继续</button>';$("next").onclick=next
+}
+function next(){if(i===scenes.length-1)return end();i++;pick=null;render()}
+function end(){$("meta").textContent="第一阶段 · END";$("app").innerHTML='<div class="eyebrow">旧车站・黄昏</div><div class="chapter">五天前，这里只有草。<br>现在，站台的钟停在 00:13。</div><div class="end">镇上的人已经有人说自己小时候来过这里。<br><br>一只乌鸦落到站牌上。<br>『旧车站——』<br><br><b>如果一座不存在的车站都能被大家说出来……那辆送你们来的银色电车呢？</b></div><button class="btn alt" onclick="location.reload()">重新开始</button>'}
+render();
 </script></body></html>

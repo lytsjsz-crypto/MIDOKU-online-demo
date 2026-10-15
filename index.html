@@ -35,5 +35,11 @@ function optionsFor(s,r){let specific=[];
  return [...new Set(arr)].slice(0,4);
 }
 const $=x=>document.getElementById(x),E=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-function start(){players=4;i=0;turn=0;picks={};pick=null;document.getElementById("meta").textContent="PROTOTYPE 06 · 4人模式";render()}
->
+function start(){players=4;i=0;turn=0;picks={};pick=null;$("meta").textContent="PROTOTYPE 06 · 4人模式";render()}
+function render(){let s=scenes[i];$("meta").textContent=(s.d?"DAY "+s.d:"PROLOGUE")+" · 4人模式";let base='<div class="eyebrow">'+s.p+'</div><h1 class="title">'+s.t+'</h1><div class="story">'+s.x.replace(/\\n/g,"<br>")+'</div><div class="dialogue">'+s.dialog.replace(/\\n/g,"<br>")+'</div>';if(s.kind==="story"){$("app").innerHTML=base+'<button class="btn" id="next">翻页</button>';$("next").onclick=next;return}renderTurn(s,base)}
+function renderTurn(s,base){let rs=roles(),r=rs[turn],op=optionsFor(s,r);$("app").innerHTML=base+'<section class="box"><div class="prompt">'+s.prompt+'</div><div class="eyebrow" style="margin-top:18px">玩家 '+(turn+1)+'｜【'+r+'】</div><div class="choices">'+op.map((v,n)=>'<button class="choice '+(pick===n?"sel":"")+'" data-n="'+n+'">'+E(v)+'</button>').join("")+'</div><button class="btn" id="go" '+(pick===null?"disabled":"")+'>确定</button></section>';document.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{pick=+b.dataset.n;renderTurn(s,base)});$("go").onclick=()=>{picks[r]=op[pick];pick=null;turn++;if(turn<rs.length)render();else reveal(s)}}
+function reveal(s){let q=picks["时间"]+"，"+picks["主语"]+picks["谓语"]+picks["宾语"];let cards=roles().map(r=>[r,picks[r]]);let after=s.after.map(x=>E(x.replace("{Q}",q))).join("<br><br>");$("app").innerHTML='<div class="eyebrow">'+s.p+'</div><div class="reveal four">'+cards.map(x=>'<div class="word"><small>'+x[0]+'</small>'+E(x[1])+'</div>').join("")+'</div><div class="sentence">「'+E(q)+'。」</div><div class="after">'+after+'</div><button class="btn" id="next">继续</button>';$("next").onclick=next}
+function next(){if(i===scenes.length-1)return end();i++;pick=null;turn=0;picks={};render()}
+function end(){$("meta").textContent="第一阶段 · END";$("app").innerHTML='<div class="eyebrow">旧车站・黄昏</div><div class="chapter">五天前，这里只有草。<br>现在，站台的钟停在 00:13。</div><div class="end">一只乌鸦落到站牌上。<br><br>『旧车站——』<br><br>镇上的人已经有人说，自己小时候来过这里。<br><br><b>如果一座车站可以这样出现，那辆送你们来的银色电车呢？</b></div><button class="btn alt" onclick="start()">重新开始</button>'}
+start();
+</script></body></html>

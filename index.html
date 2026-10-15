@@ -21,7 +21,7 @@ sub:["那辆银色电车","我们几个","Mio","森林里的乌鸦","修钟老�
 verb:["把我们送到了","突然消失在","一直跟着","捡到了","藏起了","忘在了","叼走了","好像见过"],
 obj:["这个小镇","没有铁轨的站台","森林那边","旧车站","我的便当盒","一张旧车票","Mio的手表","一支钢笔"]
 };
-function roles(){return players===4?["时间","主语","谓语","宾语"]:["主语","谓语","宾语"]}
+function roles(){return ["时间","主语","谓语","宾语"]}
 function keyFor(r){return r==="时间"?"time":r==="主语"?"sub":r==="谓语"?"verb":"obj"}
 function optionsFor(s,r){let specific=[];
  if(r==="时间"&&s.opts4)specific=s.opts4;
@@ -35,13 +35,5 @@ function optionsFor(s,r){let specific=[];
  return [...new Set(arr)].slice(0,4);
 }
 const $=x=>document.getElementById(x),E=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-function start(){document.getElementById("meta").textContent="PROTOTYPE 04";document.getElementById("app").innerHTML='<div class="eyebrow">NEW GAME</div><h1 class="title">几个人一起迷路？</h1><div class="story">四人是完整模式。每个人只负责一句话的一块记忆。三人模式保留为简化玩法。</div><div class="modegrid"><button class="mode" id="p4"><b>4人</b><span>时间 × 主语 × 谓语 × 宾语<br>完整模式</span></button><button class="mode" id="p3"><b>3人</b><span>主语 × 谓语 × 宾语<br>简化模式</span></button></div>';document.getElementById("p4").onclick=()=>{players=4;i=0;turn=0;picks={};render()};document.getElementById("p3").onclick=()=>{players=3;i=0;turn=0;picks={};render()}}
-function render(){let s=scenes[i];document.getElementById("meta").textContent=(s.d?"DAY "+s.d:"PROLOGUE")+" · "+players+"人模式";let base='<div class="eyebrow">'+s.p+'</div><h1 class="title">'+s.t+'</h1><div class="story">'+s.x.replace(/\\n/g,"<br>")+'</div><div class="dialogue">'+s.dialog.replace(/\\n/g,"<br>")+'</div>';if(s.kind==="story"){document.getElementById("app").innerHTML=base+'<button class="btn" id="next">'+(i===scenes.length-1?"继续":"翻页")+'</button>';document.getElementById("next").onclick=next;return}renderTurn(s,base)}
-function renderTurn(s,base){let rs=roles(),r=rs[turn],op=optionsFor(s,r);document.getElementById("app").innerHTML=base+'<section class="box"><div class="prompt">'+s.prompt+'</div><div class="eyebrow" style="margin-top:18px">第 '+(turn+1)+' / '+rs.length+' 位玩家｜你负责【'+r+'】</div><div class="choices">'+op.map((v,n)=>'<button class="choice '+(pick===n?"sel":"")+'" data-n="'+n+'">'+E(v)+'</button>').join("")+'</div><div class="note">选好后把内容盖住，再把屏幕交给下一位。其他玩家不能偷看。</div><button class="btn" id="go" '+(pick===null?"disabled":"")+'>确定</button></section>';document.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{pick=+b.dataset.n;renderTurn(s,base)});document.getElementById("go").onclick=()=>{picks[r]=op[pick];pick=null;turn++;if(turn<rs.length)render();else reveal(s)}}
-function cover(s){document.getElementById("app").innerHTML='<div class="eyebrow">不要偷看</div><h1 class="title">把屏幕交给玩家 '+(turn+1)+'</h1><div class="story">上一位的词已经盖住了。</div><button class="btn" id="go">我是玩家 '+(turn+1)+'</button>';document.getElementById("go").onclick=()=>render()}
-function ready(s){document.getElementById("app").innerHTML='<div class="eyebrow">都选好了</div><h1 class="title">没有人知道完整句子。</h1><div class="story">'+s.prompt+'</div><button class="btn" id="go">四人一起翻开</button>';if(players===3)document.getElementById("go").textContent="三人一起翻开";document.getElementById("go").onclick=()=>reveal(s)}
-function reveal(s){let time=players===4?picks["时间"]:"",sub=picks["主语"],verb=picks["谓语"],obj=picks["宾语"],q=(players===4?time+"，":"")+sub+verb+obj,rs=roles();let cards=rs.map(r=>[r,picks[r]]);let after=s.after.map(x=>E(x.replace("{Q}",q))).join("<br><br>");document.getElementById("app").innerHTML='<div class="eyebrow">'+s.p+' · 一起翻开</div><div class="reveal '+(players===4?"four":"three")+'">'+cards.map(x=>'<div class="word"><small>'+x[0]+'</small>'+E(x[1])+'</div>').join("")+'</div><div class="sentence">「'+E(q)+'。」</div><div class="after">'+after+'</div><button class="btn" id="next">继续</button>';document.getElementById("next").onclick=next}
-function next(){if(i===scenes.length-1)return end();i++;pick=null;turn=0;picks={};render()}
-function end(){document.getElementById("meta").textContent="第一阶段 · END";document.getElementById("app").innerHTML='<div class="eyebrow">旧车站・黄昏</div><div class="chapter">五天前，这里只有草。<br>现在，站台的钟停在 00:13。</div><div class="end">一只乌鸦落到站牌上。<br><br>『旧车站——』<br><br>又一只从屋顶答它。<br><br>镇上的人已经有人说，自己小时候来过这里。<br><br>你们却记得这里原来什么都没有。<br><br><b>如果一座车站可以这样出现，那辆送你们来的银色电车呢？</b></div><button class="btn alt" onclick="start()">重新开始</button>'}
-start();
-</script></body></html>
+function start(){players=4;i=0;turn=0;picks={};pick=null;document.getElementById("meta").textContent="PROTOTYPE 06 · 4人模式";render()}
+>

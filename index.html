@@ -1,29 +1,401 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>コトノハ町</title><style>
-*{box-sizing:border-box}body{margin:0;background:#f6f2e8;color:#24231f;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}.wrap{max-width:800px;margin:auto;padding:34px 20px 80px}.head{display:flex;justify-content:space-between;align-items:end;border-bottom:1px solid #393832;padding-bottom:10px;margin-bottom:30px}.logo{font:25px Georgia,serif;letter-spacing:.12em}.meta,.place{font-size:11px;color:#77736a;letter-spacing:.11em}.title{font:24px/1.5 Georgia,"Noto Serif SC",serif;margin:8px 0 14px}.story{font-size:15px;line-height:2}.dialogue{font:16px/2 Georgia,"Noto Serif SC",serif;margin:18px 0;padding-left:15px;border-left:2px solid #aaa59a}.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px}.slotlabel{font-size:11px;color:#817c73;margin:20px 0 8px;letter-spacing:.08em}.choice{border:1px solid #99948a;background:transparent;padding:15px 12px;text-align:center;cursor:pointer;font-size:16px;min-height:56px}.choice:hover{background:#282722;color:#fff}.wordrow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0}.word{border-top:1px solid #918c82;padding:12px 5px;text-align:center;font:19px/1.6 Georgia,"Noto Serif SC",serif}.word small{display:block;font:10px sans-serif;color:#888279;margin-bottom:6px}.sentence{font:25px/1.7 Georgia,"Noto Serif SC",serif;text-align:center;padding:20px 0;margin:18px 0;border-top:1px solid #aaa59a;border-bottom:1px solid #aaa59a}.event{font:16px/2 Georgia,"Noto Serif SC",serif;margin-top:20px}.next{display:block;width:100%;border:1px solid #777168;background:transparent;padding:13px 16px;margin-top:28px;cursor:pointer;color:#3b3934;font-size:14px}.next:hover{background:#282722;color:#fff}.setup{max-width:560px;margin:65px auto}.setup h1{font:26px Georgia,"Noto Serif SC",serif;font-weight:400}.people{display:flex;gap:10px;margin:25px 0}.people button{flex:1;border:1px solid #99948a;background:transparent;padding:15px;cursor:pointer}.people button.on{background:#282722;color:#fff}.names{display:grid;gap:10px}.names input{width:100%;border:0;border-bottom:1px solid #99948a;background:transparent;padding:12px 4px;font-size:16px;outline:none}.start{width:100%;margin-top:28px;border:1px solid #282722;background:#282722;color:#fff;padding:14px;cursor:pointer}.end{font-size:16px;line-height:2}@media(max-width:600px){.choices{grid-template-columns:1fr 1fr}.wordrow{grid-template-columns:1fr}.sentence{font-size:21px}}
-</style></head><body><main class="wrap"><header class="head"><div class="logo">コトノハ町</div><div class="meta" id="meta">PROTOTYPE 16 JP</div></header><div id="app"></div></main><script>
-const $=x=>document.getElementById(x),E=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]||m));let round=0;const M={};let playerCount=3,players=[];const timePools=[["放課後","さっき","日が暮れる前","誰も見ていない間に"],["さっき","電車が行ったあと","店主が出てくる前","振り返ったとき"],["夕方","店が閉まる前","猫が走り去ったあと","夕飯の前"],["さっき","日が沈む前","みんなが電話していた頃","誰も見ていないとき"],["日が暮れてから","銀色の電車が来たとき","カラスが鳴いたとき","誰かが迷子になったとき"],["さっき","森に入ってから","カラスが鳴いたとき","みんなが探している間"],["今","霧が出てから","次の電車が来る前","明日"]];
-const rounds=[
-{day:"金曜日・17:38",place:"いつもの駅",story:"部活がいつもより長引いた。駅まで走ったものの、いつもの電車は目の前でドアを閉めた。\n\n{P1}：「あー、あとちょっとだったのに！」\n\n次の電車は二十分後。\n\n{P2}がスマホを見る。「六時までに帰ってこいって。」\n\nそのとき、向かいのホームに見慣れない銀色の電車が停まった。路線図を見ると、途中までは帰る方向と重なっているように見える。",dialog:"{P3}：「これも途中までは同じ方向じゃない？」\n\n{P1}：「何駅か乗って、どこかで乗り換えればいいんじゃない？」\n\n発車ベルが鳴り始めた。\n\nみんなは顔を見合わせ、その電車へ駆け込んだ。",trigger:"電車が動き出してから、{P1}はもう一度、ドアの上の路線図を見上げた。見慣れた駅名は途中で途切れている。\n\n「……で、この電車、結局どこに行くんだろう？」",slot:"o",fixed:{s:"この電車は",v:"向かった。行き先は"},opts:["見たことのない町","いつもの乗換駅","終点","家とはまったく逆の方向"],event:(o)=>{M.arrive=o;if(o==="見たことのない町")return"駅を過ぎるたび、乗客が減っていく。\n\nスマホの電波は一本だけになった。\n\nやがて車内放送が流れる。『次は終点、コトノハ町。』\n\n全員が同時に顔を上げた。\n\n{P3}：「……どこ、ここ？」";if(o==="いつもの乗換駅")return"ところが、車内放送から聞こえてきたのはまったく知らない駅名だった。\n\n{P1}がドアの上の路線図を見つめる。\n\n「おかしい。乗換駅なら、とっくに着いてるはずだよ。」\n\nその直後、『次は終点、コトノハ町』と放送が流れた。";if(o==="終点")return"電車は、知っている駅には一度も停まらなかった。\n\n気づけば、車内に残っているのはみんなだけ。\n\n『次は終点、コトノハ町。』\n\n{P2}：「もしかして、逆に乗った？」";return"窓の外から見慣れた建物がどんどん消えていく。\n\n{P1}がスマホの地図を何度も回す。\n\n「……ほんとに逆だ。」\n\nそのとき、『次は終点、コトノハ町』と車内放送が流れた。"},next:"電車を降りる"},
-{day:"金曜日・18:11",place:"コトノハ町",story:"みんなが電車を降りると、銀色の車体はすぐに薄い霧の向こうへ消えていった。\n\n「とりあえず駅員さんを探そう。」\n\n低い家並みを抜けたところで、誰かが足を止める。何かがおかしい。来た道を引き返した。\n\nさっきまであったはずのホームがない。\n\nそこには草むらが広がっているだけだった。\n\n道路の向かいの雑貨屋から、段ボールを抱えた店主が出てきて、しばらくこちらを見ていた。",dialog:"店主：「君たち、そこで何してるんだ？」\n\n{P3}：「さっき、駅から出てきたんです。」\n\n店主：「駅？」\n\n店主は草むらを見る。\n\n「この町に駅なんてないぞ。」",trigger:"店主はまだ腑に落ちない顔で、草むらを指した。\n\n「じゃあ、その銀色の電車は、君たちをどこへ連れてきたんだ？」",slot:"o",fixed:{s:"銀色の電車は",v:"私たちを連れてきた。そこは"},opts:["ここの駅","この草むら","「コトノハ町」という駅","どこか分からない場所"],event:(o)=>{M.station=o;if(o==="ここの駅")return"店主：「ここの駅？」\n\n{P3}：「はい。さっきまで本当に――」\n\n店主が言葉を遮る。「ここには昔から駅なんてない。」\n\n店の奥から足音がする。みんなと同じくらいの年の女の子が、のれんをくぐって出てきた。\n\n「お父さん、誰？」\n\n店主はみんなを指す。「Mio、この子たち、ここに駅があったって言うんだ。」";if(o.includes("コトノハ町"))return"店主：「コトノハ町駅？」\n\n店主は眉をひそめて、その名前を繰り返した。\n\n「町の名前はコトノハ町だけど、そんな駅はないぞ。」\n\n店ののれんが揺れ、女の子が顔を出す。\n\n「お父さん、誰？」\n\n店主が振り返る。「Mio、この子たち、『コトノハ町駅』から降りたらしい。」";if(o==="この草むら")return"店主は足元の草を見る。\n\n「電車が、草むらに？」\n\n{P1}：「違います。さっきまではここがホームだったんです。」\n\n店の中から女の子が出てきた。\n\n「お父さん、誰と話してるの？」\n\n店主は草むらを指す。「Mio、この子たち、ここがさっきまで駅だったって言うんだ。」";return"店主：「どこか分からない場所？」\n\n{P1}：「だから、帰るために駅を探してるんです。」\n\n「だから、この町に駅はないって。」\n\n店の中から女の子が顔を出す。\n\n「お父さん？」\n\n店主：「Mio、町を案内してやってくれ。このままだと、この子たち日が暮れてもここにいそうだ。」"},next:"Mioについていく"},
-{day:"金曜日・18:29",place:"商店街",story:"Mioに連れられ、商店街を歩く。まだ完全には日が暮れていない。肉屋は看板をしまい、文房具屋の前には明日の朝に出す段ボールが積まれている。\n\nMio：「私、ずっとここに住んでるけど、本当に駅なんて見たことないよ。」\n\n{P1}：「じゃあ、私たちどうやって来たんだろう。」\n\nMio：「だから、それを聞きに行くの。」\n\n商店街の端では、コロッケ屋のおばさんがガラス戸を閉めようとしていた。",dialog:"Mio：「ねえ、おばさん。この辺に昔、駅ってあった？」\n\n店のおばさん：「駅？　なかったと思うけどねえ。」\n\nおばさんはみんなの制服を見る。\n\n「どうして急にそんなこと聞くの？」",trigger:"話を聞くうちに、おばさんの手が止まった。\n\n「ちょっと待って。その駅を実際に見たのは誰なの？」",slot:"s",fixed:{v:"が見たことがある。",o:"あの駅を。"},opts:["雑貨屋のおじさん","制服を着た子","あの三毛猫","銀色の電車に乗った人"],event:(x)=>{M.witness=x;if(x==="雑貨屋のおじさん")return"おばさん：「雑貨屋のおじさんが見たの？」\n\nMio：「違うよ。さっきは『駅なんてない』って言ってた。」\n\n「じゃあ、昔は見たことがあるってこと？」\n\n隣で店じまいをしていた人が顔を上げる。\n\n「何？　昔、この町に駅があったの？」\n\n否定する前に、話が一つ先へ進んでしまった。";if(x==="制服を着た子")return"おばさんは、みんなの制服をもう一度見る。\n\n「制服の子が見た駅……って、君たちのこと？」\n\n隣の店から誰かが顔を出した。\n\n「どこの学校？　前にも迷子の子が来たって話、なかったっけ。」\n\nMio：「え、そんな話あった？」\n\n今度は、知らない昔話まで混ざり始めた。";if(x==="あの三毛猫")return"おばさんは一瞬、言葉を失った。\n\n「猫が駅を見たの？」\n\nそのとき、足元で「ニャア」と声がする。商店街でよく見かける三毛猫が段ボールの陰から出てきた。\n\n隣の店の人が笑う。「じゃあ、その猫についていけば駅に着くんじゃない？」\n\nMioは笑わず、街の奥へ歩いていく猫を目で追った。";return"おばさん：「銀色の電車に乗った人が見た駅……？」\n\n隣の店の人が『銀色の電車』という言葉に反応する。\n\n「待って。昔、うちのばあちゃんが似たような話をしてた気がする。夕方になると、白っぽい電車が通るって。」\n\nMio：「ここ、線路すらないのに。」\n\nそれでも『昔からあった話』として、噂は形を持ち始めた。"},next:"もう少し町を歩く"},
-{day:"金曜日・18:47",place:"小さな公園",story:"商店街の先には、小さな公園があった。二人の小学生がブランコのそばで迎えを待っている。\n\nみんなが何も言わないうちに、一人が先に声をかけてきた。\n\n「駅を探してる人たち？」\n\nMioの足が止まる。\n\n「なんで知ってるの？」\n\n「さっき、お母さんが電話で言ってた。」\n\nさっき商店街で生まれたばかりの話が、もう先回りしていた。",dialog:"もう一人の小学生が割り込む。「なんか、変な駅なんでしょ？」\n\n{P1}：「何が変なの？」\n\n「知らないよ。見たの、そっちでしょ？」",trigger:"小学生がブランコから飛び降りる。どこで付け足されたのか、今度は『森』という言葉まで出てきた。\n\n「じゃあ、その『ないはずの駅』って、森のほうでどうなってるの？」",slot:"v",fixed:{s:"存在しないはずの駅は",o:"、森のほうに。"},opts:["隠れている","突然現れる","誰かを待っている","移ってしまった"],event:(v)=>{M.place=v;if(v==="隠れている")return"小学生：「駅が森に隠れてるの？」\n\nもう一人がすぐに言う。「分かった！　神社の裏の森だ！」\n\n迎えに来た母親がちょうど近づいてくる。\n\n「何の話？」\n\n「この人たち、森に駅が隠れてるって。」\n\nMio：「いや、私たちはそこまで――」\n\n言い終わる前に、母親はスマホを取り出していた。";if(v==="突然現れる")return"小学生：「森に突然現れるの？」\n\n目が一気に輝く。\n\n「いつ？」\n\n{P2}：「時間までは言ってないよ。」\n\n迎えに来た母親は、会話の後半だけを聞いた。\n\n「夜になると現れる駅なの？」\n\nMio：「……今度は『夜』まで増えた。」";if(v==="誰かを待っている")return"二人の小学生がそろって森のほうを見る。\n\n「駅が誰かを待ってるの？」\n\n一人が声を潜める。「さっきの銀色の電車じゃない？」\n\n迎えに来た母親が、その部分だけを聞く。\n\n「銀色の電車？」\n\n十秒後には、電話の向こうへ『森で電車を待つ駅』という話が伝わっていた。";return"小学生：「駅が森に移ったの？」\n\n二人は笑った。\n\nけれど迎えに来た母親が聞いたのは、その最後の一言だけだった。\n\n「森のほうに駅があるの？」\n\n「うん。この人たち、そこから来たんだって！」\n\nMioは口を開いたまま、訂正するタイミングを失った。"},next:"森のほうへ向かう"},
-{day:"金曜日・19:06",place:"神社前",story:"森へ向かう道の途中に、小さな神社がある。\n\n公園で交わした話は、みんなより先にここまで来ていたらしい。石段のそばにいた老人が、Mioを見るなり声をかけた。\n\n「本当に、あの駅を探しに行くのか？」\n\nMio：「おじいさんまで知ってるの？」\n\n老人：「さっき聞いたよ。森のほうにあるんだろ？」",dialog:"{P1}：「でも、森って広いですよね。どこにあるんですか？」\n\n老人は首を横に振る。\n\n「そこまでは知らんよ。ただ、普通の駅じゃないらしいな。」",trigger:"老人は暗くなっていく空を見上げた。\n\n「森にあるっていうなら、その駅はいつ姿を見せるんだ？」",slot:"o",fixed:{s:"森の中の駅は",v:"姿を現す。"},opts:["日が暮れてから","子どもが迷子になったとき","銀色の電車が来たとき","カラスが鳴いたとき"],event:(o)=>{M.time=o;if(o==="日が暮れてから")return"老人：「日が暮れてからしか現れないのか。」\n\n青く沈み始めた空を見上げる。\n\n「なら、もうすぐだな。」\n\n石段を上がってきた二人が、その一言を聞いた。\n\n「夜にだけ出る駅だって？」\n\nそのうちの一人は、すぐに山道を引き返していった。";if(o.includes("迷子"))return"老人はみんなを見る。\n\n「子どもが迷子になると現れる駅、か……。」\n\n石段にいた女性がそれを聞き、そばの子どもの手を握り直す。\n\n「森には入っちゃだめよ。」\n\n子どもはみんなを見て首をかしげた。\n\n「でも、この人たち、もう迷子なんじゃないの？」";if(o.includes("銀色"))return"老人：「銀色の電車が来ると現れるのか。」\n\n石段の途中で誰かが立ち止まる。\n\n「銀色の電車？　さっき商店街でもその話を聞いたぞ。」\n\nMioが小さくつぶやく。\n\n「もう、ここまで来てる……。」";return"頭上から「カァ」と声が落ちてきた。\n\n老人が見上げる。\n\n「カラスが鳴くと現れる？」\n\nもう一度、「カァ」。\n\n石段の子どもが笑う。「じゃあ、今もう出てるかもね。」"},next:"森へ入る"},
-{day:"金曜日・19:24",place:"森",story:"神社の裏で街灯は途切れた。Mioがスマホのライトをつける。\n\n森にいるのは、みんなだけではない。前方では、ときどき知らない人のライトが揺れている。\n\n{P1}：「あの人たちも駅を探してるのかな。」\n\n遠くから「こっちにはない！」と声がする。\n\n頭上でカラスが鳴いた。",dialog:"「カァ――」\n\n少し離れた木から、もう一羽が応える。\n\n「エキ――」\n\nみんなの足が止まった。\n\n{P2}：「……今の、『駅』って言わなかった？」",trigger:"さらに遠くの木から、もう一度カラスの声が返ってくる。近くを歩いていた人まで足を止めた。\n\n「じゃあ今、駅の場所を知ってるのは誰なんだ？」",slot:"s",fixed:{v:"が知っている。",o:"駅の場所を。"},opts:["森のカラス","あの三毛猫","町のみんな","私たち"],event:(x)=>{M.know=x;if(x==="森のカラス")return"「森のカラスが、駅の場所を知っている。」\n\n言い終わるのとほとんど同時に、前方の木から声がした。\n\n「エキ――」\n\nさらに遠くからも続く。\n\n「エキ、エキ――」\n\nMioがスマホのライトをゆっくり持ち上げる。\n\n森の奥で、ごく小さなベルの音がした。";if(x==="あの三毛猫")return"足元の草むらが動いた。\n\n商店街で見かけた三毛猫が暗がりから現れ、みんなを一度だけ見て森の奥へ歩いていく。\n\n頭上のカラスが鳴く。\n\n「エキ――」\n\n{P1}：「……本当についていく？」\n\nそのとき、遠くから小さなベルの音がした。";if(x==="町のみんな")return"前からも後ろからも、人の声が聞こえる。\n\n「こっちにはない。」\n「もっと奥らしいよ。」\n「暗くなってから出るんだろ？」\n\n誰も同じ話をしていない。それでも全員が、同じ『駅』を探している。\n\n木の上でカラスが一声鳴いた。\n\n「エキ――」\n\n遠くから、ベルの音が返ってきた。";return"誰もすぐには答えなかった。\n\nみんなはここまで、会う人ごとに駅のことを聞いてきた。けれど、本当に場所を知っている人は一人もいない。\n\nそのとき、頭上のカラスが鳴いた。\n\n「エキ――」\n\n続いて、森の奥からベルの音が聞こえた。"},next:"音のするほうへ進む"},
-{day:"金曜日・19:31",place:"森の奥",story:"最初は、ほんの小さな音だった。\n\n数歩進むと、今度ははっきり聞こえる。\n\nカン、カン、カン。\n\n踏切の音だ。\n\nでも、ここに線路なんてない。\n\nMioがスマホのライトを消す。それでも暗くはならなかった。木々の向こうから、暖かな黄色い明かりが一列に漏れている。",dialog:"最後の枝をかき分ける。\n\n目の前を線路が横切っていた。\n\n白い駅名標が霧の中に立っている。\n\nコトノハ町駅。\n\n{P1}：「……ここ、さっきまで本当に何もなかったよな。」",trigger:"線路も駅名標も、もう目の前にある。背後で誰かが声を潜めた。\n\n「じゃあ、このコトノハ町駅は……今、何を待ってるんだろう。」",slot:"o",fixed:{s:"コトノハ町駅は",v:"待っている。"},opts:["あの銀色の電車","私たち","明日","次の噂"],event:(o)=>{if(o==="あの銀色の電車")return"霧の向こうに二つの明かりが浮かんだ。\n\n足元のレールが、かすかに震え始める。\n\nMioは駅名標を見て、それからみんなを見る。\n\n「……今度も、乗る？」";if(o==="私たち")return"ホームの灯りが、手前から一つずつ点いていく。\n\n駅員も、ほかの乗客もいない。\n\nベンチの上には、みんなの人数と同じだけの切符が置かれていた。";if(o==="明日")return"ホームの電光時計が一度だけ瞬いた。\n\n「19:31」という表示が消える。\n\n残ったのは、ひとつの日付だけだった。\n\n――明日。";return"木の上で、またカラスが鳴いた。\n\n「エキ――」\n\n森の向こうから誰かが駆けてくる。\n\n「あった！　本当に駅がある！」\n\nその声を追うように、いくつもの足音が近づいてきた。"},next:"→"}
-];
-function injectPlayers(x){if(!x)return x;const p=i=>players[Math.min(i,players.length-1)]||("プレイヤー"+(i+1));return x.replaceAll("{P1}",p(0)).replaceAll("{P2}",p(1)).replaceAll("{P3}",p(2)).replaceAll("{P4}",p(3));}
-function preMio(x){return injectPlayers(x)}
-function render(){const r=rounds[round];$("meta").textContent=(round+1)+" / "+rounds.length;$("app").innerHTML='<div class="place">'+r.day+"・"+r.place+'</div><div class="story">'+preMio(r.story).replace(/\n/g,"<br>")+'</div><div class="dialogue">'+preMio(r.dialog).replace(/\n/g,"<br>")+'</div><div class="dialogue">'+preMio(r.trigger).replace(/\n/g,"<br>")+'</div><div class="slotlabel">'+(r.slot==="s"?"主語":r.slot==="v"?"述語":"目的語")+'</div><div class="choices">'+r.opts.map((o,i)=>'<button class="choice" data-i="'+i+'">'+E(o)+'</button>').join("")+'</div>';document.querySelectorAll(".choice").forEach(b=>b.onclick=()=>resolve(r,r.opts[+b.dataset.i]))}
-function resolve(r,val){
-let s=r.slot==="s"?val:r.fixed.s,v=r.slot==="v"?val:r.fixed.v,o=r.slot==="o"?val:r.fixed.o;
-let t=playerCount===4?timePools[round][round%4]:"";
-let sentence=(t?t+"，":"")+s+v+o+"。";
-let roles=playerCount===4?[t,s,v,o]:[s,v,o];
-let offset=round%playerCount;
-let names=roles.map((_,i)=>players[(i+offset)%playerCount]||("プレイヤー"+(i+1)));
-$("app").innerHTML='<div class="place">'+r.day+"・"+r.place+'</div><div class="wordrow" style="grid-template-columns:repeat('+roles.length+',1fr)">'+roles.map((x,i)=>'<div class="word"><small>'+E(names[i])+'</small>'+E(x)+'</div>').join("")+'</div><div class="sentence">'+E(sentence)+'</div><div class="event">'+preMio(r.event(val)).replace(/\n/g,"<br>")+'</div><button class="next" id="n">'+r.next+'</button>';
-if(round<rounds.length-1)$("n").onclick=()=>{round++;render()};else $("n").onclick=end
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MIDOKU 序章 Demo</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#11110f;color:#eee;font-family:"Noto Sans SC","PingFang SC",sans-serif}
+#app{max-width:1180px;margin:auto;min-height:100vh;padding:20px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.brand{letter-spacing:4px;font-family:Georgia,serif;font-size:24px}.phase{font-size:12px;color:#aaa}
+.game{display:grid;grid-template-columns:1.45fr .8fr;gap:14px}.scene,.side{border:1px solid #454238;background:#1a1915;border-radius:18px;overflow:hidden}
+.visual{height:410px;position:relative;background:linear-gradient(#77766b 0 45%,#79734e 46% 100%);overflow:hidden}
+.sky{position:absolute;inset:0 0 55% 0;background:linear-gradient(#777a78,#b5aa87)}
+.grass{position:absolute;left:0;right:0;bottom:0;height:55%;background:repeating-linear-gradient(100deg,#6f7046 0 3px,#7e7b4b 4px 9px)}
+.track{position:absolute;bottom:65px;left:-5%;width:110%;height:55px;transform:rotate(-3deg);border-top:8px solid #4b463b;border-bottom:8px solid #4b463b}
+.track:after{content:"";position:absolute;inset:8px 0;background:repeating-linear-gradient(90deg,transparent 0 35px,#514b3d 36px 43px,transparent 44px 70px)}
+.train{position:absolute;width:430px;height:125px;left:110px;bottom:115px;background:#d2c8a7;border:5px solid #403b32;border-radius:16px 26px 8px 8px;transition:1.4s}
+.train.hide{transform:translateX(950px);opacity:0}.window{display:inline-block;width:64px;height:48px;margin:20px 5px;background:#536064;border:4px solid #403b32}
+.station{position:absolute;right:110px;bottom:130px;width:180px;height:135px;background:#c5b991;border:4px solid #403b32;transition:1s}.station:before{content:"駅";position:absolute;left:65px;top:40px;font-size:34px;color:#333}.station.hide{opacity:0;filter:blur(12px)}
+.npc{position:absolute;left:54%;bottom:120px;width:46px;height:92px;cursor:pointer;display:none}.npc.show{display:block}.head{width:34px;height:34px;border-radius:50%;background:#bca982;margin:auto}.body{width:44px;height:58px;background:#46453d;border-radius:12px 12px 3px 3px}
+.map{position:absolute;inset:0;display:none;background:#c9bc92}.map.show{display:block}.road{position:absolute;background:#938461;border-radius:50%;transform:rotate(-10deg)}.zone{position:absolute;border:2px dashed #5b5546;background:#b8aa7eaa;padding:12px;border-radius:45% 55% 42% 58%;text-align:center;color:#28261f;font-weight:700;cursor:pointer}.zone.lock{background:#292821;color:#aaa;border-color:#777;filter:brightness(.65)}.zone.new{animation:pulse 1.1s infinite alternate}@keyframes pulse{to{box-shadow:0 0 0 8px #e7dca744}}
+.story{padding:18px 20px 20px;min-height:205px}.story h2{margin:0 0 8px;font-size:20px}.story p{line-height:1.7;color:#d6d1c3;margin:5px 0 15px}.choices{display:flex;gap:8px;flex-wrap:wrap}button{border:0;border-radius:10px;background:#e1d5b2;color:#26231d;padding:10px 15px;font-weight:700;cursor:pointer}.ghost{background:#35332c;color:#ddd}.side{padding:18px}.side h3{margin:0 0 12px;font-size:15px}.log{font-size:13px;color:#bcb6a6;line-height:1.6;max-height:230px;overflow:auto;border-bottom:1px solid #39362e;padding-bottom:12px}.rumor{margin-top:14px;padding:12px;background:#23211c;border-radius:12px;min-height:95px;font-family:serif}.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}.slot{padding:8px 4px;text-align:center;background:#302e27;border-radius:8px;font-size:12px}.slot b{display:block;color:#dfd3ae;margin-bottom:4px}.progress{display:flex;gap:5px;margin-top:18px}.p{height:6px;flex:1;background:#3c3930;border-radius:5px}.p.on{background:#d8cca7}
+.cardpick{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.word{background:#343129;padding:12px;border:1px solid #5b5548;border-radius:10px;cursor:pointer}.word.sel{outline:2px solid #e4d6aa;background:#494334}
+@media(max-width:800px){.game{grid-template-columns:1fr}.visual{height:330px}.side{order:2}.train{left:20px;transform:scale(.8);transform-origin:left bottom}}
+
+/* V4: exploreable map, visible rumors, gradually unlocked aberrant options */
+#mapEffects{position:absolute;z-index:4;right:8px;bottom:8px;max-width:65%;display:flex;gap:3px;justify-content:flex-end;flex-wrap:wrap;pointer-events:none}
+.zone.altered{background:#cdb29c!important;border-color:#a46759!important;border-style:solid;box-shadow:0 0 0 2px #e4c0a666}
+
+.map{background:radial-gradient(ellipse at 43% 49%,#d3c89f 0,#b4a881 62%,#8d8468 100%)}
+.map:before{content:"";position:absolute;inset:8%;border:1px dashed #82795c;border-radius:47% 55% 50% 40%;opacity:.5;pointer-events:none}
+.map:after{content:"言叶町 · 手绘地图";position:absolute;left:16px;bottom:12px;font:12px Georgia,serif;letter-spacing:3px;color:#463f30;pointer-events:none}
+.map .road{pointer-events:none;background:#b1a17b;box-shadow:0 0 0 2px #93836133}
+.zone{z-index:2;padding:10px 5px!important;width:clamp(70px,16%,120px)!important;height:clamp(58px,19%,82px)!important;display:flex;align-items:center;justify-content:center;line-height:1.3;flex-direction:column;font-size:14px;transition:filter .3s,background .3s;white-space:nowrap}
+.zone small{display:block;font-size:10px;font-weight:400;margin-top:4px}.zone:hover:not(.lock){filter:brightness(1.09);background:#e3d5a4}
+.zone.lock{cursor:default;filter:brightness(.65)}.zone.current{border-style:solid;background:#ece1b5;box-shadow:0 0 0 4px #fff8de75}.zone.visited{background:#acb89c;box-shadow:0 0 0 2px #e3e0c0}
+.zone.new{animation:pulse 1.1s infinite alternate}.map-hud{position:absolute;left:9px;top:9px;z-index:5;border-radius:9px;background:#191913e8;padding:6px 10px;font-size:11px;color:#e1d8b9;pointer-events:none;letter-spacing:1px}
+.map-effect{position:relative;left:auto!important;top:auto!important;display:inline-block;z-index:4;border:1px solid #e5d4a8;box-shadow:0 2px 10px #10101066;background:#322f29ee;color:#f0dfc3;border-radius:14px;padding:4px 8px;font-size:10px;pointer-events:none;transform:none;max-width:118px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.story p strong{color:#f4dfb0}.side .goal{margin:12px 0;padding:10px;background:#282721;border:1px solid #474438;border-radius:12px;font-size:12px;line-height:1.75;color:#ded2b3}.goal b{color:#f0d7a7}
+.story button:disabled{opacity:.5;cursor:not-allowed}.story .choices{gap:8px}.story .choices button{white-space:normal;text-align:left;line-height:1.5}
+.word.odd{border-color:#986c5c;background:#3e2c2b}.word .odd-tag{display:inline-block;font-size:10px;color:#ead6c4;background:#87564b;border-radius:5px;padding:2px 5px;margin-right:5px}.word small{font-size:11px;color:#c2b69d;display:block;margin-top:4px}.word:disabled{opacity:.5;cursor:not-allowed}
+.choice-help{margin:8px 0 11px;font-size:12px;color:#cfc4ae;line-height:1.6}.sentence-card{padding:16px;border:1px solid #766b4d;background:#2c2920;border-radius:12px;margin:10px 0 16px;font-size:17px;line-height:1.8}
+.sentences{padding:8px 0}.sentence-log{margin:0 0 9px;padding:6px 0;border-top:1px dashed #4a4638;font-size:11px;line-height:1.5;color:#c4bba8}.sentence-log b{color:#e1d3b2}.unlock{border:1px solid #779977;border-radius:8px;background:#25352a;color:#d8e7d8;padding:9px;margin-top:10px;font-size:12px}
+.small-pill{display:inline-block;border:1px solid #766c4b;color:#d9cdad;font-size:11px;border-radius:14px;padding:3px 8px;margin:0 5px 7px 0}
+.visual.white-tokyo{background:#fafafa}.visual.white-tokyo>*{display:none!important}.visual.white-tokyo:before{content:"东京 / TOKYO";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#dddddd;letter-spacing:5px;font-size:14px;white-space:nowrap}.visual.white-tokyo:after{content:"没有谁能描述的地方";position:absolute;left:50%;top:66%;transform:translateX(-50%);color:#e5e5e5;font-size:11px;white-space:nowrap}
+.visual.return-town{background:linear-gradient(145deg,#655f52,#2d2c28)}.visual.return-town:after{content:"你们的话，比你们先回来了。";position:absolute;bottom:20px;right:20px;color:#e1ccab;font-size:14px}
+@media(max-width:800px){.visual{height:340px}.zone{font-size:12px!important}.map-hud{font-size:10px}.story{min-height:220px}.scene,.side{border-radius:12px}.cardpick{grid-template-columns:repeat(2,minmax(0,1fr))}.word{font-size:13px;min-height:62px}}
+@media(max-width:480px){.visual{height:300px}.zone{font-size:11px!important;width:78px!important;height:55px!important}.zone small{font-size:8px}.story{padding:14px}.side{padding:14px}.map-hud{max-width:80%;white-space:normal}}
+</style></head>
+<body><div id="app">
+<div class="top"><div><div class="brand">未読 / MIDOKU</div><div class="phase">PROLOGUE · 第一阶段序章原型</div></div><button class="ghost" onclick="location.reload()">重新开始</button></div>
+<div class="game"><div class="scene"><div class="visual" id="visual">
+<div class="sky"></div><div class="grass"></div><div class="track" id="track"></div>
+<div class="train" id="train"><span class="window"></span><span class="window"></span><span class="window"></span><span class="window"></span></div>
+<div class="station" id="station"></div>
+<div class="npc" id="npc" onclick="npcClick()"><div class="head"></div><div class="body"></div></div>
+<div class="map" id="map">
+<div class="road" style="width:80%;height:23px;left:10%;top:48%;transform:rotate(-11deg)"></div>
+<div class="road" style="width:65%;height:18px;left:18%;top:47%;transform:rotate(48deg)"></div>
+<div class="road" style="width:56%;height:14px;left:20%;top:48%;transform:rotate(-58deg)"></div>
+<div id="mapHud" class="map-hud">已知地点 1 / 7</div>
+<button class="zone" id="grassZone" style="left:42%;top:45%" onclick="mapClick('grass')">荒草地</button>
+<button class="zone lock" id="schoolZone" style="left:9%;top:20%" onclick="mapClick('school')">迷雾</button>
+<button class="zone lock" id="marketZone" style="right:11%;top:24%" onclick="mapClick('market')">迷雾</button>
+<button class="zone lock" id="homeZone" style="right:9%;bottom:12%" onclick="mapClick('home')">迷雾</button>
+<button class="zone lock" id="riverZone" style="left:14%;bottom:14%" onclick="mapClick('river')">迷雾</button>
+<button class="zone lock" id="shrineZone" style="left:43%;top:7%" onclick="mapClick('shrine')">迷雾</button>
+<button class="zone lock" id="forestZone" style="right:3%;top:3%" onclick="mapClick('forest')">迷雾</button>
+<div id="mapEffects"></div>
+</div></div>
+<div class="story"><h2 id="title">终点站？</h2><p id="text">电车慢慢停下。窗外没有城市，只有大片荒草和一座小得不像终点站的站台。你们明明记得自己要回东京，却从没见过这一站。</p><div class="choices" id="choices"><button onclick="arrive()">下车看看</button></div></div></div>
+<div class="side"><h3>探索记录</h3><div class="log" id="log">17:38　电车抵达陌生站台。</div>
+<div class="rumor"><b>这一带流传的话</b><div id="rumorText" style="margin-top:8px;color:#d7cbaa">目前还没有传闻。</div></div>
+<div id="wordArea"></div><div class="progress" id="progress"></div></div></div></div>
+<script>
+let step=0, selected={}, rumorDone=false;
+const logs=[];
+function setStory(t,x,buttons){title.textContent=t;text.innerHTML=x;choices.innerHTML=buttons||"";progress()}
+function addLog(x){logs.push(x);log.innerHTML='17:38　电车抵达陌生站台。<br>'+logs.join("<br>");log.scrollTop=999}
+function progress(){let n=Math.min(step,8);progressEl=document.getElementById("progress");progressEl.innerHTML="";for(let i=0;i<8;i++){let d=document.createElement("div");d.className="p"+(i<n?" on":"");progressEl.appendChild(d)}}
+function arrive(){step=1;train.classList.add("hide");setStory("陌生的小镇","你们刚踏上荒草地，电车就关上门离开了。<br><br>“……先看看站牌吧。”",'<button onclick="lookBack()">回头看车站</button>');addLog("你们在陌生站台下车。")}
+function lookBack(){step=2;station.classList.add("hide");setTimeout(()=>{station.style.display="none";track.style?.setProperty("opacity","0")},900);setStory("车站消失了","刚才还在身后的站台像从来没有存在过一样消失了。铁轨尽头只剩荒草。<br><br>远处似乎站着一个人。",'<button onclick="openMap()">打开地图</button>');addLog("车站与铁轨消失。");}
+function openMap(){step=3;map.classList.add("show");setStory("地图解锁：荒草地","现在唯一能够确认的位置只有这里。其他区域仍然被迷雾覆盖。<br><br>荒草地上有一个当地人。",'<button onclick="showNpc()">调查荒草地</button>');addLog("解锁地图板块【荒草地】。")}
+function showNpc(){map.classList.remove("show");npc.classList.add("show");setStory("荒草地","一个提着篮子的女人正奇怪地看着你们。点击她进行对话。","");}
+function npcClick(){npc.onclick=null;step=4;setStory("陌生女人","“你们几个……从哪儿来的？我以前没见过你们。”<br><br>你们正准备解释刚才发生的事情，但每个人记住的细节似乎不太一样。",'<button onclick="startWords()">试着说明刚才发生的事</button>');addLog("遇到第一名当地居民。她还不知道你们经历了什么。")}
+const sets={subject:["我们","其他同学","站台上的乘客","一位同行的朋友"],verb:["坐过","看见过","正在寻找","错过了"],object:["电车","车站","回东京的路","同车的乘客"],time:["刚才","下车之前","电车停下时","天色变暗之前"]};
+function startWords(){step=5;setStory("第一次 · 主谓宾游戏","四个人回忆刚才发生的事。每个人记住的东西并不完全一样。<br><br><b>从每一组里选一个词，把大家的碎片重新拼成一句话。</b>","");renderWords()}
+function renderWords(){wordArea.innerHTML='<h3 style="margin-top:18px">信息碎片</h3>';for(const [k,arr] of Object.entries(sets)){let box=document.createElement("div");box.innerHTML='<div style="font-size:11px;color:#888;margin:8px 0">'+({subject:"主语",verb:"谓语",object:"宾语",time:"时间"}[k])+'</div>';let grid=document.createElement("div");grid.className="cardpick";arr.forEach(w=>{let d=document.createElement("div");d.className="word";d.textContent=w;d.onclick=()=>{selected[k]=w;[...grid.children].forEach(e=>e.classList.remove("sel"));d.classList.add("sel");checkWords()};grid.appendChild(d)});box.appendChild(grid);wordArea.appendChild(box)}}
+function checkWords(){if(Object.keys(selected).length===4&&!document.getElementById("makeBtn")){let b=document.createElement("button");b.id="makeBtn";b.style.marginTop="12px";b.textContent="组成这句话";b.onclick=makeRumor;wordArea.appendChild(b)}}
+function makeRumor(){
+ step=6;
+ let sentence=`${selected.time}，${selected.subject}${selected.verb}${selected.object}。`;
+ rumorText.textContent="“"+sentence+"”";
+ wordArea.innerHTML="";
+ window.firstRumor={...selected,sentence};
+
+ // NPC only reacts to words the players actually selected.
+ let reactions=[];
+ if(selected.object==="电车") reactions.push("“电车？这里可没有那种东西。”");
+ if(selected.object==="车站") reactions.push("“车站？这附近从来没有车站。”");
+ if(selected.object==="回东京的路") reactions.push("“东京……我只听过这个名字。你们是从那里来的吗？”");
+ if(selected.object==="奇怪的乘客") reactions.push("“奇怪的乘客？可我刚才只看见了你们几个。”");
+ if(selected.subject==="没人") reactions.push("“没人？那这句话又是谁看到的呢……”");
+ if(selected.subject==="陌生人"||selected.subject==="站台上的人") reactions.push("“你们说的那个人，现在在哪里？”");
+ if(selected.verb==="弄丢了") reactions.push("“弄丢了？你们确定原来真的有吗？”");
+ if(selected.verb==="等着") reactions.push("“在这种荒草地里等什么呢……”");
+ if(selected.time==="午夜") reactions.push("“午夜？现在明明还是白天。是谁这么说的？”");
+ if(selected.time==="昨天") reactions.push("“昨天？可你们不是刚刚才到这里吗？”");
+ if(selected.time==="很久以前") reactions.push("“很久以前的事，你们怎么会知道？”");
+ if(!reactions.length) reactions.push("女人把这句话低声重复了一遍，似乎仍然没有完全听懂。");
+
+ setStory("一句话诞生了",
+ `你们七嘴八舌地解释刚才发生的事情，最后留下了这样一句话：<br><br><b>“${sentence}”</b><br><br>${reactions.slice(0,2).join("<br>")}<br><br>女人想了想。<br>“总之，先别一直站在这里。跟我来吧。”`,
+ '<button onclick="shop()">跟她去杂货店</button>');
+ addLog("第一句话被当地人记住：【"+sentence+"】");
 }
-function end(){$("meta").textContent="END";$("app").innerHTML='<div class="place">月曜日・07:46・いつもの駅</div><div class="end">Suicaを改札にかざす。<br><br>ピッ。<br><br>後ろでは、同じ制服の生徒が二人話している。<br><br>「コトノハ町って、駅があるらしいよ。」<br><br>「知ってる。森の中にあるやつでしょ。」<br><br>「夜にしか出ないんだって。」<br><br>電車がホームへ入ってくる。<br><br>ドアが開く直前、屋根の上に一羽のカラスが降りた。<br><br>「エキ――」</div>'}
-function setup(){ $("meta").textContent="SETUP"; $("app").innerHTML='<div class="setup"><h1>コトノハ町</h1><div class="people"><button id="p3" class="on">3人</button><button id="p4">4人</button></div><div class="names" id="names"></div><button class="start" id="start">はじめる</button></div>'; function draw(){ $("names").innerHTML=Array.from({length:playerCount},(_,i)=>'<input maxlength="10" placeholder="プレイヤー '+(i+1)+'のニックネーム">').join("") } draw(); $("p3").onclick=()=>{playerCount=3;$("p3").classList.add("on");$("p4").classList.remove("on");draw()}; $("p4").onclick=()=>{playerCount=4;$("p4").classList.add("on");$("p3").classList.remove("on");draw()}; $("start").onclick=()=>{players=[...document.querySelectorAll("#names input")].map((x,i)=>x.value.trim()||("プレイヤー"+(i+1)));round=0;render()}} setup();
+
+function shop(){
+ step=7;
+ let r=window.firstRumor;
+ let daughter="";
+ // Daughter repeats ONLY the rumor she actually receives.
+ if(r.object==="电车"){
+   daughter=`女儿听完后立刻抬起头：<br>“<b>电车</b>？那是什么？你们刚才真的坐过吗？”`;
+ } else if(r.object==="车站"){
+   daughter=`女儿听完后有些惊讶：<br>“<b>车站</b>？妈妈不是说镇上没有车站吗？”`;
+ } else if(r.object==="回东京的路"){
+   daughter=`女儿一下凑了过来：<br>“<b>东京</b>？我听过这个名字！那里是什么样的？”`;
+ } else if(r.object==="奇怪的乘客"){
+   daughter=`女儿压低声音问：<br>“你们说的那个<b>奇怪的乘客</b>，后来去哪儿了？”`;
+ }
+ setStory("小镇杂货店",
+ `女人原来是市场里杂货店的老板。店里还有她的女儿。<br><br>老板把刚才听到的话复述给女儿：<br><b>“${r.sentence}”</b><br><br>${daughter}<br><br>老板看了看天色：<br>“不管怎样，你们今晚暂时回不去了。先听听你们怎么打算吧。”`,
+ '<button onclick="townInfo()">询问这个小镇</button>');
+ addLog("杂货店老板把第一句话转述给女儿，没有加入新的信息。");
+}
+
+let lodging="";
+function townInfo(){
+ let r=window.firstRumor;
+ let tail=r.object==="回东京的路"?'女儿轻声问：“东京……是地方的名字吗？”':r.object==="电车"?'女儿问：“你们说的电车，究竟是什么？”':r.object==="车站"?'女儿问：“车站是什么地方？”':'女儿又问了一遍：“你们刚才说的那件事，是真的吗？”';
+ setStory("今晚住在哪里？",`老板没有马上替你们决定住处。<br><br>“天快黑了。店里可以挤出一间空房；我也能去问问学校宿舍能不能收留你们。”<br><br>${tail}<br><br>你们几个人意见不同，决定再用一次<b>主语＋谓语＋宾语＋时间</b>把今晚的打算说清楚。`,'<button onclick="startLodgingWords()">开始第二次主谓宾游戏</button>');
+}
+function startLodgingWords(){
+ step=7; selected={};wordArea.innerHTML='';
+ setStory("第二次 · 今晚的去处","这次每个人提出不同的说法。请依次选择主语、谓语、宾语和时间。<br><br><b>句子中的地点决定今晚住在哪里，也决定最先开放的探索区域。</b>","");
+ const opts={subject:["我们","几个外来孩子","大家","老板的客人"],verb:["借住在","暂时留在","决定去","请求住进"],object:["杂货店老板家","学校宿舍"],time:["今晚","天黑之前","从今天开始","这一夜"]};
+ for(const [key,words] of Object.entries(opts)){
+  const h=document.createElement('div');h.style.marginTop='12px';h.textContent=({subject:'主语',verb:'谓语',object:'宾语',time:'时间'})[key];wordArea.appendChild(h);
+  const grid=document.createElement('div');grid.className='cardpick';wordArea.appendChild(grid);
+  words.forEach(w=>{const el=document.createElement('button');el.className='word';el.textContent=w;el.onclick=()=>{selected[key]=w;[...grid.children].forEach(x=>x.classList.remove('sel'));el.classList.add('sel');const done=Object.keys(selected).length===4;let btn=document.getElementById('lodgingConfirm');if(done&&!btn){btn=document.createElement('button');btn.id='lodgingConfirm';btn.style.marginTop='14px';btn.textContent='确认这句话';btn.onclick=confirmLodging;wordArea.appendChild(btn)}};grid.appendChild(el)});
+ }
+}
+function confirmLodging(){
+ lodging=selected.object==='学校宿舍'?'school':'market';
+ const sentence=`${selected.time}，${selected.subject}${selected.verb}${selected.object}。`;
+ wordArea.innerHTML='';addLog('今晚的决定：【'+sentence+'】');
+ const response=lodging==='school'?'老板点点头：“好，我去跟学校的老师说一声。”':'老板笑了：“那就来我家吧。楼上还有间空房。”';
+ setStory('今晚的决定',`你们最终说出了：<br><br><b>“${sentence}”</b><br><br>${response}<br><br>夜色渐深，大家跟着老板动身。`,'<button onclick="unlockTown()">前往住处</button>');
+}
+function unlockTown(){
+ step=8;map.classList.add('show');
+ const id=lodging==='school'?'schoolZone':'marketZone';const zone=document.getElementById(id);
+ zone.classList.remove('lock');zone.classList.add('new');zone.textContent=lodging==='school'?'学校':'市场';
+ const place=lodging==='school'?'学校宿舍':'杂货店老板家';
+ setStory('新区域已解锁',`你们来到<b>${place}</b>。<br><br>地图现在只开放了【荒草地】和【${lodging==='school'?'学校':'市场'}】。另一处仍被迷雾覆盖，需要后续探索才能发现。`,'<button onclick="finishPrologue()">开始探索</button>');
+ addLog('解锁【'+(lodging==='school'?'学校':'市场')+'】；另一地点仍未开放。');
+}
+function finishPrologue(){
+ document.querySelectorAll('.zone.new').forEach(x=>x.classList.remove('new'));
+ setStory('序章结束 · 自由探索开始',`你们今晚住在<b>${lodging==='school'?'学校宿舍':'杂货店老板家'}</b>。<br><br>从已开放区域开始探索，寻找更多居民与线索。未探索的地点依然保持未知。<br><br>小镇居民目前只听到了你们实际说出的传闻，不会自动知道“东京”或“电车”。`,'');
+ addLog('进入自由探索，起点：'+(lodging==='school'?'学校':'市场'));
+}
+function mapClick(id){
+ if(step<8)return;
+ if(id==='school'&&lodging==='school')setStory('学校','你们住进了学校宿舍。其他地方还要靠调查才能找到。','');
+ else if(id==='market'&&lodging==='market')setStory('市场','杂货店老板让你们住在店铺楼上的空房间。','');
+ else if(id==='grass')setStory('荒草地','你们最初抵达的地方。车站已经消失了。','');
+}
+progress();
+// ===== 第一阶段：沿用上传的 V3 序章，再接回可自由探索的地图。 =====
+// 序章不放异端；只在真正展开探索、传闻被居民听到后，异常逐步出现。
+const EXP={
+ started:false,mode:'prologue',current:'grass',active:null,chosen:{},unlocked:new Set(['grass']),
+ visited:new Set(),completed:new Set(),rumors:[],effects:[],lastOdd:[],lastOutcome:'',finalStatement:'',total:0,
+ names:{grass:'荒草地',school:'学校',market:'市场',home:'居民家',river:'河边',shrine:'神社',forest:'森林'},
+ graph:{grass:[],school:['river','home'],market:['home','river'],home:['market','school','shrine'],river:['forest','shrine'],shrine:['forest'],forest:['shrine']},
+ quests:{
+  school:{npc:'值班老师',intro:'学校已经放学。值班老师正在锁教室门，黑板上有一条没擦干净的粉笔线，像一段没画完的铁轨。\n\n“你们几个不是本校的吧？今晚要借住的话，先别乱跑。”',clue:'老师告诉你们：河边那条小路能绕到镇子的另一头。',
+   options:{subject:['黑板上的粉笔字','傍晚的铃声','那位值班老师','课桌上留下的纸条'],verb:['指向了','记下了','提起了','藏着'],object:['一条没画完的路','教室外的脚步声','一张车票','放学的时间'],time:['放学以后','教室关门之前','刚才','天黑以前']},
+   odd:[{slot:'object',text:'明天才会响起的铃声',level:1,effect:'楼道里突然响起了明天的下课铃。老师看看挂钟，又看看空空的教室。'},{slot:'subject',text:'写着明天日期的黑板',level:3,effect:'黑板上的日期变了，甚至写出了还没发生的课表。'}]},
+  market:{npc:'市场摊主',intro:'市场正在收摊。一个卖可乐饼的摊主把纸袋递给三花猫，猫却丢下一张皱巴巴的纸。\n\n摊主说：“奇怪，刚才怎么没人看见这张纸是哪来的？”',clue:'摊主告诉你们：沿着摊位后的居民家，能找到通往河边的小巷。',
+   options:{subject:['市场里的三花猫','收摊的老板','路过的孩子','一张被捡起的纸'],verb:['发现了','叼走了','藏起了','带来了'],object:['一张旧纸片','奇怪的脚印','没见过的站牌图','一只遗失的手套'],time:['刚才','打烊之前','人群散去时','晚饭以前']},
+   odd:[{slot:'object',text:'自己会收钱的影子',level:1,effect:'摊位底下的影子伸出手，准确接住了一枚硬币；摊主却不敢低头。'},{slot:'subject',text:'还没开门的明天的摊位',level:3,effect:'空地上忽然摆出了明天的价签和新鲜蔬菜。'}]},
+  home:{npc:'独居的老奶奶',intro:'居民区里有一户窗户亮着灯。老奶奶正在往门上贴纸条。\n\n“这里最近总有人敲错门。说出来你们可能不信，他们连自己敲的是哪一天的门都记不清。”',clue:'老奶奶说神社后面有条小径，以前孩子们常去那儿玩。',
+   options:{subject:['门口的纸条','隔壁家的孩子','走廊上的脚步声','老奶奶的旧挂钟'],verb:['记录了','听见了','指向了','找到了'],object:['一扇紧闭的门','陌生人的名字','旧时的约定','走错路的孩子'],time:['傍晚','敲门以后','太阳落下时','今晚']},
+   odd:[{slot:'object',text:'通往昨天的房门',level:1,effect:'房门打开的一瞬间，门后是白天的阳光。关上再开，才变回夜晚的走廊。'},{slot:'subject',text:'还没出生的邻居',level:3,effect:'门外有人道谢，老奶奶却说那户人家根本还没人搬进来。'}]},
+  river:{npc:'河边的钓鱼人',intro:'河边的水面上飘着细小的纸屑。一个钓鱼人把它们捞上岸，却发现每一张都只有半句话。\n\n“我今天一直捡到这种纸。像是谁把说过的话丢进河里了。”',clue:'钓鱼人指向河对岸的小径：顺着那条路，可以去神社或森林。',
+   options:{subject:['河水里的纸片','桥下的回声','岸边的钓鱼人','水面上的倒影'],verb:['重复着','藏着','带来了','指向了'],object:['半句没有说完的话','一条看不清的河道','陌生的站名','一片飘来的树叶'],time:['刚才','太阳落下时','今晚','桥上有人经过时']},
+   odd:[{slot:'object',text:'倒着流的时间',level:1,effect:'水里的落叶逆流漂回了树上，钓鱼人吓得松开了鱼竿。'},{slot:'subject',text:'学会替人回答的河水',level:3,effect:'你们还没开口，河面已经传来一句回答。'}]},
+  shrine:{npc:'守神社的老人',intro:'神社门口挂着一排写着愿望的木牌。有人写“去东京”，有人写“看一眼真正的大城市”。\n\n老人说：“这里的人都听过东京。可是我认识的人里，没有谁亲眼看过它。每个人说的样子都不一样。”',clue:'老人指出：神社后方就是森林。传闻中的午夜电车，有人说要从那儿经过。',
+   options:{subject:['石阶上的老人','神社里的铃铛','木牌上的愿望','屋檐下的乌鸦'],verb:['听见了','记下了','等待着','提起了'],object:['远方城市的名字','没有答案的愿望','森林传来的铃声','大家没见过的风景'],time:['暮色里','刚才','有人许愿时','太阳完全落下前']},
+   odd:[{slot:'object',text:'能回答问题的神社铃',level:1,effect:'神社的铃没有人碰，却一声一声回答了你们刚才问的问题。'},{slot:'subject',text:'写着未来的木牌',level:3,effect:'一块空白木牌上浮出明天的日期，其他人争着把它当成预言。'}]},
+  forest:{npc:'跟着传闻寻路的居民',intro:'森林里没有路灯。几束手电筒在树影间晃动。\n\n一个居民说：“有人说深处会出现车站，可大家都只听过别人说，根本没人找到过。”\n\n你们脚边的乌鸦忽然叫了一声，听起来像是“エキ”。',clue:'林子最深处有片平整的空地，像在等待某个还没人说出口的东西。',
+   options:{subject:['森林里的乌鸦','寻找车站的居民','那片没有树的空地','远处传来的铃声'],verb:['等待着','听见了','指向了','藏着'],object:['一块白色站牌','不存在的车站','很轻的列车铃声','通向别处的小路'],time:['天黑以后','刚才','有人提起时','下一声乌鸦叫起时']},
+   odd:[{slot:'object',text:'会替乘客检票的乌鸦',level:1,effect:'一只乌鸦站上石头，叼走居民手里并不存在的车票。'},{slot:'subject',text:'从未铺设的铁轨',level:3,effect:'泥土地上出现两道发亮的钢轨，却没有人记得它们是何时出现的。'}]}
+ }
+};
+function expGet(id){return document.getElementById(id)}
+function expEsc(x){return String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function expBr(x){return expEsc(x).replace(/\n{2,}/g,'<br><br>').replace(/\n/g,'<br>')}
+const origUnlockTown=unlockTown;
+unlockTown=function(){origUnlockTown();EXP.mode='new-area';EXP.unlocked.add(lodging);EXP.syncMap();};
+finishPrologue=function(){
+  document.querySelectorAll('.zone.new').forEach(x=>x.classList.remove('new'));
+  document.querySelector('.phase').textContent='ACT 01 · 第一阶段 / 自由探索';
+  EXP.started=true;EXP.mode='explore';EXP.current=lodging;EXP.syncMap();EXP.goal();
+  addLog('自由探索开始：从'+EXP.names[lodging]+'出发。');
+  EXP.visit(lodging);
+};
+mapClick=function(id){
+  if(!EXP.started || EXP.mode==='tokyo'||EXP.mode==='returned')return;
+  if(!EXP.unlocked.has(id))return;
+  EXP.visit(id);
+};
+EXP.syncMap=function(){
+ const active=EXP.started||step>=8;
+ for(const id of Object.keys(EXP.names)){
+  const node=expGet(id+'Zone');if(!node)continue;
+  const found=EXP.unlocked.has(id);
+  if(!active && id!=='grass'){node.style.display='none';continue}
+  node.style.display='flex';node.textContent=found?EXP.names[id]:'迷雾';
+  node.disabled=!found;
+  node.classList.toggle('lock',!found);node.classList.toggle('visited',EXP.visited.has(id));
+  node.classList.toggle('current',EXP.started&&EXP.current===id);
+  node.classList.toggle('altered',EXP.effects.some(e=>e.loc===id));
+  if(found&&EXP.completed.has(id)){
+   const sub=document.createElement('small');sub.textContent='已调查';node.appendChild(sub);
+  }
+ }
+ expGet('mapHud').textContent=EXP.started?'已发现 '+EXP.unlocked.size+' / 7 · 传闻 '+EXP.rumors.length+' 条':'已发现：荒草地';
+ expGet('mapEffects').innerHTML=EXP.effects.slice(-4).map(e=>'<span class="map-effect" style="left:'+e.x+'%;top:'+e.y+'%">'+expEsc(e.caption)+'</span>').join('');
+};
+EXP.goal=function(){
+ let goal=expGet('exploreGoal');if(!goal){goal=document.createElement('div');goal.id='exploreGoal';goal.className='goal';expGet('wordArea').before(goal)}
+ if(!EXP.started){goal.style.display='none';return}
+ goal.style.display='block';
+ const count=EXP.rumors.length;
+ const parts=[];
+ if(!EXP.completed.has('shrine'))parts.push('寻找神社里有关远方的传闻');
+ if(!EXP.completed.has('forest'))parts.push('在森林寻找车站的痕迹');
+ if(count<4)parts.push('收集至少 '+(4-count)+' 条新的传闻');
+ const late=EXP.canPrepare();
+ const suffix=EXP.mode==='tokyo'?'已经抵达“东京”。':EXP.mode==='returned'?'第一阶段结束。':late?'线索汇聚：返回森林深处。':parts.length?parts.join('；'):'返回森林深处，决定要不要利用传闻回家。';
+ goal.innerHTML='<b>当前目标</b><br>'+expEsc(suffix)+'<br><span style="color:#a9a08c">探索 '+EXP.completed.size+'/6 地点 · 传闻 '+count+' 条 · 已出现异端 '+EXP.effects.length+' 次</span>';
+};
+EXP.canPrepare=function(){return EXP.rumors.length>=4&&EXP.completed.has('shrine')&&EXP.completed.has('forest')};
+EXP.adjRumor=function(loc){
+ const out=EXP.rumors.filter(r=>(EXP.graph[r.loc]||[]).includes(loc));
+ if(!out.length)return '';
+ const r=out.at(-1);
+ return '\n\n有人正向旁边的人复述从'+EXP.names[r.loc]+'听来的话：\n“'+r.sentence+'”\n\n你们记得这句话，但它原先只是几个人拼出来的碎片。';
+};
+EXP.visit=function(loc){
+ EXP.started=true;EXP.mode='explore';EXP.current=loc;EXP.active=null;EXP.chosen={};
+ EXP.visited.add(loc);EXP.syncMap();EXP.goal();
+ map.classList.add('show');visual.classList.remove('white-tokyo','return-town');
+ wordArea.innerHTML='';
+ if(loc==='grass'){
+  setStory('荒草地 · 原来的终点站','地上的草又长回了原处。你们曾在这里下过电车，可现在连一截铁轨也没有。<br><br>这里没有新的居民，也没有可供造句的线索。<br><br>点击地图上其他已经发现的地点，继续寻找回家的办法。','');
+  return;
+ }
+ if(loc==='forest'&&EXP.canPrepare())return EXP.prepareStation();
+ const q=EXP.quests[loc];const completed=EXP.completed.has(loc);
+ const header='<span class="small-pill">'+EXP.names[loc]+'</span>'+(completed?'<span class="small-pill">已记录传闻</span>':'<span class="small-pill">可调查</span>');
+ const actions=completed?'<button onclick="EXP.revisit(\''+loc+'\')">查看这里的变化</button><button class="ghost" onclick="EXP.showOverview()">查看探索地图</button>':
+  '<button onclick="EXP.startWords(\''+loc+'\')">听完线索，一起造句</button><button class="ghost" onclick="EXP.showOverview()">先去别处看看</button>';
+ setStory(EXP.names[loc]+' · '+q.npc,header+'<br>'+expBr(q.intro+EXP.adjRumor(loc)),actions);
+};
+EXP.showOverview=function(){EXP.active=null;wordArea.innerHTML='';map.classList.add('show');EXP.syncMap();EXP.goal();
+ setStory('言叶町 · 自由探索','地图里亮起来的地点可以直接点击。<br><br>不同的住处让你们从不同的方向认识这座镇子；已经调查过的地方可以返回，也许会看见先前那句话造成的变化。','');
+};
+EXP.startWords=function(loc){
+ EXP.active=loc;EXP.chosen={};const q=EXP.quests[loc];
+ setStory('整理听见的话 · '+EXP.names[loc],expBr('你们都看见了同一个场面，却注意到不同的细节。\n\n'+q.npc+'正在等你们解释。先选各自记住的碎片，最后再一起看这句话会变成什么。'),'<button class="ghost" onclick="EXP.visit(\''+loc+'\')">暂时不说，返回地图</button>');
+ EXP.wordUI();
+};
+EXP.optionSet=function(loc,key){
+ const quest=EXP.quests[loc];let options=quest.options[key].map(text=>({text,odd:false}));
+ for(const alt of quest.odd){if(alt.slot===key&&EXP.rumors.length>=alt.level){options.push({text:alt.text,odd:true,detail:alt.effect})}}
+ return options;
+};
+EXP.wordUI=function(){
+ const loc=EXP.active;if(!loc)return;
+ const labels={subject:'主语',verb:'谓语',object:'宾语',time:'时间'};
+ wordArea.innerHTML='<h3 style="margin-top:17px">四人记住的碎片</h3><div class="choice-help">先正常交流。随着传闻改变小镇，才会逐渐出现标着“异端”的选项。异端不是错误；如果你选择了它，它就可能真的发生。</div>';
+ for(const [key,label] of Object.entries(labels)){
+  const h=document.createElement('div');h.style.cssText='font-size:12px;color:#ddd0b4;margin:13px 0 7px';h.textContent=label;wordArea.appendChild(h);
+  const grid=document.createElement('div');grid.className='cardpick';wordArea.appendChild(grid);
+  for(const opt of EXP.optionSet(loc,key)){
+   const b=document.createElement('button');b.type='button';b.className='word'+(opt.odd?' odd':'');b.innerHTML=(opt.odd?'<span class="odd-tag">异端</span>':'')+expEsc(opt.text);
+   b.onclick=()=>{EXP.chosen[key]=opt;[...grid.children].forEach(x=>x.classList.remove('sel'));b.classList.add('sel');EXP.updateSentenceButton()};grid.appendChild(b);
+  }
+ }
+ const info=document.createElement('div');info.id='sentencePreview';info.className='choice-help';info.style.marginTop='12px';info.textContent='还差四个碎片。';wordArea.appendChild(info);
+ const confirm=document.createElement('button');confirm.id='expMakeBtn';confirm.textContent='把大家的话拼成一句';confirm.disabled=true;confirm.onclick=EXP.complete;wordArea.appendChild(confirm);
+};
+EXP.sentence=function(){const a=EXP.chosen;return a.time.text+'，'+a.subject.text+a.verb.text+a.object.text+'。'};
+EXP.updateSentenceButton=function(){
+ const n=Object.keys(EXP.chosen).length;const complete=n===4;expGet('expMakeBtn').disabled=!complete;
+ expGet('sentencePreview').textContent=complete?'碎片已收集：点击后组成完整句子，并让附近的人听见。':'还差 '+(4-n)+' 个碎片。';
+};
+EXP.unlockMore=function(loc){
+ const fresh=[];
+ for(const n of EXP.graph[loc]||[]){if(!EXP.unlocked.has(n)){EXP.unlocked.add(n);fresh.push(EXP.names[n]);}}
+ EXP.syncMap();return fresh;
+};
+EXP.effectCoordinates={school:[21,19],market:[76,23],home:[80,71],river:[22,75],shrine:[45,11],forest:[81,10]};
+EXP.complete=function(){
+ const loc=EXP.active;if(!loc||EXP.completed.has(loc))return;
+ if(Object.keys(EXP.chosen).length<4)return;
+ const q=EXP.quests[loc],s=EXP.sentence(),anomalies=Object.values(EXP.chosen).filter(o=>o.odd);
+ const rumor={loc,sentence:s,odd:anomalies.length>0,at:EXP.rumors.length+1};
+ EXP.rumors.push(rumor);EXP.completed.add(loc);EXP.total++;
+ const unlocks=EXP.unlockMore(loc);
+ let response=q.npc+'把你们拼出来的话重复了一遍。\n“'+s+'”\n\n“原来是这么回事……”\n\n他/她开始把这句话当成确实发生过的事情。';
+ if(anomalies.length){
+  const coord=EXP.effectCoordinates[loc];
+  for(let i=0;i<anomalies.length;i++){EXP.effects.push({loc,x:coord[0]+i*3,y:coord[1]+i*6,caption:anomalies[i].text});}
+  response+='\n\n接着，事情真的变了：\n'+anomalies.map(x=>x.detail).join('\n');
+  response+='\n\n你们没有再能找到“只是开玩笑”与“变成现实”之间的界线。';
+ } else {
+  response+='\n\n附近的人一边听一边补上自己理解的细节。这句话开始有了第二个版本。';
+ }
+ response+='\n\n'+q.clue;
+ if(unlocks.length)response+='\n\n新发现的地点：'+unlocks.join('、')+'。';
+ if(EXP.canPrepare())response+='\n\n已有足够多的故事在镇子里传开。森林深处现在可能会听见新的声音。';
+ EXP.active=null;EXP.chosen={};EXP.syncMap();EXP.goal();
+ wordArea.innerHTML='<div class="sentence-card">'+expEsc(s)+'</div><div class="choice-help">这句话已经留在镇上的人之间。你下次遇到他们时，他们可能会再讲一遍。</div>';
+ const last=EXP.rumors.slice(-3).reverse();
+ wordArea.innerHTML+='<div class="sentences">'+last.map(r=>'<div class="sentence-log"><b>'+EXP.names[r.loc]+'</b> · '+expEsc(r.sentence)+'</div>').join('')+'</div>';
+ rumorText.textContent='“'+s+'”';
+ addLog('【'+EXP.names[loc]+'】'+s+(anomalies.length?'（异常成真）':''));
+ setStory('传闻已被留下',expBr(response),'<button onclick="EXP.showOverview()">打开地图，继续探索</button>'+(EXP.canPrepare()?'<button onclick="EXP.visit(\'forest\')">去森林深处看看</button>':''));
+};
+EXP.revisit=function(loc){
+ const related=EXP.rumors.find(r=>r.loc===loc),odd=EXP.effects.filter(e=>{
+  const c=EXP.effectCoordinates[loc];return c&&Math.abs(c[0]-e.x)<=6&&Math.abs(c[1]-e.y)<=7;
+ });
+ let msg='你们又来到'+EXP.names[loc]+'。\n\n'+EXP.quests[loc].npc+'记得你们那句话：\n“'+related.sentence+'”';
+ if(odd.length)msg+='\n\n这里的异常仍然存在。'+odd.map(e=>e.caption).join('、')+'并没有恢复原状。';
+ else msg+='\n\n人们还在讨论这句话。它正在变成小镇的常识。';
+ setStory('重新走过 · '+EXP.names[loc],expBr(msg),'<button onclick="EXP.showOverview()">返回地图</button>');
+};
+EXP.prepareStation=function(){
+ EXP.mode='station-decision';EXP.syncMap();EXP.goal();wordArea.innerHTML='';
+ const text='你们回到森林深处。人们在树下讨论着不同版本的传闻。\n\n有人拿出纸笔说：“如果这里真的能有一个车站，那是不是也能有一辆去东京的电车？”\n\nMio低声提醒你们：“我们已经看到了，自己说出的话会影响这里。可是我们甚至不知道他们想象的东京是什么样的。”\n\n为了回家，你们要不要告诉镇民：午夜的列车可以去东京？';
+ setStory('森林深处 · 一个不该轻易说出的决定',expBr(text),'<button onclick="EXP.questionRail()">先去核实有无铁轨</button><button onclick="EXP.finalWords()">利用传闻，制造午夜电车</button><button class="ghost" onclick="EXP.showOverview()">先不决定，继续探索</button>');
+};
+EXP.questionRail=function(){
+ setStory('核实之后','你们沿着林间走了一圈。泥土上根本没有轨枕，树林也没有被砍开的痕迹。<br><br>眼前没有任何证据能证明午夜真的有电车。<br><br>如果你们现在告诉居民“电车一定会来”，那就是一次有意识的传闻制造。','<button onclick="EXP.finalWords()">还是决定说出那句话</button><button class="ghost" onclick="EXP.showOverview()">继续探索，不说这句话</button>');
+};
+EXP.finalWords=function(){
+ EXP.mode='final-words';EXP.finalChosen={};
+ setStory('最后一次造句 · 午夜电车','为了离开小镇，你们开始故意拼出一条还没有人亲眼证实的传闻。<br><br>这一次，你们已经知道，<strong>说出口的话可能会变成现实。</strong>','<button class="ghost" onclick="EXP.prepareStation()">再想一想</button>');
+ const opt={subject:['那辆银色电车','大家口中的午夜列车','森林深处的车站','没有司机的末班车'],verb:['会开往','可以抵达','将带我们去','被认为通往'],object:['镇民想象的东京','谁也没亲眼见过的东京','传闻里灯火通明的东京','只有名字的东京'],time:['午夜','所有人相信时','钟声响起以后','在不存在的第十三个小时']};
+ wordArea.innerHTML='<h3 style="margin-top:16px">拼出一趟不存在的列车</h3><div class="choice-help">这些词并不是镇民亲眼见过的证据。你们在决定怎样把一条传闻说得可信。</div>';
+ for(const [key,label] of Object.entries({subject:'主语',verb:'谓语',object:'宾语',time:'时间'})){
+  const h=document.createElement('div');h.style.cssText='font-size:12px;color:#ddd0b4;margin:12px 0 7px';h.textContent=label;wordArea.appendChild(h);
+  const div=document.createElement('div');div.className='cardpick';wordArea.appendChild(div);
+  opt[key].forEach((val,i)=>{const b=document.createElement('button');b.className='word'+(key==='time'&&i===3?' odd':'');b.innerHTML=(key==='time'&&i===3?'<span class="odd-tag">异端</span>':'')+expEsc(val);
+   b.onclick=()=>{EXP.finalChosen[key]=val;[...div.children].forEach(x=>x.classList.remove('sel'));b.classList.add('sel');expGet('finalSay').disabled=Object.keys(EXP.finalChosen).length<4};div.appendChild(b)})
+ }
+ const btn=document.createElement('button');btn.id='finalSay';btn.disabled=true;btn.textContent='让镇民听见这句话';btn.style.marginTop='15px';btn.onclick=EXP.sayFinal;wordArea.appendChild(btn);
+};
+EXP.sayFinal=function(){
+ if(Object.keys(EXP.finalChosen).length!==4)return;
+ const c=EXP.finalChosen;EXP.finalStatement=c.time+'，'+c.subject+c.verb+c.object+'。';
+ EXP.rumors.push({loc:'forest',sentence:EXP.finalStatement,odd:c.time.includes('第十三'),at:EXP.rumors.length+1});
+ if(c.time.includes('第十三')){EXP.effects.push({loc:'forest',x:67,y:15,caption:'第十三个小时'});}
+ EXP.mode='station-found';EXP.syncMap();EXP.goal();
+ wordArea.innerHTML='<div class="sentence-card">'+expEsc(EXP.finalStatement)+'</div>';
+ rumorText.textContent='“'+EXP.finalStatement+'”';
+ addLog('有意识地制造了一条关于午夜电车的传闻：'+EXP.finalStatement);
+ const msg='你们告诉了围在森林里的居民：\n“'+EXP.finalStatement+'”\n\n最初大家愣了几秒。接着有人说：“我也听过那趟电车！”\n\n另一人接话：“对，我小时候就听人提过东京。”\n\n雾气从树缝里漫出来。先是一块站牌，然后是一排台阶，最后连铁轨都从泥土里冒了出来。\n\n它不是你们原先乘坐的车站。它是小镇上所有人拼凑出的——午夜车站。';
+ setStory('午夜车站 · 传闻变成现实',expBr(msg),'<button onclick="EXP.boardTrain()">乘上午夜电车，前往东京</button>');
+};
+EXP.boardTrain=function(){
+ EXP.mode='tokyo';document.querySelector('.phase').textContent='ACT 01 · 东京 / 空白';EXP.syncMap();EXP.goal();wordArea.innerHTML='';
+ map.classList.remove('show');visual.classList.add('white-tokyo');
+ setStory('终点：东京？','电车终于停下。<br><br>广播说：“终点站，东京。”<br><br>可车门外什么也没有。没有街道、没有人群，也没有人们传说中的高楼。<br><br>这里甚至没有能让你确认方向的地平线。<br><br>小镇的人知道有一个叫“东京”的地方，却不知道真正的东京究竟是什么样。<br><br><strong>传闻可以为列车创造一个目的地，却无法创造人们从未认识过的具体世界。</strong>','<button onclick="EXP.returnTown()">返回言叶町</button>');
+};
+EXP.returnTown=function(){
+ EXP.mode='returned';document.querySelector('.phase').textContent='ACT 02 · 第二阶段 / 序幕';EXP.current='grass';map.classList.add('show');visual.classList.remove('white-tokyo');visual.classList.add('return-town');EXP.syncMap();EXP.goal();
+ const anomaly=EXP.effects.length?EXP.effects.map(e=>e.caption).slice(0,3).join('、'):'那些被大家反复讲述的句子';
+ setStory('第一阶段结束 · 第二阶段的开始','你们坐着银色电车返回言叶町。<br><br>可是，这座镇子已经不是刚来时的样子了。<br><br>学校、市场、居民家、河边和森林都有人在讲述你们说过的话。<br><br>你们认得出一些变化：<strong>'+expEsc(anomaly)+'</strong>。<br><br>没人记得这些变化最初是从哪里来的。镇民们只说：“这里一直就是这样。”<br><br><strong>第一阶段，你们制造了传闻。第二阶段，你们必须生活在自己制造的传闻里。</strong>','<button onclick="location.reload()">重新开始</button>');
+ addLog('第一阶段结束：回到被传闻改变的小镇。');
+};
+// 保留原 V3 序章，但地图直到选定住处才展开；探索期间才逐渐出现异端。
+EXP.syncMap();EXP.goal();
+
 </script></body></html>

@@ -1,29 +1,813 @@
-<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>コトノハ町</title><style>
-*{box-sizing:border-box}body{margin:0;background:#f6f2e8;color:#24231f;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif}.wrap{max-width:800px;margin:auto;padding:34px 20px 80px}.head{display:flex;justify-content:space-between;align-items:end;border-bottom:1px solid #393832;padding-bottom:10px;margin-bottom:30px}.logo{font:25px Georgia,serif;letter-spacing:.12em}.meta,.place{font-size:11px;color:#77736a;letter-spacing:.11em}.title{font:24px/1.5 Georgia,"Noto Serif SC",serif;margin:8px 0 14px}.story{font-size:15px;line-height:2}.dialogue{font:16px/2 Georgia,"Noto Serif SC",serif;margin:18px 0;padding-left:15px;border-left:2px solid #aaa59a}.choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px}.slotlabel{font-size:11px;color:#817c73;margin:20px 0 8px;letter-spacing:.08em}.choice{border:1px solid #99948a;background:transparent;padding:15px 12px;text-align:center;cursor:pointer;font-size:16px;min-height:56px}.choice:hover{background:#282722;color:#fff}.wordrow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0}.word{border-top:1px solid #918c82;padding:12px 5px;text-align:center;font:19px/1.6 Georgia,"Noto Serif SC",serif}.word small{display:block;font:10px sans-serif;color:#888279;margin-bottom:6px}.sentence{font:25px/1.7 Georgia,"Noto Serif SC",serif;text-align:center;padding:20px 0;margin:18px 0;border-top:1px solid #aaa59a;border-bottom:1px solid #aaa59a}.event{font:16px/2 Georgia,"Noto Serif SC",serif;margin-top:20px}.next{display:block;width:100%;border:1px solid #777168;background:transparent;padding:13px 16px;margin-top:28px;cursor:pointer;color:#3b3934;font-size:14px}.next:hover{background:#282722;color:#fff}.setup{max-width:560px;margin:65px auto}.setup h1{font:26px Georgia,"Noto Serif SC",serif;font-weight:400}.people{display:flex;gap:10px;margin:25px 0}.people button{flex:1;border:1px solid #99948a;background:transparent;padding:15px;cursor:pointer}.people button.on{background:#282722;color:#fff}.names{display:grid;gap:10px}.names input{width:100%;border:0;border-bottom:1px solid #99948a;background:transparent;padding:12px 4px;font-size:16px;outline:none}.start{width:100%;margin-top:28px;border:1px solid #282722;background:#282722;color:#fff;padding:14px;cursor:pointer}.end{font-size:16px;line-height:2}@media(max-width:600px){.choices{grid-template-columns:1fr 1fr}.wordrow{grid-template-columns:1fr}.sentence{font-size:21px}}
-</style></head><body><main class="wrap"><header class="head"><div class="logo">コトノハ町</div><div class="meta" id="meta">PROTOTYPE 16 JP</div></header><div id="app"></div></main><script>
-const $=x=>document.getElementById(x),E=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]||m));let round=0;const M={};let playerCount=3,players=[];const timePools=[["放課後","さっき","日が暮れる前","誰も見ていない間に"],["さっき","電車が行ったあと","店主が出てくる前","振り返ったとき"],["夕方","店が閉まる前","猫が走り去ったあと","夕飯の前"],["さっき","日が沈む前","みんなが電話していた頃","誰も見ていないとき"],["日が暮れてから","銀色の電車が来たとき","カラスが鳴いたとき","誰かが迷子になったとき"],["さっき","森に入ってから","カラスが鳴いたとき","みんなが探している間"],["今","霧が出てから","次の電車が来る前","明日"]];
-const rounds=[
-{day:"金曜日・17:38",place:"いつもの駅",story:"部活がいつもより長引いた。駅まで走ったものの、いつもの電車は目の前でドアを閉めた。\n\n{P1}：「あー、あとちょっとだったのに！」\n\n次の電車は二十分後。\n\n{P2}がスマホを見る。「六時までに帰ってこいって。」\n\nそのとき、向かいのホームに見慣れない銀色の電車が停まった。路線図を見ると、途中までは帰る方向と重なっているように見える。",dialog:"{P3}：「これも途中までは同じ方向じゃない？」\n\n{P1}：「何駅か乗って、どこかで乗り換えればいいんじゃない？」\n\n発車ベルが鳴り始めた。\n\nみんなは顔を見合わせ、その電車へ駆け込んだ。",trigger:"電車が動き出してから、{P1}はもう一度、ドアの上の路線図を見上げた。見慣れた駅名は途中で途切れている。\n\n「……で、この電車、結局どこに行くんだろう？」",slot:"o",fixed:{s:"この電車は",v:"向かった。行き先は"},opts:["見たことのない町","いつもの乗換駅","終点","家とはまったく逆の方向"],event:(o)=>{M.arrive=o;if(o==="見たことのない町")return"駅を過ぎるたび、乗客が減っていく。\n\nスマホの電波は一本だけになった。\n\nやがて車内放送が流れる。『次は終点、コトノハ町。』\n\n全員が同時に顔を上げた。\n\n{P3}：「……どこ、ここ？」";if(o==="いつもの乗換駅")return"ところが、車内放送から聞こえてきたのはまったく知らない駅名だった。\n\n{P1}がドアの上の路線図を見つめる。\n\n「おかしい。乗換駅なら、とっくに着いてるはずだよ。」\n\nその直後、『次は終点、コトノハ町』と放送が流れた。";if(o==="終点")return"電車は、知っている駅には一度も停まらなかった。\n\n気づけば、車内に残っているのはみんなだけ。\n\n『次は終点、コトノハ町。』\n\n{P2}：「もしかして、逆に乗った？」";return"窓の外から見慣れた建物がどんどん消えていく。\n\n{P1}がスマホの地図を何度も回す。\n\n「……ほんとに逆だ。」\n\nそのとき、『次は終点、コトノハ町』と車内放送が流れた。"},next:"電車を降りる"},
-{day:"金曜日・18:11",place:"コトノハ町",story:"みんなが電車を降りると、銀色の車体はすぐに薄い霧の向こうへ消えていった。\n\n「とりあえず駅員さんを探そう。」\n\n低い家並みを抜けたところで、誰かが足を止める。何かがおかしい。来た道を引き返した。\n\nさっきまであったはずのホームがない。\n\nそこには草むらが広がっているだけだった。\n\n道路の向かいの雑貨屋から、段ボールを抱えた店主が出てきて、しばらくこちらを見ていた。",dialog:"店主：「君たち、そこで何してるんだ？」\n\n{P3}：「さっき、駅から出てきたんです。」\n\n店主：「駅？」\n\n店主は草むらを見る。\n\n「この町に駅なんてないぞ。」",trigger:"店主はまだ腑に落ちない顔で、草むらを指した。\n\n「じゃあ、その銀色の電車は、君たちをどこへ連れてきたんだ？」",slot:"o",fixed:{s:"銀色の電車は",v:"私たちを連れてきた。そこは"},opts:["ここの駅","この草むら","「コトノハ町」という駅","どこか分からない場所"],event:(o)=>{M.station=o;if(o==="ここの駅")return"店主：「ここの駅？」\n\n{P3}：「はい。さっきまで本当に――」\n\n店主が言葉を遮る。「ここには昔から駅なんてない。」\n\n店の奥から足音がする。みんなと同じくらいの年の女の子が、のれんをくぐって出てきた。\n\n「お父さん、誰？」\n\n店主はみんなを指す。「Mio、この子たち、ここに駅があったって言うんだ。」";if(o.includes("コトノハ町"))return"店主：「コトノハ町駅？」\n\n店主は眉をひそめて、その名前を繰り返した。\n\n「町の名前はコトノハ町だけど、そんな駅はないぞ。」\n\n店ののれんが揺れ、女の子が顔を出す。\n\n「お父さん、誰？」\n\n店主が振り返る。「Mio、この子たち、『コトノハ町駅』から降りたらしい。」";if(o==="この草むら")return"店主は足元の草を見る。\n\n「電車が、草むらに？」\n\n{P1}：「違います。さっきまではここがホームだったんです。」\n\n店の中から女の子が出てきた。\n\n「お父さん、誰と話してるの？」\n\n店主は草むらを指す。「Mio、この子たち、ここがさっきまで駅だったって言うんだ。」";return"店主：「どこか分からない場所？」\n\n{P1}：「だから、帰るために駅を探してるんです。」\n\n「だから、この町に駅はないって。」\n\n店の中から女の子が顔を出す。\n\n「お父さん？」\n\n店主：「Mio、町を案内してやってくれ。このままだと、この子たち日が暮れてもここにいそうだ。」"},next:"Mioについていく"},
-{day:"金曜日・18:29",place:"商店街",story:"Mioに連れられ、商店街を歩く。まだ完全には日が暮れていない。肉屋は看板をしまい、文房具屋の前には明日の朝に出す段ボールが積まれている。\n\nMio：「私、ずっとここに住んでるけど、本当に駅なんて見たことないよ。」\n\n{P1}：「じゃあ、私たちどうやって来たんだろう。」\n\nMio：「だから、それを聞きに行くの。」\n\n商店街の端では、コロッケ屋のおばさんがガラス戸を閉めようとしていた。",dialog:"Mio：「ねえ、おばさん。この辺に昔、駅ってあった？」\n\n店のおばさん：「駅？　なかったと思うけどねえ。」\n\nおばさんはみんなの制服を見る。\n\n「どうして急にそんなこと聞くの？」",trigger:"話を聞くうちに、おばさんの手が止まった。\n\n「ちょっと待って。その駅を実際に見たのは誰なの？」",slot:"s",fixed:{v:"が見たことがある。",o:"あの駅を。"},opts:["雑貨屋のおじさん","制服を着た子","あの三毛猫","銀色の電車に乗った人"],event:(x)=>{M.witness=x;if(x==="雑貨屋のおじさん")return"おばさん：「雑貨屋のおじさんが見たの？」\n\nMio：「違うよ。さっきは『駅なんてない』って言ってた。」\n\n「じゃあ、昔は見たことがあるってこと？」\n\n隣で店じまいをしていた人が顔を上げる。\n\n「何？　昔、この町に駅があったの？」\n\n否定する前に、話が一つ先へ進んでしまった。";if(x==="制服を着た子")return"おばさんは、みんなの制服をもう一度見る。\n\n「制服の子が見た駅……って、君たちのこと？」\n\n隣の店から誰かが顔を出した。\n\n「どこの学校？　前にも迷子の子が来たって話、なかったっけ。」\n\nMio：「え、そんな話あった？」\n\n今度は、知らない昔話まで混ざり始めた。";if(x==="あの三毛猫")return"おばさんは一瞬、言葉を失った。\n\n「猫が駅を見たの？」\n\nそのとき、足元で「ニャア」と声がする。商店街でよく見かける三毛猫が段ボールの陰から出てきた。\n\n隣の店の人が笑う。「じゃあ、その猫についていけば駅に着くんじゃない？」\n\nMioは笑わず、街の奥へ歩いていく猫を目で追った。";return"おばさん：「銀色の電車に乗った人が見た駅……？」\n\n隣の店の人が『銀色の電車』という言葉に反応する。\n\n「待って。昔、うちのばあちゃんが似たような話をしてた気がする。夕方になると、白っぽい電車が通るって。」\n\nMio：「ここ、線路すらないのに。」\n\nそれでも『昔からあった話』として、噂は形を持ち始めた。"},next:"もう少し町を歩く"},
-{day:"金曜日・18:47",place:"小さな公園",story:"商店街の先には、小さな公園があった。二人の小学生がブランコのそばで迎えを待っている。\n\nみんなが何も言わないうちに、一人が先に声をかけてきた。\n\n「駅を探してる人たち？」\n\nMioの足が止まる。\n\n「なんで知ってるの？」\n\n「さっき、お母さんが電話で言ってた。」\n\nさっき商店街で生まれたばかりの話が、もう先回りしていた。",dialog:"もう一人の小学生が割り込む。「なんか、変な駅なんでしょ？」\n\n{P1}：「何が変なの？」\n\n「知らないよ。見たの、そっちでしょ？」",trigger:"小学生がブランコから飛び降りる。どこで付け足されたのか、今度は『森』という言葉まで出てきた。\n\n「じゃあ、その『ないはずの駅』って、森のほうでどうなってるの？」",slot:"v",fixed:{s:"存在しないはずの駅は",o:"、森のほうに。"},opts:["隠れている","突然現れる","誰かを待っている","移ってしまった"],event:(v)=>{M.place=v;if(v==="隠れている")return"小学生：「駅が森に隠れてるの？」\n\nもう一人がすぐに言う。「分かった！　神社の裏の森だ！」\n\n迎えに来た母親がちょうど近づいてくる。\n\n「何の話？」\n\n「この人たち、森に駅が隠れてるって。」\n\nMio：「いや、私たちはそこまで――」\n\n言い終わる前に、母親はスマホを取り出していた。";if(v==="突然現れる")return"小学生：「森に突然現れるの？」\n\n目が一気に輝く。\n\n「いつ？」\n\n{P2}：「時間までは言ってないよ。」\n\n迎えに来た母親は、会話の後半だけを聞いた。\n\n「夜になると現れる駅なの？」\n\nMio：「……今度は『夜』まで増えた。」";if(v==="誰かを待っている")return"二人の小学生がそろって森のほうを見る。\n\n「駅が誰かを待ってるの？」\n\n一人が声を潜める。「さっきの銀色の電車じゃない？」\n\n迎えに来た母親が、その部分だけを聞く。\n\n「銀色の電車？」\n\n十秒後には、電話の向こうへ『森で電車を待つ駅』という話が伝わっていた。";return"小学生：「駅が森に移ったの？」\n\n二人は笑った。\n\nけれど迎えに来た母親が聞いたのは、その最後の一言だけだった。\n\n「森のほうに駅があるの？」\n\n「うん。この人たち、そこから来たんだって！」\n\nMioは口を開いたまま、訂正するタイミングを失った。"},next:"森のほうへ向かう"},
-{day:"金曜日・19:06",place:"神社前",story:"森へ向かう道の途中に、小さな神社がある。\n\n公園で交わした話は、みんなより先にここまで来ていたらしい。石段のそばにいた老人が、Mioを見るなり声をかけた。\n\n「本当に、あの駅を探しに行くのか？」\n\nMio：「おじいさんまで知ってるの？」\n\n老人：「さっき聞いたよ。森のほうにあるんだろ？」",dialog:"{P1}：「でも、森って広いですよね。どこにあるんですか？」\n\n老人は首を横に振る。\n\n「そこまでは知らんよ。ただ、普通の駅じゃないらしいな。」",trigger:"老人は暗くなっていく空を見上げた。\n\n「森にあるっていうなら、その駅はいつ姿を見せるんだ？」",slot:"o",fixed:{s:"森の中の駅は",v:"姿を現す。"},opts:["日が暮れてから","子どもが迷子になったとき","銀色の電車が来たとき","カラスが鳴いたとき"],event:(o)=>{M.time=o;if(o==="日が暮れてから")return"老人：「日が暮れてからしか現れないのか。」\n\n青く沈み始めた空を見上げる。\n\n「なら、もうすぐだな。」\n\n石段を上がってきた二人が、その一言を聞いた。\n\n「夜にだけ出る駅だって？」\n\nそのうちの一人は、すぐに山道を引き返していった。";if(o.includes("迷子"))return"老人はみんなを見る。\n\n「子どもが迷子になると現れる駅、か……。」\n\n石段にいた女性がそれを聞き、そばの子どもの手を握り直す。\n\n「森には入っちゃだめよ。」\n\n子どもはみんなを見て首をかしげた。\n\n「でも、この人たち、もう迷子なんじゃないの？」";if(o.includes("銀色"))return"老人：「銀色の電車が来ると現れるのか。」\n\n石段の途中で誰かが立ち止まる。\n\n「銀色の電車？　さっき商店街でもその話を聞いたぞ。」\n\nMioが小さくつぶやく。\n\n「もう、ここまで来てる……。」";return"頭上から「カァ」と声が落ちてきた。\n\n老人が見上げる。\n\n「カラスが鳴くと現れる？」\n\nもう一度、「カァ」。\n\n石段の子どもが笑う。「じゃあ、今もう出てるかもね。」"},next:"森へ入る"},
-{day:"金曜日・19:24",place:"森",story:"神社の裏で街灯は途切れた。Mioがスマホのライトをつける。\n\n森にいるのは、みんなだけではない。前方では、ときどき知らない人のライトが揺れている。\n\n{P1}：「あの人たちも駅を探してるのかな。」\n\n遠くから「こっちにはない！」と声がする。\n\n頭上でカラスが鳴いた。",dialog:"「カァ――」\n\n少し離れた木から、もう一羽が応える。\n\n「エキ――」\n\nみんなの足が止まった。\n\n{P2}：「……今の、『駅』って言わなかった？」",trigger:"さらに遠くの木から、もう一度カラスの声が返ってくる。近くを歩いていた人まで足を止めた。\n\n「じゃあ今、駅の場所を知ってるのは誰なんだ？」",slot:"s",fixed:{v:"が知っている。",o:"駅の場所を。"},opts:["森のカラス","あの三毛猫","町のみんな","私たち"],event:(x)=>{M.know=x;if(x==="森のカラス")return"「森のカラスが、駅の場所を知っている。」\n\n言い終わるのとほとんど同時に、前方の木から声がした。\n\n「エキ――」\n\nさらに遠くからも続く。\n\n「エキ、エキ――」\n\nMioがスマホのライトをゆっくり持ち上げる。\n\n森の奥で、ごく小さなベルの音がした。";if(x==="あの三毛猫")return"足元の草むらが動いた。\n\n商店街で見かけた三毛猫が暗がりから現れ、みんなを一度だけ見て森の奥へ歩いていく。\n\n頭上のカラスが鳴く。\n\n「エキ――」\n\n{P1}：「……本当についていく？」\n\nそのとき、遠くから小さなベルの音がした。";if(x==="町のみんな")return"前からも後ろからも、人の声が聞こえる。\n\n「こっちにはない。」\n「もっと奥らしいよ。」\n「暗くなってから出るんだろ？」\n\n誰も同じ話をしていない。それでも全員が、同じ『駅』を探している。\n\n木の上でカラスが一声鳴いた。\n\n「エキ――」\n\n遠くから、ベルの音が返ってきた。";return"誰もすぐには答えなかった。\n\nみんなはここまで、会う人ごとに駅のことを聞いてきた。けれど、本当に場所を知っている人は一人もいない。\n\nそのとき、頭上のカラスが鳴いた。\n\n「エキ――」\n\n続いて、森の奥からベルの音が聞こえた。"},next:"音のするほうへ進む"},
-{day:"金曜日・19:31",place:"森の奥",story:"最初は、ほんの小さな音だった。\n\n数歩進むと、今度ははっきり聞こえる。\n\nカン、カン、カン。\n\n踏切の音だ。\n\nでも、ここに線路なんてない。\n\nMioがスマホのライトを消す。それでも暗くはならなかった。木々の向こうから、暖かな黄色い明かりが一列に漏れている。",dialog:"最後の枝をかき分ける。\n\n目の前を線路が横切っていた。\n\n白い駅名標が霧の中に立っている。\n\nコトノハ町駅。\n\n{P1}：「……ここ、さっきまで本当に何もなかったよな。」",trigger:"線路も駅名標も、もう目の前にある。背後で誰かが声を潜めた。\n\n「じゃあ、このコトノハ町駅は……今、何を待ってるんだろう。」",slot:"o",fixed:{s:"コトノハ町駅は",v:"待っている。"},opts:["あの銀色の電車","私たち","明日","次の噂"],event:(o)=>{if(o==="あの銀色の電車")return"霧の向こうに二つの明かりが浮かんだ。\n\n足元のレールが、かすかに震え始める。\n\nMioは駅名標を見て、それからみんなを見る。\n\n「……今度も、乗る？」";if(o==="私たち")return"ホームの灯りが、手前から一つずつ点いていく。\n\n駅員も、ほかの乗客もいない。\n\nベンチの上には、みんなの人数と同じだけの切符が置かれていた。";if(o==="明日")return"ホームの電光時計が一度だけ瞬いた。\n\n「19:31」という表示が消える。\n\n残ったのは、ひとつの日付だけだった。\n\n――明日。";return"木の上で、またカラスが鳴いた。\n\n「エキ――」\n\n森の向こうから誰かが駆けてくる。\n\n「あった！　本当に駅がある！」\n\nその声を追うように、いくつもの足音が近づいてきた。"},next:"→"}
-];
-function injectPlayers(x){if(!x)return x;const p=i=>players[Math.min(i,players.length-1)]||("プレイヤー"+(i+1));return x.replaceAll("{P1}",p(0)).replaceAll("{P2}",p(1)).replaceAll("{P3}",p(2)).replaceAll("{P4}",p(3));}
-function preMio(x){return injectPlayers(x)}
-function render(){const r=rounds[round];$("meta").textContent=(round+1)+" / "+rounds.length;$("app").innerHTML='<div class="place">'+r.day+"・"+r.place+'</div><div class="story">'+preMio(r.story).replace(/\n/g,"<br>")+'</div><div class="dialogue">'+preMio(r.dialog).replace(/\n/g,"<br>")+'</div><div class="dialogue">'+preMio(r.trigger).replace(/\n/g,"<br>")+'</div><div class="slotlabel">'+(r.slot==="s"?"主語":r.slot==="v"?"述語":"目的語")+'</div><div class="choices">'+r.opts.map((o,i)=>'<button class="choice" data-i="'+i+'">'+E(o)+'</button>').join("")+'</div>';document.querySelectorAll(".choice").forEach(b=>b.onclick=()=>resolve(r,r.opts[+b.dataset.i]))}
-function resolve(r,val){
-let s=r.slot==="s"?val:r.fixed.s,v=r.slot==="v"?val:r.fixed.v,o=r.slot==="o"?val:r.fixed.o;
-let t=playerCount===4?timePools[round][round%4]:"";
-let sentence=(t?t+"，":"")+s+v+o+"。";
-let roles=playerCount===4?[t,s,v,o]:[s,v,o];
-let offset=round%playerCount;
-let names=roles.map((_,i)=>players[(i+offset)%playerCount]||("プレイヤー"+(i+1)));
-$("app").innerHTML='<div class="place">'+r.day+"・"+r.place+'</div><div class="wordrow" style="grid-template-columns:repeat('+roles.length+',1fr)">'+roles.map((x,i)=>'<div class="word"><small>'+E(names[i])+'</small>'+E(x)+'</div>').join("")+'</div><div class="sentence">'+E(sentence)+'</div><div class="event">'+preMio(r.event(val)).replace(/\n/g,"<br>")+'</div><button class="next" id="n">'+r.next+'</button>';
-if(round<rounds.length-1)$("n").onclick=()=>{round++;render()};else $("n").onclick=end
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>未读 MIDOKU · 言叶町 | 第一阶段 V5</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#11110f;color:#eee;font-family:"Noto Sans SC","PingFang SC",sans-serif}
+#app{max-width:1180px;margin:auto;min-height:100vh;padding:20px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.brand{letter-spacing:4px;font-family:Georgia,serif;font-size:24px}.phase{font-size:12px;color:#aaa}
+.game{display:grid;grid-template-columns:1.45fr .8fr;gap:14px}.scene,.side{border:1px solid #454238;background:#1a1915;border-radius:18px;overflow:hidden}
+.visual{height:410px;position:relative;background:linear-gradient(#77766b 0 45%,#79734e 46% 100%);overflow:hidden}
+.sky{position:absolute;inset:0 0 55% 0;background:linear-gradient(#777a78,#b5aa87)}
+.grass{position:absolute;left:0;right:0;bottom:0;height:55%;background:repeating-linear-gradient(100deg,#6f7046 0 3px,#7e7b4b 4px 9px)}
+.track{position:absolute;bottom:65px;left:-5%;width:110%;height:55px;transform:rotate(-3deg);border-top:8px solid #4b463b;border-bottom:8px solid #4b463b}
+.track:after{content:"";position:absolute;inset:8px 0;background:repeating-linear-gradient(90deg,transparent 0 35px,#514b3d 36px 43px,transparent 44px 70px)}
+.train{position:absolute;width:430px;height:125px;left:110px;bottom:115px;background:#d2c8a7;border:5px solid #403b32;border-radius:16px 26px 8px 8px;transition:1.4s}
+.train.hide{transform:translateX(950px);opacity:0}.window{display:inline-block;width:64px;height:48px;margin:20px 5px;background:#536064;border:4px solid #403b32}
+.station{position:absolute;right:110px;bottom:130px;width:180px;height:135px;background:#c5b991;border:4px solid #403b32;transition:1s}.station:before{content:"駅";position:absolute;left:65px;top:40px;font-size:34px;color:#333}.station.hide{opacity:0;filter:blur(12px)}
+.npc{position:absolute;left:54%;bottom:120px;width:46px;height:92px;cursor:pointer;display:none}.npc.show{display:block}.head{width:34px;height:34px;border-radius:50%;background:#bca982;margin:auto}.body{width:44px;height:58px;background:#46453d;border-radius:12px 12px 3px 3px}
+.map{position:absolute;inset:0;display:none;background:#c9bc92}.map.show{display:block}.road{position:absolute;background:#938461;border-radius:50%;transform:rotate(-10deg)}.zone{position:absolute;border:2px dashed #5b5546;background:#b8aa7eaa;padding:12px;border-radius:45% 55% 42% 58%;text-align:center;color:#28261f;font-weight:700;cursor:pointer}.zone.lock{background:#292821;color:#aaa;border-color:#777;filter:brightness(.65)}.zone.new{animation:pulse 1.1s infinite alternate}@keyframes pulse{to{box-shadow:0 0 0 8px #e7dca744}}
+.story{padding:18px 20px 20px;min-height:205px}.story h2{margin:0 0 8px;font-size:20px}.story p{line-height:1.7;color:#d6d1c3;margin:5px 0 15px}.choices{display:flex;gap:8px;flex-wrap:wrap}button{border:0;border-radius:10px;background:#e1d5b2;color:#26231d;padding:10px 15px;font-weight:700;cursor:pointer}.ghost{background:#35332c;color:#ddd}.side{padding:18px}.side h3{margin:0 0 12px;font-size:15px}.log{font-size:13px;color:#bcb6a6;line-height:1.6;max-height:230px;overflow:auto;border-bottom:1px solid #39362e;padding-bottom:12px}.rumor{margin-top:14px;padding:12px;background:#23211c;border-radius:12px;min-height:95px;font-family:serif}.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}.slot{padding:8px 4px;text-align:center;background:#302e27;border-radius:8px;font-size:12px}.slot b{display:block;color:#dfd3ae;margin-bottom:4px}.progress{display:flex;gap:5px;margin-top:18px}.p{height:6px;flex:1;background:#3c3930;border-radius:5px}.p.on{background:#d8cca7}
+.cardpick{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}.word{background:#343129;padding:12px;border:1px solid #5b5548;border-radius:10px;cursor:pointer}.word.sel{outline:2px solid #e4d6aa;background:#494334}
+@media(max-width:800px){.game{grid-template-columns:1fr}.visual{height:330px}.side{order:2}.train{left:20px;transform:scale(.8);transform-origin:left bottom}}
+
+/* V4: exploreable map, visible rumors, gradually unlocked aberrant options */
+#mapEffects{position:absolute;z-index:4;right:8px;bottom:8px;max-width:65%;display:flex;gap:3px;justify-content:flex-end;flex-wrap:wrap;pointer-events:none}
+.zone.altered{background:#cdb29c!important;border-color:#a46759!important;border-style:solid;box-shadow:0 0 0 2px #e4c0a666}
+
+.map{background:radial-gradient(ellipse at 43% 49%,#d3c89f 0,#b4a881 62%,#8d8468 100%)}
+.map:before{content:"";position:absolute;inset:8%;border:1px dashed #82795c;border-radius:47% 55% 50% 40%;opacity:.5;pointer-events:none}
+.map:after{content:"言叶町 · 手绘地图";position:absolute;left:16px;bottom:12px;font:12px Georgia,serif;letter-spacing:3px;color:#463f30;pointer-events:none}
+.map .road{pointer-events:none;background:#b1a17b;box-shadow:0 0 0 2px #93836133}
+.zone{z-index:2;padding:10px 5px!important;width:clamp(70px,16%,120px)!important;height:clamp(58px,19%,82px)!important;display:flex;align-items:center;justify-content:center;line-height:1.3;flex-direction:column;font-size:14px;transition:filter .3s,background .3s;white-space:nowrap}
+.zone small{display:block;font-size:10px;font-weight:400;margin-top:4px}.zone:hover:not(.lock){filter:brightness(1.09);background:#e3d5a4}
+.zone.lock{cursor:default;filter:brightness(.65)}.zone.current{border-style:solid;background:#ece1b5;box-shadow:0 0 0 4px #fff8de75}.zone.visited{background:#acb89c;box-shadow:0 0 0 2px #e3e0c0}
+.zone.new{animation:pulse 1.1s infinite alternate}.map-hud{position:absolute;left:9px;top:9px;z-index:5;border-radius:9px;background:#191913e8;padding:6px 10px;font-size:11px;color:#e1d8b9;pointer-events:none;letter-spacing:1px}
+.map-effect{position:relative;left:auto!important;top:auto!important;display:inline-block;z-index:4;border:1px solid #e5d4a8;box-shadow:0 2px 10px #10101066;background:#322f29ee;color:#f0dfc3;border-radius:14px;padding:4px 8px;font-size:10px;pointer-events:none;transform:none;max-width:118px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.story p strong{color:#f4dfb0}.side .goal{margin:12px 0;padding:10px;background:#282721;border:1px solid #474438;border-radius:12px;font-size:12px;line-height:1.75;color:#ded2b3}.goal b{color:#f0d7a7}
+.story button:disabled{opacity:.5;cursor:not-allowed}.story .choices{gap:8px}.story .choices button{white-space:normal;text-align:left;line-height:1.5}
+.word.odd{border-color:#986c5c;background:#3e2c2b}.word .odd-tag{display:inline-block;font-size:10px;color:#ead6c4;background:#87564b;border-radius:5px;padding:2px 5px;margin-right:5px}.word small{font-size:11px;color:#c2b69d;display:block;margin-top:4px}.word:disabled{opacity:.5;cursor:not-allowed}
+.choice-help{margin:8px 0 11px;font-size:12px;color:#cfc4ae;line-height:1.6}.sentence-card{padding:16px;border:1px solid #766b4d;background:#2c2920;border-radius:12px;margin:10px 0 16px;font-size:17px;line-height:1.8}
+.sentences{padding:8px 0}.sentence-log{margin:0 0 9px;padding:6px 0;border-top:1px dashed #4a4638;font-size:11px;line-height:1.5;color:#c4bba8}.sentence-log b{color:#e1d3b2}.unlock{border:1px solid #779977;border-radius:8px;background:#25352a;color:#d8e7d8;padding:9px;margin-top:10px;font-size:12px}
+.small-pill{display:inline-block;border:1px solid #766c4b;color:#d9cdad;font-size:11px;border-radius:14px;padding:3px 8px;margin:0 5px 7px 0}
+.visual.white-tokyo{background:#fafafa}.visual.white-tokyo>*{display:none!important}.visual.white-tokyo:before{content:"东京 / TOKYO";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#dddddd;letter-spacing:5px;font-size:14px;white-space:nowrap}.visual.white-tokyo:after{content:"没有谁能描述的地方";position:absolute;left:50%;top:66%;transform:translateX(-50%);color:#e5e5e5;font-size:11px;white-space:nowrap}
+.visual.return-town{background:linear-gradient(145deg,#655f52,#2d2c28)}.visual.return-town:after{content:"你们的话，比你们先回来了。";position:absolute;bottom:20px;right:20px;color:#e1ccab;font-size:14px}
+@media(max-width:800px){.visual{height:340px}.zone{font-size:12px!important}.map-hud{font-size:10px}.story{min-height:220px}.scene,.side{border-radius:12px}.cardpick{grid-template-columns:repeat(2,minmax(0,1fr))}.word{font-size:13px;min-height:62px}}
+@media(max-width:480px){.visual{height:300px}.zone{font-size:11px!important;width:78px!important;height:55px!important}.zone small{font-size:8px}.story{padding:14px}.side{padding:14px}.map-hud{max-width:80%;white-space:normal}}
+
+/* -------- V5 / Kotonoha atlas: minimalist Japanese notebook -------- */
+:root{--night:#141817;--panel:#202421;--paper:#e9dfc8;--ink:#332e27;--linen:#c9b99b;--muted:#a9a99f;--accent:#8f9d87}
+html{background:var(--night)}body{background:radial-gradient(ellipse at 38% -35%,#333b35 0,#171b19 47%,#111412 100%);color:#f0eee5;min-height:100vh;font-family:-apple-system,BlinkMacSystemFont,"Noto Sans SC","PingFang SC","Hiragino Sans",sans-serif}
+#app{max-width:1460px;padding:30px 36px 60px}.top{padding:2px 7px 18px;margin-bottom:18px;border-bottom:1px solid #53605655}.brand{font:24px/1.2 Georgia,"Noto Serif SC",serif;letter-spacing:.18em;color:#eee7d7}.brand-sub{font-size:12px;letter-spacing:.22em;color:#adaf9f;margin-left:9px}.phase{font-size:11px;letter-spacing:.18em;color:#9da69b}.top .ghost{background:transparent;border:1px solid #5a6258;color:#cdcdbd;font-weight:400;letter-spacing:.07em;border-radius:3px}
+.game{grid-template-columns:minmax(0,1.55fr) minmax(315px,.82fr);gap:24px;align-items:start}
+.scene,.side{background:transparent;border:0;border-radius:0;overflow:visible}
+.scene{min-width:0}.folio{position:relative;padding:29px 22px 17px;background:linear-gradient(90deg,#38352d 0,#564f40 1%,#4a443a 2.1%,#746853 2.5%,#5c5141 3%,#474239 97%,#776a55 97.5%,#50483a 99%,#302d28);border:2px solid #746958;border-radius:5px;box-shadow:0 18px 30px #0008,0 0 0 5px #161b18,0 0 0 6px #464a42}
+.folio:before,.folio:after{content:"";position:absolute;top:20px;bottom:15px;width:13px;background:repeating-linear-gradient(90deg,#d9c7a7 0px,#d9c7a7 2px,#a99473 3px,#ebd8b5 4px);opacity:.85;pointer-events:none}.folio:before{left:7px}.folio:after{right:7px}
+.folio-cap,.folio-foot{position:relative;z-index:5;display:flex;justify-content:space-between;align-items:center;color:#eadbc3;letter-spacing:.2em;padding:0 20px;font-size:10px}.folio-cap{margin-bottom:14px}.folio-foot{margin-top:12px;opacity:.8}
+.visual{height:496px;min-height:300px;border:9px solid #e0d1b3;outline:1px solid #5b4d3d;border-radius:1px;box-shadow:inset 0 0 0 1px #958668;background:#d7c8ac;overflow:hidden}
+.visual:before{pointer-events:none}.visual .sky{background:linear-gradient(#b4bcb4 5%,#d9cfb7 100%)}.visual .grass{background:repeating-linear-gradient(83deg,#afb296 0 2px,#b6b69a 3px 11px)}
+.visual .track{border-color:#5e5b4e}.visual .train{background:#ded8c8;border-color:#555249;box-shadow:inset 0 0 0 4px #ece6d7}.visual .window{background:#72847e;border-color:#54554e}.visual .station{background:#e3d5b9;border-color:#655a4b}
+.npc{z-index:6}.npc.show{filter:drop-shadow(0 0 3px #e2d2a2)}
+.atlas-tabs{position:absolute;z-index:10;top:113px;display:flex;flex-direction:column;gap:18px}.atlas-left{left:-30px}.atlas-right{right:-30px}.atlas-tabs button{font-family:Georgia,serif;border-radius:3px;background:linear-gradient(135deg,#4b4b40,#292c29);border:1px solid #8c8069;box-shadow:0 5px 9px #07090788;color:#e9e0c9;min-width:33px;width:37px;height:44px;padding:0;font-size:19px;display:grid;place-items:center;transition:transform .15s,background .15s}.atlas-tabs button:hover{background:#6a6959;transform:translateX(-2px)}.atlas-right button:hover{transform:translateX(2px)}
+.map,.map:before,.map:after{background:none!important;content:none!important;border:0!important;box-shadow:none!important}.map{position:absolute;inset:0;background:#e9dfc8!important;overflow:hidden}.map.show{display:block}.map .town-art{position:absolute;inset:0;width:100%;height:100%;display:block;filter:contrast(.99)}
+.paper-title{position:absolute;z-index:2;top:19px;left:37%;width:25%;text-align:center;pointer-events:none;color:#564e40}.paper-title span{display:block;font:17px/1.3 Georgia,"Noto Serif SC",serif;letter-spacing:.18em}.paper-title small{display:block;font:8px/1.5 Georgia,serif;letter-spacing:.18em;color:#897c66}
+.map-hud{left:24px;top:auto;bottom:18px;background:#eee6d6d9;border:1px solid #a99b82;padding:6px 12px;color:#685d4a;font-family:Georgia,"Noto Serif SC",serif;border-radius:1px;letter-spacing:.06em;font-size:10px;white-space:nowrap}
+.zone,.zone.lock,.zone.current,.zone.visited,.zone.new,.zone.altered{appearance:none;position:absolute;z-index:4;width:auto!important;min-width:68px;max-width:95px;height:auto!important;min-height:29px;padding:5px 11px!important;background:#efe8d8!important;color:#3d362c!important;border:1px solid #80735f!important;border-radius:3px!important;box-shadow:0 2px 0 #b6a78b77,0 3px 11px #53463524;filter:none!important;font-size:12px!important;letter-spacing:.04em;font-weight:600;font-family:"Noto Serif SC","Hiragino Mincho ProN",serif;transform:translate(-50%,-50%);display:flex;justify-content:center;align-items:center;white-space:nowrap;transition:box-shadow .2s,transform .2s}
+.zone:hover:not(:disabled){transform:translate(-50%,-54%);background:#fcf6e9!important;box-shadow:0 4px 0 #b6a78b77,0 5px 15px #56493733}.zone.current{background:#4b6256!important;color:#fffbed!important;border-color:#263d31!important;box-shadow:0 0 0 3px #4c65563b}.zone.visited:not(.current){border-bottom:3px double #6b7762!important}.zone small{font-size:9px!important;margin:1px 0 0;line-height:1.3;color:inherit;opacity:.7}.zone.lock{display:none!important}.zone:focus-visible{outline:3px solid #ae8768;outline-offset:4px}.zone.new{animation:none}
+#mapEffects{position:absolute;inset:0;display:block;z-index:3;pointer-events:none;max-width:none!important}
+.map-effect{position:absolute!important;display:flex;align-items:center;justify-content:center;width:21px;height:21px;padding:0;border:0;border-radius:0;background:none!important;box-shadow:none;color:#795847;font:17px Georgia,serif;transform:translate(-50%,-50%)!important;text-shadow:0 1px #f3e6ce;white-space:nowrap}.map-effect:after{content:"";position:absolute;inset:0;border-bottom:1px solid #9e806d;transform:rotate(-18deg);opacity:.6}
+/* Small rail drawing only after the midnight platform is made */
+.map.has-station .town-art:after{content:none}.map.has-station .town-art{filter:contrast(1.05)}
+.story{margin-top:19px;padding:24px 28px 27px;border-top:1px solid #555b50;border-bottom:1px solid #555b50;background:linear-gradient(125deg,#252b26ee,#20252099);min-height:230px}.scene-index{color:#b0ac94;letter-spacing:.21em;font-size:10px;margin-bottom:12px;font-family:Georgia,serif}.story h2{font:normal 21px/1.5 "Noto Serif SC","Hiragino Mincho ProN",serif;color:#f3eee0;letter-spacing:.04em;margin-bottom:16px}.story p{font-size:14px;line-height:2.05;color:#e2dfd4!important;margin-bottom:19px}.story p b,.story p strong{color:#f7e9cf!important;font-weight:600}
+.choices{gap:9px}.choices button,button:not(.zone):not(.word):not(.ghost):not(.atlas-tabs button){transition:background .2s,border-color .2s}.choices button{background:#dad0b8;color:#292c27;border:1px solid #bdb39b;border-radius:3px;padding:11px 15px;font-size:13px;font-weight:500;letter-spacing:.025em}.choices button:hover{background:#f7e9d1}.choices .ghost{background:transparent;color:#d0cbbd;border:1px solid #6f7467}.choices .ghost:hover{background:#343e35}.choices button:focus-visible{outline:3px solid #9aab97;outline-offset:2px}
+.side{padding:20px 21px 25px;background:linear-gradient(#272c26,#20251f);border:1px solid #51584b;box-shadow:0 14px 25px #0005;min-width:0}.sidebar-heading{display:flex;justify-content:space-between;align-items:center;padding:0 0 16px;margin:0 0 12px!important;border-bottom:1px solid #56594c;color:#eee4d0;letter-spacing:.15em;font:17px Georgia,"Noto Serif SC",serif!important}.sidebar-heading span{font:9px Georgia,serif;letter-spacing:.13em;color:#9c9f90}
+.log{max-height:95px;font:11px/1.8 "Noto Sans SC",sans-serif;color:#bcbcac;overflow:auto;mask-image:linear-gradient(#000 70%,transparent);border:none;padding-bottom:7px}
+.rumor{border:1px solid #52564b;background:#262d26;padding:17px 16px;border-radius:2px;margin-top:12px;min-height:72px;font:13px/1.9 "Noto Serif SC",serif;color:#dedccf}.rumor b{font-size:12px;font-weight:500;color:#b9bea8;letter-spacing:.08em}#rumorText{color:#efe6d4!important;font-size:13px;line-height:1.85;overflow-wrap:anywhere}
+.side .goal{border:0;border-left:2px solid #8e9c84;background:transparent;border-radius:0;color:#d5d4c5;padding:4px 12px;font:12px/2 "Noto Sans SC",sans-serif}.goal b{color:#f4e9d2}.progress{margin:20px 0 0}.p{height:2px;border-radius:0;background:#4c5047}.p.on{background:#b5bea8}
+#wordArea{color:#e8e4d8}#wordArea h3{font:15px "Noto Serif SC",serif;color:#e9dfca;letter-spacing:.06em}.choice-help{color:#c6c7b8!important;line-height:1.85;font-size:12px}
+.cardpick{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.word,.word.odd{background:#e5ddcb!important;color:#38352d!important;border:1px solid #b1a58e!important;border-radius:2px;padding:12px 12px;min-height:52px;text-align:left;font:13px/1.6 "Noto Serif SC",serif;letter-spacing:.02em;box-shadow:inset 0 0 0 1px #f5efdf;overflow-wrap:anywhere}.word:hover,.word.odd:hover{background:#f6ebd3!important}.word.sel,.word.odd.sel{background:#c2d0bb!important;border-color:#607564!important;color:#243428!important;outline:2px solid #869a7b;outline-offset:1px}.word .odd-tag{display:none!important}
+#wordArea>button,.side button:not(.word){background:#d8cfba;border:1px solid #bfb096;color:#302e27!important;border-radius:3px;padding:10px 14px;margin-top:10px;cursor:pointer;line-height:1.4;font-size:13px;font-weight:500}#wordArea>button:hover{background:#efe4cf}#wordArea>button:disabled{opacity:.5;cursor:default}
+.sentence-card{background:#2d372e;color:#f4e9d2!important;border:1px solid #6b7a64;border-radius:2px;font:17px/1.9 "Noto Serif SC",serif;padding:18px;overflow-wrap:anywhere}.sentence-log{color:#cac5b5}.sentence-log b{color:#e3d2b8}.small-pill{border:1px solid #77796e;color:#e0dfce;font-size:10px;border-radius:2px;padding:4px 8px}
+.visual.white-tokyo{background:#fffefa!important;border:9px solid #fffefa!important;box-shadow:inset 0 0 0 1px #f4f1ed}.visual.white-tokyo>*{display:none!important}.visual.white-tokyo:before{content:""!important}.visual.white-tokyo:after{content:""!important}.visual.return-town{background:#d9ceb7!important}.visual.return-town:after{content:none!important}
+.book-overlay[hidden]{display:none!important}.book-overlay{position:fixed;inset:0;z-index:50;background:#070b09cc;display:flex;align-items:center;justify-content:center;padding:20px}.book-sheet{position:relative;width:min(690px,100%);max-height:min(86vh,800px);overflow:auto;background:linear-gradient(95deg,#e3d6b9,#f0e5d0 48%,#e6dac4);border:10px solid #5e5343;outline:2px solid #aa987a;box-shadow:0 24px 80px #000b;padding:30px;color:#342f28;font:14px/2 "Noto Serif SC",serif}.sheet-head{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #9c8c73;padding-bottom:9px;margin-bottom:17px;font-size:20px;letter-spacing:.12em}.sheet-head button{background:transparent;color:#514434;border:1px solid #aa977a;border-radius:1px;padding:0;width:30px;height:30px;font-size:22px}.note-entry{padding:14px 4px;border-bottom:1px solid #bdb097}.note-entry small{display:block;font-size:11px;color:#867760}.note-entry strong{font-weight:500}.sheet-help{line-height:2.1}
+@media(max-width:1060px){#app{padding:20px 20px 40px}.game{gap:16px;grid-template-columns:minmax(0,1.3fr) minmax(275px,.85fr)}.folio{padding-left:16px;padding-right:16px}.visual{height:400px}.atlas-left{left:-17px}.atlas-right{right:-17px}}
+@media(max-width:800px){#app{padding:18px 16px 55px}.top{gap:12px}.brand{font-size:20px}.brand-sub{font-size:10px}.game{grid-template-columns:1fr;gap:22px}.side{order:0}.folio{padding:21px 11px 12px}.atlas-tabs{top:85px;gap:11px}.atlas-left{left:-11px}.atlas-right{right:-11px}.atlas-tabs button{width:29px;min-width:29px;height:36px;font-size:17px}.visual{height:auto;aspect-ratio:1.55;min-height:290px;border-width:6px}.folio-cap,.folio-foot{padding:0 11px;font-size:8px}.story{margin-top:14px;padding:22px 20px}.zone{font-size:10px!important;min-width:53px;min-height:24px;padding:3px 6px!important}.paper-title span{font-size:13px}.paper-title small{font-size:6px}.map-hud{left:12px;bottom:11px;font-size:8px}.side{padding:20px}}
+@media(max-width:500px){#app{padding:13px 10px 40px}.top{padding:4px 6px 14px}.brand{letter-spacing:.08em;font-size:18px}.brand-sub{font-size:9px}.phase{font-size:9px}.top .ghost{font-size:11px;padding:8px 10px}.folio-cap{letter-spacing:.07em}.folio{padding:19px 11px 12px}.visual{aspect-ratio:1.4;min-height:250px}.paper-title{left:35%;width:30%}.paper-title span{font-size:11px}.zone{font-size:9px!important;min-width:40px;min-height:21px;padding:2px 5px!important}.map-hud{font-size:8px}.map-effect{font-size:12px}.story{min-height:0}.story p{font-size:13px}.side{padding:17px 15px}.book-sheet{padding:17px;border-width:7px}.cardpick{gap:6px}.word,.word.odd{font-size:12px;min-height:48px;padding:10px}.visual .train{transform:scale(.75);transform-origin:left bottom;left:20px}.visual .station{right:20px;transform:scale(.83);transform-origin:right bottom}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* calm opening scenery, no flat blocky debug shapes */
+.prologue-art{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+.visual>.sky,.visual>.grass{display:none}.visual .track{bottom:50px;opacity:.82}.visual .train{bottom:120px;background:linear-gradient(to bottom,#e3dfd1 0 60%,#b4b6aa 61% 71%,#ddd4c0 72%);height:115px;border:3px solid #5c5d55;border-radius:18px 19px 6px 6px;box-shadow:0 13px 10px #2b352b44}
+.visual .train:before{content:"";position:absolute;left:10px;right:9px;bottom:14px;height:6px;background:#9f9e89;border-top:2px solid #5b5d51}
+.visual .train:after{content:"";position:absolute;right:39px;top:4px;width:50px;height:103px;border:2px solid #777567;border-radius:4px;opacity:.8}
+.visual .window{margin:15px 6px;width:62px;height:45px;border:3px solid #666961;background:linear-gradient(135deg,#a2b7ab,#788a88);box-shadow:inset 2px 2px 0 #d1ddd4}
+.visual .station{width:104px;height:58px;right:67px;bottom:169px;background:#e7dfc9;border:3px solid #6b6356;border-radius:1px;box-shadow:3px 4px 1px #5d594b33}
+.visual .station:before{content:"言葉町";left:6px;top:11px;font-size:15px;letter-spacing:.06em;font-family:"Noto Serif SC",serif;color:#4e4940}
+.visual .station:after{content:"";position:absolute;left:45px;top:57px;width:8px;height:82px;background:#615c51}
+/* undiscovered areas are soft erased ink washes, not clickable placemarks */
+.fog-patch{position:absolute;z-index:2;transform:translate(-50%,-50%);width:28%;height:36%;border-radius:45%;background:radial-gradient(ellipse at center,#e9dfc8 3%,#e9dfc8e8 38%,#e9dfc899 56%,transparent 79%);opacity:.86;pointer-events:none;transition:opacity .8s ease-out}
+#map .zone{z-index:5}#mapEffects{z-index:4}.paper-title{z-index:6}.map-hud{z-index:7}
+@media(max-width:500px){.visual .train{left:15px;bottom:85px;width:340px;height:104px;transform:scale(.83);transform-origin:left bottom}.visual .train:after{height:94px}.visual .window{margin:14px 5px;width:48px;height:37px}.visual .station{right:25px;bottom:117px;transform:scale(.72);transform-origin:right bottom}.visual .station:after{height:72px}.fog-patch{width:35%;height:39%}}
+
+/* V5 finished: clear map title / non-intrusive handwritten changes */
+#mapInkChanges{position:absolute;inset:0;pointer-events:none;z-index:4;overflow:hidden}
+.ink-mutation{position:absolute;transform:translate(-50%,-50%);width:54px;height:54px;pointer-events:none;opacity:.94;filter:drop-shadow(1px 2px 1px #cdbda4)}
+.ink-mutation svg{display:block;width:100%;height:100%;overflow:visible}
+#mapEffects .map-effect{display:none!important}
+@media(max-width:500px){#shrineZone{top:27%!important;left:54%!important}.paper-title{top:11px!important;left:34%!important;width:33%!important}.ink-mutation{width:35px;height:35px}.sidebar-heading{font-size:15px!important}}
+@media(min-width:501px) and (max-width:800px){#shrineZone{top:23%!important;left:54%!important}}
+</style></head>
+<body><div id="app">
+<div class="top"><div><div class="brand">未読 <span class="brand-sub">MIDOKU</span></div><div class="phase">ACT 01　·　言葉町</div></div><button class="ghost" onclick="location.reload()">重新开始</button></div>
+<div class="game"><div class="scene"><div class="folio" id="folio"><div class="folio-cap"><span>言葉町・探索手帳</span><span>第 一 章　|　PROLOGUE</span></div>
+<div class="atlas-tabs atlas-left"><button type="button" title="打开地图" aria-label="打开地图" onclick="UI.map()">⌖</button><button type="button" title="查看手记" aria-label="查看手记" onclick="UI.journal()">▤</button></div>
+<div class="atlas-tabs atlas-right"><button type="button" title="如何游玩" aria-label="如何游玩" onclick="UI.help()">?</button><button type="button" title="音效切换" aria-label="音效切换" onclick="UI.sound()" id="soundSwitch">♪</button></div>
+<div class="visual" id="visual">
+<div class="sky"></div><div class="grass"></div><svg class="prologue-art" viewBox="0 0 960 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+<defs><linearGradient id="lateSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#929f99"/><stop offset=".54" stop-color="#d1c9b4"/><stop offset="1" stop-color="#c5c0a5"/></linearGradient><pattern id="reeds" width="21" height="13" patternUnits="userSpaceOnUse"><path d="M0 13l4 -7m5 7 2 -5m5 5 3 -4" fill="none" stroke="#929780" stroke-width=".8"/></pattern></defs>
+<rect width="960" height="560" fill="url(#lateSky)"/>
+<circle cx="720" cy="145" r="51" fill="#ede0be" opacity=".7"/>
+<path d="M-10 292Q75 244 142 265Q214 228 279 262Q365 216 456 266Q526 226 610 261Q707 222 796 254Q873 239 970 265V500H-10Z" fill="#aab4a2" stroke="#7b897c" stroke-width="2"/>
+<path d="M-10 307Q165 276 262 300T485 288T740 299T970 283" fill="none" stroke="#637968" stroke-width="1.6" opacity=".6"/>
+<path d="M0 350Q210 317 394 333Q630 310 960 331V560H0Z" fill="#c6c8af"/>
+<rect y="335" width="960" height="225" fill="url(#reeds)" opacity=".8"/>
+<g fill="#b6b49c" stroke="#746f5e" stroke-width="2"><path d="M32 306v-42l27-18 33 18v42Z"/><path d="M23 264l38-27 41 27" fill="none"/><path d="M113 307v-24l27-20 38 20v24Z"/><path d="M112 283l31-29 42 29" fill="none"/><path d="M835 301v-28l33-21 39 21v28Z"/><path d="M830 273l40-27 42 27" fill="none"/></g>
+<g stroke="#605a50" stroke-width="2" opacity=".7"><path d="M30 305h160M825 302h100M62 262v45M142 282v25"/><path d="M770 80v280M758 112h55M783 110l-26 34M782 112l23 31M768 123Q645 115 504 143" fill="none"/></g>
+<g stroke="#7b866f" fill="none" stroke-width="2" opacity=".8"><path d="M10 516q14-65 25-88m-24 88q-11-48-17-73m17 73q23-46 28-54M925 532q8-68 20-95m-20 95q-17-55-34-83m34 83q24-45 31-57"/></g>
+<rect x="0" y="0" width="960" height="560" fill="none" stroke="#91836b" stroke-width="1.2"/>
+</svg><div class="track" id="track"></div>
+<div class="train" id="train"><span class="window"></span><span class="window"></span><span class="window"></span><span class="window"></span></div>
+<div class="station" id="station"></div>
+<div class="npc" id="npc" onclick="npcClick()"><div class="head"></div><div class="body"></div></div>
+<div class="map" id="map" aria-label="言叶町手绘地图">
+<div class="paper-title"><span>言葉町案内図</span><small>KOTONOHA · 町の地図</small></div>
+<svg class="town-art" viewBox="0 0 960 560" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+<defs>
+  <pattern id="paperGrain" width="29" height="29" patternUnits="userSpaceOnUse"><path d="M5 9h1 M19 22h2 M25 6h1" stroke="#9d8d70" stroke-width=".7" opacity=".34"/></pattern>
+  <pattern id="waterline" patternUnits="userSpaceOnUse" width="20" height="17"><path d="M-3 7q7-7 14 0t15 0 M-5 15q6-6 12 0" stroke="#8f9b91" stroke-width="1" fill="none" opacity=".65"/></pattern>
+  <pattern id="hatch" patternUnits="userSpaceOnUse" width="7" height="7"><path d="M0 7L7 0" stroke="#776e5c" stroke-width=".6" opacity=".45"/></pattern>
+</defs>
+<rect width="960" height="560" fill="#e9dfc8"/>
+<rect width="960" height="560" fill="url(#paperGrain)"/>
+<path d="M7 7H953V553H7Z M19 19H941V541H19Z" fill="none" stroke="#655846" stroke-width="2"/>
+<path d="M26 26H934V534H26Z" fill="none" stroke="#968769" stroke-width=".8" stroke-dasharray="4 4"/>
+<!-- forest contour and distant mountain ridges -->
+<path d="M730 17Q746 42 765 31T814 30Q847 16 876 35T942 32V276Q885 256 861 290T782 274Q737 259 719 210T685 125Z" fill="#c7d2bd" opacity=".6"/>
+<path d="M705 20Q727 59 748 55Q787 49 803 71Q845 33 888 73Q923 66 953 89" fill="none" stroke="#6f796b" stroke-width="1.5"/>
+<path d="M698 52Q746 86 771 81Q814 75 844 102Q885 77 947 120" fill="none" stroke="#6f796b" stroke-width="1.2"/>
+<path d="M712 105Q748 125 773 115Q815 108 839 141Q899 121 954 155" fill="none" stroke="#6f796b" stroke-width="1.2"/>
+<!-- paddies and hill topography -->
+<path d="M43 34Q125 21 219 40T355 51L330 151Q277 177 212 154L143 204L48 166Z" fill="#d6d3bd" stroke="#a89f87" stroke-width="1"/>
+<path d="M51 56Q146 39 227 68T337 77 M55 79Q150 56 229 89T338 100 M63 104Q146 82 230 113T331 128 M60 139Q145 117 238 141T313 151" fill="none" stroke="#aea58b" stroke-width="1"/>
+<!-- river -->
+<path d="M33 -15C58 35 94 58 81 117S41 202 68 258S141 316 105 392S56 476 87 575" stroke="#a7b6ae" fill="none" stroke-width="77" opacity=".76"/>
+<path d="M33 -15C58 35 94 58 81 117S41 202 68 258S141 316 105 392S56 476 87 575" stroke="#e6e6d9" fill="none" stroke-width="55"/>
+<path d="M33 -15C58 35 94 58 81 117S41 202 68 258S141 316 105 392S56 476 87 575" stroke="#a3b0a5" fill="none" stroke-width="45"/>
+<path d="M33 -15C58 35 94 58 81 117S41 202 68 258S141 316 105 392S56 476 87 575" stroke="url(#waterline)" fill="none" stroke-width="40"/>
+<!-- roads: quiet town paths, connected -->
+<g fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path d="M146 168Q206 205 326 251T488 322Q600 307 703 206T883 105" stroke="#ab9f87" stroke-width="27"/>
+  <path d="M146 168Q206 205 326 251T488 322Q600 307 703 206T883 105" stroke="#f1eadb" stroke-width="21"/>
+  <path d="M484 322Q565 379 669 432T815 503" stroke="#ab9f87" stroke-width="24"/>
+  <path d="M484 322Q565 379 669 432T815 503" stroke="#f1eadb" stroke-width="18"/>
+  <path d="M332 253Q362 180 457 113T552 46" stroke="#ad9f87" stroke-width="20"/>
+  <path d="M332 253Q362 180 457 113T552 46" stroke="#f1eadb" stroke-width="14"/>
+  <path d="M483 320Q325 372 197 429T81 493" stroke="#ad9f87" stroke-width="21"/>
+  <path d="M483 320Q325 372 197 429T81 493" stroke="#f1eadb" stroke-width="15"/>
+  <path d="M686 216Q672 268 683 331T673 426" stroke="#ad9f87" stroke-width="16"/>
+  <path d="M686 216Q672 268 683 331T673 426" stroke="#f1eadb" stroke-width="12"/>
+</g>
+<!-- little footbridge -->
+<g transform="translate(105 395) rotate(18)" stroke="#756650"><rect x="-37" y="-10" width="74" height="20" fill="#c3ab88" stroke-width="1.5"/>
+<path d="M-32 -17V17M-20 -17V17M-8 -17V17M4 -17V17M16 -17V17M28 -17V17" stroke-width="1"/></g>
+<g transform="translate(179 154) scale(0.9)" stroke="#554a3b" stroke-linejoin="round">
+        <path d="M-56 -17L-28 -38L34 -38L62 -17Z" fill="#8b8173" stroke-width="2"/><rect x="-51" y="-17" width="105" height="54" fill="#d7c6a7" stroke-width="2"/><path d="M-48 10H51M-48 25H51" fill="none" stroke="#8b816e"/>
+        <g fill="#f3ede0"><rect x="-39" y="-5" width="13" height="13" stroke-width="1"/><rect x="-15" y="-5" width="13" height="13" stroke-width="1"/><rect x="9" y="-5" width="13" height="13" stroke-width="1"/><rect x="33" y="-5" width="13" height="13" stroke-width="1"/></g>
+        <rect x="-9" y="12" width="17" height="25" fill="#9e9180"/></g><g transform="translate(496 99) scale(0.72)" stroke="#51463a" stroke-width="1.7" fill="none">
+        <path d="M-32 -8L0 -28L32 -8Z" fill="#706b60"/><rect x="-26" y="-8" width="52" height="34" fill="#e5d5b6"/><path d="M-8 26V3H8V26"/>
+        <path d="M42 -21V30M66 -21V30M35 -18H73M37 -29H71" stroke="#98665a" stroke-width="5"/></g><g transform="translate(698 178) scale(0.66)" stroke="#625647" stroke-width="1.6"><path d="M-25 -9L0 -23L26 -9Z" fill="#8e806f"/><rect x="-21" y="-9" width="43" height="31" fill="#d7c5a6"/><path d="M-25 1H25L22 10H-21Z" fill="#b18f7e"/><path d="M-13 1V9M0 1V9M13 1V9"/></g><g transform="translate(753 202) scale(0.61)" stroke="#625647" stroke-width="1.6"><path d="M-25 -9L0 -23L26 -9Z" fill="#8e806f"/><rect x="-21" y="-9" width="43" height="31" fill="#d7c5a6"/><path d="M-25 1H25L22 10H-21Z" fill="#b18f7e"/><path d="M-13 1V9M0 1V9M13 1V9"/></g><g transform="translate(800 178) scale(0.58)" stroke="#625647" stroke-width="1.6"><path d="M-25 -9L0 -23L26 -9Z" fill="#8e806f"/><rect x="-21" y="-9" width="43" height="31" fill="#d7c5a6"/><path d="M-25 1H25L22 10H-21Z" fill="#b18f7e"/><path d="M-13 1V9M0 1V9M13 1V9"/></g><g transform="translate(743 262) scale(0.62)" stroke="#625647" stroke-width="1.6"><path d="M-25 -9L0 -23L26 -9Z" fill="#8e806f"/><rect x="-21" y="-9" width="43" height="31" fill="#d7c5a6"/><path d="M-25 1H25L22 10H-21Z" fill="#b18f7e"/><path d="M-13 1V9M0 1V9M13 1V9"/></g><g transform="translate(794 270) scale(0.58)" stroke="#625647" stroke-width="1.6"><path d="M-25 -9L0 -23L26 -9Z" fill="#8e806f"/><rect x="-21" y="-9" width="43" height="31" fill="#d7c5a6"/><path d="M-25 1H25L22 10H-21Z" fill="#b18f7e"/><path d="M-13 1V9M0 1V9M13 1V9"/></g><g transform="translate(675 267) scale(0.6)" stroke="#625647" stroke-width="1.6"><path d="M-25 -9L0 -23L26 -9Z" fill="#8e806f"/><rect x="-21" y="-9" width="43" height="31" fill="#d7c5a6"/><path d="M-25 1H25L22 10H-21Z" fill="#b18f7e"/><path d="M-13 1V9M0 1V9M13 1V9"/></g><g transform="translate(736 408) rotate(0) scale(0.8)" stroke="#665b48" stroke-width="1.35" stroke-linejoin="round"><path d="M-26 -8L-5 -22L19 -21L31 -8Z" fill="#8c8070"/><rect x="-23" y="-8" width="51" height="32" fill="#dbcaad"/><rect x="-5" y="4" width="12" height="20" fill="#a99a83"/><rect x="-18" y="0" width="9" height="9" fill="#f8f2e7"/><rect x="12" y="0" width="9" height="9" fill="#f8f2e7"/></g><g transform="translate(818 438) rotate(-7) scale(0.67)" stroke="#665b48" stroke-width="1.35" stroke-linejoin="round"><path d="M-26 -8L-5 -22L19 -21L31 -8Z" fill="#8c8070"/><rect x="-23" y="-8" width="51" height="32" fill="#dbcaad"/><rect x="-5" y="4" width="12" height="20" fill="#a99a83"/><rect x="-18" y="0" width="9" height="9" fill="#f8f2e7"/><rect x="12" y="0" width="9" height="9" fill="#f8f2e7"/></g><g transform="translate(694 469) rotate(4) scale(0.73)" stroke="#665b48" stroke-width="1.35" stroke-linejoin="round"><path d="M-26 -8L-5 -22L19 -21L31 -8Z" fill="#8c8070"/><rect x="-23" y="-8" width="51" height="32" fill="#dbcaad"/><rect x="-5" y="4" width="12" height="20" fill="#a99a83"/><rect x="-18" y="0" width="9" height="9" fill="#f8f2e7"/><rect x="12" y="0" width="9" height="9" fill="#f8f2e7"/></g><g transform="translate(839 498) rotate(6) scale(0.66)" stroke="#665b48" stroke-width="1.35" stroke-linejoin="round"><path d="M-26 -8L-5 -22L19 -21L31 -8Z" fill="#8c8070"/><rect x="-23" y="-8" width="51" height="32" fill="#dbcaad"/><rect x="-5" y="4" width="12" height="20" fill="#a99a83"/><rect x="-18" y="0" width="9" height="9" fill="#f8f2e7"/><rect x="12" y="0" width="9" height="9" fill="#f8f2e7"/></g><g transform="translate(619 454) rotate(0) scale(0.6)" stroke="#665b48" stroke-width="1.35" stroke-linejoin="round"><path d="M-26 -8L-5 -22L19 -21L31 -8Z" fill="#8c8070"/><rect x="-23" y="-8" width="51" height="32" fill="#dbcaad"/><rect x="-5" y="4" width="12" height="20" fill="#a99a83"/><rect x="-18" y="0" width="9" height="9" fill="#f8f2e7"/><rect x="12" y="0" width="9" height="9" fill="#f8f2e7"/></g><g transform="translate(793 369) rotate(-7) scale(0.69)" stroke="#665b48" stroke-width="1.35" stroke-linejoin="round"><path d="M-26 -8L-5 -22L19 -21L31 -8Z" fill="#8c8070"/><rect x="-23" y="-8" width="51" height="32" fill="#dbcaad"/><rect x="-5" y="4" width="12" height="20" fill="#a99a83"/><rect x="-18" y="0" width="9" height="9" fill="#f8f2e7"/><rect x="12" y="0" width="9" height="9" fill="#f8f2e7"/></g><g stroke="#a5997d" stroke-width="1"><rect x="252" y="78" width="75" height="43" rx="3" fill="#dcdcc8"/><path d="M256 85 h67"/><path d="M256 93 h67"/><path d="M256 101 h67"/><path d="M256 109 h67"/></g><g stroke="#a5997d" stroke-width="1"><rect x="305" y="118" width="64" height="36" rx="3" fill="#dcdcc8"/><path d="M309 125 h56"/><path d="M309 133 h56"/><path d="M309 141 h56"/></g><g stroke="#a5997d" stroke-width="1"><rect x="261" y="475" width="81" height="35" rx="3" fill="#dcdcc8"/><path d="M265 482 h73"/><path d="M265 490 h73"/><path d="M265 498 h73"/></g><g stroke="#a5997d" stroke-width="1"><rect x="363" y="450" width="77" height="43" rx="3" fill="#dcdcc8"/><path d="M367 457 h69"/><path d="M367 465 h69"/><path d="M367 473 h69"/><path d="M367 481 h69"/></g><g stroke="#a5997d" stroke-width="1"><rect x="545" y="481" width="74" height="38" rx="3" fill="#dcdcc8"/><path d="M549 488 h66"/><path d="M549 496 h66"/><path d="M549 504 h66"/></g><g stroke="#a5997d" stroke-width="1"><rect x="542" y="182" width="80" height="34" rx="3" fill="#dcdcc8"/><path d="M546 189 h72"/><path d="M546 197 h72"/><path d="M546 205 h72"/></g><g stroke="#8c967b" fill="none" stroke-width="1.2" opacity=".9"><path d="M426 302l-9 -15m9 15 7 -18m-7 18 -16 -6M457 335l-7 -17m7 17 12 -22m-12 22 14 -5M390 332l-10 -18m10 18 6 -16"/><path d="M425 360q20-10 39-3M407 350q-20-9-37-2" stroke="#a99f86"/></g><g transform="translate(876 301)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(863 312)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(721 72)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(875 64)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(789 307)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(896 84)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(894 282)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(753 278)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(926 75)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(905 315)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(742 258)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(800 296)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(913 177)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(741 218)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(869 208)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(817 131)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(791 219)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(926 95)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(777 197)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(907 182)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(808 323)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(807 308)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(859 124)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(852 134)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(814 88)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(800 126)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(714 131)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(817 48)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(880 54)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(912 157)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(735 75)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(826 128)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(908 232)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(913 180)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(883 278)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(894 113)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(882 196)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(747 231)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(741 64)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(744 230)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(643 100)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(301 479)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(59 524)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(572 102)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(367 90)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(648 442)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(42 520)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(594 517)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(617 53)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(584 472)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(64 58)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(368 80)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(625 69)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(626 507)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(35 65)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><g transform="translate(370 40)" stroke="#667866" stroke-width="1.1" fill="none"><path d="M0 10V-3" stroke="#6d5f45"/><path d="M-10 6Q-16 -6 -6 -11Q2 -23 11 -10Q20 -8 13 5Z" fill="#a4b19b"/><path d="M-4 1Q-10 -7 0 -12M3 5Q11 -3 6 -10" stroke="#74816e" stroke-width=".8"/></g><path d="M267 361q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M409 99q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M605 65q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M208 445q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M663 150q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M360 233q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M575 189q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M711 265q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M876 281q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M226 157q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M413 198q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M503 206q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M424 224q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M286 131q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M432 377q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M76 170q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M777 440q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M814 461q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M558 368q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M124 124q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M419 512q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M164 116q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M364 92q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M645 276q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M316 56q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M234 512q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M855 468q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M300 125q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M255 492q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M287 491q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M859 440q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M446 106q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M77 166q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M333 141q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M829 472q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M670 244q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M591 374q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M369 247q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M675 233q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M407 485q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M182 491q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M450 82q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M321 260q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M247 100q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M157 483q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M778 138q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M296 61q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M847 488q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M759 517q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M377 223q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M473 228q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M820 447q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M818 502q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M366 77q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M135 428q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M206 217q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M353 241q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M95 63q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M821 401q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M467 439q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M623 141q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M333 307q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M460 404q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M475 494q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M599 306q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M501 197q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M568 364q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M367 173q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M115 244q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M345 64q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M182 440q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M228 209q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M891 493q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M132 135q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M391 199q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M122 353q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M110 233q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M518 142q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M683 406q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M112 206q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M769 210q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><path d="M218 477q3 -5 5 0m-2 0q3 -5 5 0" fill="none" stroke="#8b977e" opacity=".58" stroke-width=".8"/><g fill="#857b66" font-size="15" font-family="Georgia, serif" letter-spacing="2"><text x="47" y="519">KOTONOHA</text><text x="803" y="528">N ↑</text></g>
+<g transform="translate(863 443)" fill="none" stroke="#625747" stroke-width="1.6"><circle r="31"/><circle r="26" stroke-width=".7"/><path d="M0 -24L5 0 0 20 -5 0Z" fill="#806b56"/><path d="M-21 0H21M0-21V21"/><text x="0" y="-37" text-anchor="middle" stroke="none" fill="#625747" font-size="15" font-family="Georgia">N</text></g>
+<!-- legend / hairline details -->
+<rect id="railDrawing" x="0" y="0" width="0" height="0" fill="none"/>
+</svg>
+<div class="fog-patch" id="fog-school" style="left:15%;top:27%"></div><div class="fog-patch" id="fog-market" style="left:74%;top:35%"></div><div class="fog-patch" id="fog-home" style="left:75%;top:73%"></div><div class="fog-patch" id="fog-river" style="left:17%;top:72%"></div><div class="fog-patch" id="fog-shrine" style="left:50%;top:15%"></div><div class="fog-patch" id="fog-forest" style="left:85%;top:18%"></div><div id="mapHud" class="map-hud">言叶町手记</div>
+<button class="zone" id="grassZone" style="left:43%;top:49%" onclick="mapClick('grass')">荒草地</button>
+<button class="zone lock" id="schoolZone" style="left:13%;top:27%" onclick="mapClick('school')">学校</button>
+<button class="zone lock" id="marketZone" style="left:74%;top:36%" onclick="mapClick('market')">市场</button>
+<button class="zone lock" id="homeZone" style="left:75%;top:74%" onclick="mapClick('home')">居民区</button>
+<button class="zone lock" id="riverZone" style="left:15%;top:76%" onclick="mapClick('river')">河边</button>
+<button class="zone lock" id="shrineZone" style="left:49%;top:15%" onclick="mapClick('shrine')">神社</button>
+<button class="zone lock" id="forestZone" style="left:84%;top:13%" onclick="mapClick('forest')">森林</button>
+<div id="mapInkChanges" aria-label="地图上被传闻改变的细节"></div><div id="mapEffects"></div>
+</div></div><div class="folio-foot"><span>◈　ことのは町　◈</span><span id="folioPage">01 — 07</span></div></div>
+<div class="story"><div class="scene-index" id="sceneIndex">SCENE　/　01</div><h2 id="title">这站叫什么？</h2><p id="text">电车停下了。窗外没有广告牌，也看不见便利店的灯。只有大片荒草，和一座小得过分的站台。<br><br>“……不是说这趟能换车吗？”</p><div class="choices" id="choices"><button onclick="arrive()">下车看看</button></div></div></div>
+<div class="side"><h3 class="sidebar-heading">行路手记 <span>FIELD NOTES</span></h3><div class="log" id="log">17:38　电车抵达陌生站台。</div>
+<div class="rumor"><b>最近听见的话</b><div id="rumorText" style="margin-top:8px;color:#d7cbaa">还没有什么值得记下的。</div></div>
+<div id="wordArea"></div><div class="progress" id="progress"></div></div></div></div>
+<div class="book-overlay" id="bookOverlay" hidden role="dialog" aria-modal="true" aria-label="手记"><div class="book-sheet"><div class="sheet-head"><span id="sheetTitle">手记</span><button type="button" onclick="UI.close()" aria-label="关闭">×</button></div><div id="sheetContent"></div></div></div>
+<script>
+let step=0, selected={}, rumorDone=false;
+const logs=[];
+function setStory(t,x,buttons){title.textContent=t;text.innerHTML=x;choices.innerHTML=buttons||"";progress()}
+function addLog(x){logs.push(x);log.innerHTML='17:38　电车抵达陌生站台。<br>'+logs.join("<br>");log.scrollTop=999}
+function progress(){let n=Math.min(step,8);progressEl=document.getElementById("progress");progressEl.innerHTML="";for(let i=0;i<8;i++){let d=document.createElement("div");d.className="p"+(i<n?" on":"");progressEl.appendChild(d)}}
+function arrive(){step=1;train.classList.add("hide");setStory("陌生的小镇","你们刚踏上荒草地，电车就关上门离开了。<br><br>“……先看看站牌吧。”",'<button onclick="lookBack()">回头看车站</button>');addLog("你们在陌生站台下车。")}
+function lookBack(){step=2;station.classList.add("hide");setTimeout(()=>{station.style.display="none";track.style?.setProperty("opacity","0")},900);setStory("车站消失了","刚才还在身后的站台像从来没有存在过一样消失了。铁轨尽头只剩荒草。<br><br>远处似乎站着一个人。",'<button onclick="openMap()">打开地图</button>');addLog("车站与铁轨消失。");}
+function openMap(){step=3;map.classList.add("show");setStory("地图解锁：荒草地","现在唯一能够确认的位置只有这里。其他区域仍然被迷雾覆盖。<br><br>荒草地上有一个当地人。",'<button onclick="showNpc()">调查荒草地</button>');addLog("解锁地图板块【荒草地】。")}
+function showNpc(){map.classList.remove("show");npc.classList.add("show");setStory("荒草地","一个提着篮子的女人正奇怪地看着你们。点击她进行对话。","");}
+function npcClick(){npc.onclick=null;step=4;setStory("陌生女人","“你们几个……从哪儿来的？我以前没见过你们。”<br><br>你们正准备解释刚才发生的事情，但每个人记住的细节似乎不太一样。",'<button onclick="startWords()">试着说明刚才发生的事</button>');addLog("遇到第一名当地居民。她还不知道你们经历了什么。")}
+const sets={subject:["我们","其他同学","站台上的乘客","一位同行的朋友"],verb:["坐过","看见过","正在寻找","错过了"],object:["电车","车站","回东京的路","同车的乘客"],time:["刚才","下车之前","电车停下时","天色变暗之前"]};
+function startWords(){step=5;setStory("第一次 · 主谓宾游戏","四个人回忆刚才发生的事。每个人记住的东西并不完全一样。<br><br><b>从每一组里选一个词，把大家的碎片重新拼成一句话。</b>","");renderWords()}
+function renderWords(){wordArea.innerHTML='<h3 style="margin-top:18px">信息碎片</h3>';for(const [k,arr] of Object.entries(sets)){let box=document.createElement("div");box.innerHTML='<div style="font-size:11px;color:#888;margin:8px 0">'+({subject:"主语",verb:"谓语",object:"宾语",time:"时间"}[k])+'</div>';let grid=document.createElement("div");grid.className="cardpick";arr.forEach(w=>{let d=document.createElement("div");d.className="word";d.textContent=w;d.onclick=()=>{selected[k]=w;[...grid.children].forEach(e=>e.classList.remove("sel"));d.classList.add("sel");checkWords()};grid.appendChild(d)});box.appendChild(grid);wordArea.appendChild(box)}}
+function checkWords(){if(Object.keys(selected).length===4&&!document.getElementById("makeBtn")){let b=document.createElement("button");b.id="makeBtn";b.style.marginTop="12px";b.textContent="组成这句话";b.onclick=makeRumor;wordArea.appendChild(b)}}
+function makeRumor(){
+ step=6;
+ let sentence=`${selected.time}，${selected.subject}${selected.verb}${selected.object}。`;
+ rumorText.textContent="“"+sentence+"”";
+ wordArea.innerHTML="";
+ window.firstRumor={...selected,sentence};
+
+ // NPC only reacts to words the players actually selected.
+ let reactions=[];
+ if(selected.object==="电车") reactions.push("“电车？这里可没有那种东西。”");
+ if(selected.object==="车站") reactions.push("“车站？这附近从来没有车站。”");
+ if(selected.object==="回东京的路") reactions.push("“东京……我只听过这个名字。你们是从那里来的吗？”");
+ if(selected.object==="奇怪的乘客") reactions.push("“奇怪的乘客？可我刚才只看见了你们几个。”");
+ if(selected.subject==="没人") reactions.push("“没人？那这句话又是谁看到的呢……”");
+ if(selected.subject==="陌生人"||selected.subject==="站台上的人") reactions.push("“你们说的那个人，现在在哪里？”");
+ if(selected.verb==="弄丢了") reactions.push("“弄丢了？你们确定原来真的有吗？”");
+ if(selected.verb==="等着") reactions.push("“在这种荒草地里等什么呢……”");
+ if(selected.time==="午夜") reactions.push("“午夜？现在明明还是白天。是谁这么说的？”");
+ if(selected.time==="昨天") reactions.push("“昨天？可你们不是刚刚才到这里吗？”");
+ if(selected.time==="很久以前") reactions.push("“很久以前的事，你们怎么会知道？”");
+ if(!reactions.length) reactions.push("女人把这句话低声重复了一遍，似乎仍然没有完全听懂。");
+
+ setStory("一句话诞生了",
+ `你们七嘴八舌地解释刚才发生的事情，最后留下了这样一句话：<br><br><b>“${sentence}”</b><br><br>${reactions.slice(0,2).join("<br>")}<br><br>女人想了想。<br>“总之，先别一直站在这里。跟我来吧。”`,
+ '<button onclick="shop()">跟她去杂货店</button>');
+ addLog("第一句话被当地人记住：【"+sentence+"】");
 }
-function end(){$("meta").textContent="END";$("app").innerHTML='<div class="place">月曜日・07:46・いつもの駅</div><div class="end">Suicaを改札にかざす。<br><br>ピッ。<br><br>後ろでは、同じ制服の生徒が二人話している。<br><br>「コトノハ町って、駅があるらしいよ。」<br><br>「知ってる。森の中にあるやつでしょ。」<br><br>「夜にしか出ないんだって。」<br><br>電車がホームへ入ってくる。<br><br>ドアが開く直前、屋根の上に一羽のカラスが降りた。<br><br>「エキ――」</div>'}
-function setup(){ $("meta").textContent="SETUP"; $("app").innerHTML='<div class="setup"><h1>コトノハ町</h1><div class="people"><button id="p3" class="on">3人</button><button id="p4">4人</button></div><div class="names" id="names"></div><button class="start" id="start">はじめる</button></div>'; function draw(){ $("names").innerHTML=Array.from({length:playerCount},(_,i)=>'<input maxlength="10" placeholder="プレイヤー '+(i+1)+'のニックネーム">').join("") } draw(); $("p3").onclick=()=>{playerCount=3;$("p3").classList.add("on");$("p4").classList.remove("on");draw()}; $("p4").onclick=()=>{playerCount=4;$("p4").classList.add("on");$("p3").classList.remove("on");draw()}; $("start").onclick=()=>{players=[...document.querySelectorAll("#names input")].map((x,i)=>x.value.trim()||("プレイヤー"+(i+1)));round=0;render()}} setup();
+
+function shop(){
+ step=7;
+ let r=window.firstRumor;
+ let daughter="";
+ // Daughter repeats ONLY the rumor she actually receives.
+ if(r.object==="电车"){
+   daughter=`女儿听完后立刻抬起头：<br>“<b>电车</b>？那是什么？你们刚才真的坐过吗？”`;
+ } else if(r.object==="车站"){
+   daughter=`女儿听完后有些惊讶：<br>“<b>车站</b>？妈妈不是说镇上没有车站吗？”`;
+ } else if(r.object==="回东京的路"){
+   daughter=`女儿一下凑了过来：<br>“<b>东京</b>？我听过这个名字！那里是什么样的？”`;
+ } else if(r.object==="奇怪的乘客"){
+   daughter=`女儿压低声音问：<br>“你们说的那个<b>奇怪的乘客</b>，后来去哪儿了？”`;
+ }
+ setStory("小镇杂货店",
+ `女人原来是市场里杂货店的老板。店里还有她的女儿。<br><br>老板把刚才听到的话复述给女儿：<br><b>“${r.sentence}”</b><br><br>${daughter}<br><br>老板看了看天色：<br>“不管怎样，你们今晚暂时回不去了。先听听你们怎么打算吧。”`,
+ '<button onclick="townInfo()">询问这个小镇</button>');
+ addLog("杂货店老板把第一句话转述给女儿，没有加入新的信息。");
+}
+
+let lodging="";
+function townInfo(){
+ let r=window.firstRumor;
+ let tail=r.object==="回东京的路"?'女儿轻声问：“东京……是地方的名字吗？”':r.object==="电车"?'女儿问：“你们说的电车，究竟是什么？”':r.object==="车站"?'女儿问：“车站是什么地方？”':'女儿又问了一遍：“你们刚才说的那件事，是真的吗？”';
+ setStory("今晚住在哪里？",`老板没有马上替你们决定住处。<br><br>“天快黑了。店里可以挤出一间空房；我也能去问问学校宿舍能不能收留你们。”<br><br>${tail}<br><br>你们几个人意见不同，决定再用一次<b>主语＋谓语＋宾语＋时间</b>把今晚的打算说清楚。`,'<button onclick="startLodgingWords()">开始第二次主谓宾游戏</button>');
+}
+function startLodgingWords(){
+ step=7; selected={};wordArea.innerHTML='';
+ setStory("第二次 · 今晚的去处","这次每个人提出不同的说法。请依次选择主语、谓语、宾语和时间。<br><br><b>句子中的地点决定今晚住在哪里，也决定最先开放的探索区域。</b>","");
+ const opts={subject:["我们","几个外来孩子","大家","老板的客人"],verb:["借住在","暂时留在","决定去","请求住进"],object:["杂货店老板家","学校宿舍"],time:["今晚","天黑之前","从今天开始","这一夜"]};
+ for(const [key,words] of Object.entries(opts)){
+  const h=document.createElement('div');h.style.marginTop='12px';h.textContent=({subject:'主语',verb:'谓语',object:'宾语',time:'时间'})[key];wordArea.appendChild(h);
+  const grid=document.createElement('div');grid.className='cardpick';wordArea.appendChild(grid);
+  words.forEach(w=>{const el=document.createElement('button');el.className='word';el.textContent=w;el.onclick=()=>{selected[key]=w;[...grid.children].forEach(x=>x.classList.remove('sel'));el.classList.add('sel');const done=Object.keys(selected).length===4;let btn=document.getElementById('lodgingConfirm');if(done&&!btn){btn=document.createElement('button');btn.id='lodgingConfirm';btn.style.marginTop='14px';btn.textContent='确认这句话';btn.onclick=confirmLodging;wordArea.appendChild(btn)}};grid.appendChild(el)});
+ }
+}
+function confirmLodging(){
+ lodging=selected.object==='学校宿舍'?'school':'market';
+ const sentence=`${selected.time}，${selected.subject}${selected.verb}${selected.object}。`;
+ wordArea.innerHTML='';addLog('今晚的决定：【'+sentence+'】');
+ const response=lodging==='school'?'老板点点头：“好，我去跟学校的老师说一声。”':'老板笑了：“那就来我家吧。楼上还有间空房。”';
+ setStory('今晚的决定',`你们最终说出了：<br><br><b>“${sentence}”</b><br><br>${response}<br><br>夜色渐深，大家跟着老板动身。`,'<button onclick="unlockTown()">前往住处</button>');
+}
+function unlockTown(){
+ step=8;map.classList.add('show');
+ const id=lodging==='school'?'schoolZone':'marketZone';const zone=document.getElementById(id);
+ zone.classList.remove('lock');zone.classList.add('new');zone.textContent=lodging==='school'?'学校':'市场';
+ const place=lodging==='school'?'学校宿舍':'杂货店老板家';
+ setStory('新区域已解锁',`你们来到<b>${place}</b>。<br><br>地图现在只开放了【荒草地】和【${lodging==='school'?'学校':'市场'}】。另一处仍被迷雾覆盖，需要后续探索才能发现。`,'<button onclick="finishPrologue()">开始探索</button>');
+ addLog('解锁【'+(lodging==='school'?'学校':'市场')+'】；另一地点仍未开放。');
+}
+function finishPrologue(){
+ document.querySelectorAll('.zone.new').forEach(x=>x.classList.remove('new'));
+ setStory('序章结束 · 自由探索开始',`你们今晚住在<b>${lodging==='school'?'学校宿舍':'杂货店老板家'}</b>。<br><br>从已开放区域开始探索，寻找更多居民与线索。未探索的地点依然保持未知。<br><br>小镇居民目前只听到了你们实际说出的传闻，不会自动知道“东京”或“电车”。`,'');
+ addLog('进入自由探索，起点：'+(lodging==='school'?'学校':'市场'));
+}
+function mapClick(id){
+ if(step<8)return;
+ if(id==='school'&&lodging==='school')setStory('学校','你们住进了学校宿舍。其他地方还要靠调查才能找到。','');
+ else if(id==='market'&&lodging==='market')setStory('市场','杂货店老板让你们住在店铺楼上的空房间。','');
+ else if(id==='grass')setStory('荒草地','你们最初抵达的地方。车站已经消失了。','');
+}
+progress();
+// ===== 第一阶段：沿用上传的 V3 序章，再接回可自由探索的地图。 =====
+// 序章不放异端；只在真正展开探索、传闻被居民听到后，异常逐步出现。
+const EXP={
+ started:false,mode:'prologue',current:'grass',active:null,chosen:{},unlocked:new Set(['grass']),
+ visited:new Set(),completed:new Set(),rumors:[],effects:[],lastOdd:[],lastOutcome:'',finalStatement:'',total:0,
+ names:{grass:'荒草地',school:'学校',market:'市场',home:'居民家',river:'河边',shrine:'神社',forest:'森林'},
+ graph:{grass:[],school:['river','home'],market:['home','river'],home:['market','school','shrine'],river:['forest','shrine'],shrine:['forest'],forest:['shrine']},
+ quests:{
+  school:{npc:'值班老师',intro:'学校已经放学。值班老师正在锁教室门，黑板上有一条没擦干净的粉笔线，像一段没画完的铁轨。\n\n“你们几个不是本校的吧？今晚要借住的话，先别乱跑。”',clue:'老师告诉你们：河边那条小路能绕到镇子的另一头。',
+   options:{subject:['黑板上的粉笔字','傍晚的铃声','那位值班老师','课桌上留下的纸条'],verb:['指向了','记下了','提起了','藏着'],object:['一条没画完的路','教室外的脚步声','一张车票','放学的时间'],time:['放学以后','教室关门之前','刚才','天黑以前']},
+   odd:[{slot:'object',text:'明天才会响起的铃声',level:1,effect:'楼道里突然响起了明天的下课铃。老师看看挂钟，又看看空空的教室。'},{slot:'subject',text:'写着明天日期的黑板',level:3,effect:'黑板上的日期变了，甚至写出了还没发生的课表。'}]},
+  market:{npc:'市场摊主',intro:'市场正在收摊。一个卖可乐饼的摊主把纸袋递给三花猫，猫却丢下一张皱巴巴的纸。\n\n摊主说：“奇怪，刚才怎么没人看见这张纸是哪来的？”',clue:'摊主告诉你们：沿着摊位后的居民家，能找到通往河边的小巷。',
+   options:{subject:['市场里的三花猫','收摊的老板','路过的孩子','一张被捡起的纸'],verb:['发现了','叼走了','藏起了','带来了'],object:['一张旧纸片','奇怪的脚印','没见过的站牌图','一只遗失的手套'],time:['刚才','打烊之前','人群散去时','晚饭以前']},
+   odd:[{slot:'object',text:'自己会收钱的影子',level:1,effect:'摊位底下的影子伸出手，准确接住了一枚硬币；摊主却不敢低头。'},{slot:'subject',text:'还没开门的明天的摊位',level:3,effect:'空地上忽然摆出了明天的价签和新鲜蔬菜。'}]},
+  home:{npc:'独居的老奶奶',intro:'居民区里有一户窗户亮着灯。老奶奶正在往门上贴纸条。\n\n“这里最近总有人敲错门。说出来你们可能不信，他们连自己敲的是哪一天的门都记不清。”',clue:'老奶奶说神社后面有条小径，以前孩子们常去那儿玩。',
+   options:{subject:['门口的纸条','隔壁家的孩子','走廊上的脚步声','老奶奶的旧挂钟'],verb:['记录了','听见了','指向了','找到了'],object:['一扇紧闭的门','陌生人的名字','旧时的约定','走错路的孩子'],time:['傍晚','敲门以后','太阳落下时','今晚']},
+   odd:[{slot:'object',text:'通往昨天的房门',level:1,effect:'房门打开的一瞬间，门后是白天的阳光。关上再开，才变回夜晚的走廊。'},{slot:'subject',text:'还没出生的邻居',level:3,effect:'门外有人道谢，老奶奶却说那户人家根本还没人搬进来。'}]},
+  river:{npc:'河边的钓鱼人',intro:'河边的水面上飘着细小的纸屑。一个钓鱼人把它们捞上岸，却发现每一张都只有半句话。\n\n“我今天一直捡到这种纸。像是谁把说过的话丢进河里了。”',clue:'钓鱼人指向河对岸的小径：顺着那条路，可以去神社或森林。',
+   options:{subject:['河水里的纸片','桥下的回声','岸边的钓鱼人','水面上的倒影'],verb:['重复着','藏着','带来了','指向了'],object:['半句没有说完的话','一条看不清的河道','陌生的站名','一片飘来的树叶'],time:['刚才','太阳落下时','今晚','桥上有人经过时']},
+   odd:[{slot:'object',text:'倒着流的时间',level:1,effect:'水里的落叶逆流漂回了树上，钓鱼人吓得松开了鱼竿。'},{slot:'subject',text:'学会替人回答的河水',level:3,effect:'你们还没开口，河面已经传来一句回答。'}]},
+  shrine:{npc:'守神社的老人',intro:'神社门口挂着一排写着愿望的木牌。有人写“去东京”，有人写“看一眼真正的大城市”。\n\n老人说：“这里的人都听过东京。可是我认识的人里，没有谁亲眼看过它。每个人说的样子都不一样。”',clue:'老人指出：神社后方就是森林。传闻中的午夜电车，有人说要从那儿经过。',
+   options:{subject:['石阶上的老人','神社里的铃铛','木牌上的愿望','屋檐下的乌鸦'],verb:['听见了','记下了','等待着','提起了'],object:['远方城市的名字','没有答案的愿望','森林传来的铃声','大家没见过的风景'],time:['暮色里','刚才','有人许愿时','太阳完全落下前']},
+   odd:[{slot:'object',text:'能回答问题的神社铃',level:1,effect:'神社的铃没有人碰，却一声一声回答了你们刚才问的问题。'},{slot:'subject',text:'写着未来的木牌',level:3,effect:'一块空白木牌上浮出明天的日期，其他人争着把它当成预言。'}]},
+  forest:{npc:'跟着传闻寻路的居民',intro:'森林里没有路灯。几束手电筒在树影间晃动。\n\n一个居民说：“有人说深处会出现车站，可大家都只听过别人说，根本没人找到过。”\n\n你们脚边的乌鸦忽然叫了一声，听起来像是“エキ”。',clue:'林子最深处有片平整的空地，像在等待某个还没人说出口的东西。',
+   options:{subject:['森林里的乌鸦','寻找车站的居民','那片没有树的空地','远处传来的铃声'],verb:['等待着','听见了','指向了','藏着'],object:['一块白色站牌','不存在的车站','很轻的列车铃声','通向别处的小路'],time:['天黑以后','刚才','有人提起时','下一声乌鸦叫起时']},
+   odd:[{slot:'object',text:'会替乘客检票的乌鸦',level:1,effect:'一只乌鸦站上石头，叼走居民手里并不存在的车票。'},{slot:'subject',text:'从未铺设的铁轨',level:3,effect:'泥土地上出现两道发亮的钢轨，却没有人记得它们是何时出现的。'}]}
+ }
+};
+function expGet(id){return document.getElementById(id)}
+function expEsc(x){return String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+function expBr(x){return expEsc(x).replace(/\n{2,}/g,'<br><br>').replace(/\n/g,'<br>')}
+const origUnlockTown=unlockTown;
+unlockTown=function(){origUnlockTown();EXP.mode='new-area';EXP.unlocked.add(lodging);EXP.syncMap();};
+finishPrologue=function(){
+  document.querySelectorAll('.zone.new').forEach(x=>x.classList.remove('new'));
+  document.querySelector('.phase').textContent='ACT 01 · 第一阶段 / 自由探索';
+  EXP.started=true;EXP.mode='explore';EXP.current=lodging;EXP.syncMap();EXP.goal();
+  addLog('自由探索开始：从'+EXP.names[lodging]+'出发。');
+  EXP.visit(lodging);
+};
+mapClick=function(id){
+  if(!EXP.started || EXP.mode==='tokyo'||EXP.mode==='returned')return;
+  if(!EXP.unlocked.has(id))return;
+  EXP.visit(id);
+};
+EXP.syncMap=function(){
+ const active=EXP.started||step>=8;
+ for(const id of Object.keys(EXP.names)){
+  const node=expGet(id+'Zone');if(!node)continue;
+  const found=EXP.unlocked.has(id);
+  if(!active && id!=='grass'){node.style.display='none';continue}
+  node.style.display='flex';node.textContent=found?EXP.names[id]:'迷雾';
+  node.disabled=!found;
+  node.classList.toggle('lock',!found);node.classList.toggle('visited',EXP.visited.has(id));
+  node.classList.toggle('current',EXP.started&&EXP.current===id);
+  node.classList.toggle('altered',EXP.effects.some(e=>e.loc===id));
+  if(found&&EXP.completed.has(id)){
+   const sub=document.createElement('small');sub.textContent='已调查';node.appendChild(sub);
+  }
+ }
+ expGet('mapHud').textContent=EXP.started?'已发现 '+EXP.unlocked.size+' / 7 · 传闻 '+EXP.rumors.length+' 条':'已发现：荒草地';
+ expGet('mapEffects').innerHTML=EXP.effects.slice(-4).map(e=>'<span class="map-effect" style="left:'+e.x+'%;top:'+e.y+'%">'+expEsc(e.caption)+'</span>').join('');
+};
+EXP.goal=function(){
+ let goal=expGet('exploreGoal');if(!goal){goal=document.createElement('div');goal.id='exploreGoal';goal.className='goal';expGet('wordArea').before(goal)}
+ if(!EXP.started){goal.style.display='none';return}
+ goal.style.display='block';
+ const count=EXP.rumors.length;
+ const parts=[];
+ if(!EXP.completed.has('shrine'))parts.push('寻找神社里有关远方的传闻');
+ if(!EXP.completed.has('forest'))parts.push('在森林寻找车站的痕迹');
+ if(count<4)parts.push('收集至少 '+(4-count)+' 条新的传闻');
+ const late=EXP.canPrepare();
+ const suffix=EXP.mode==='tokyo'?'已经抵达“东京”。':EXP.mode==='returned'?'第一阶段结束。':late?'线索汇聚：返回森林深处。':parts.length?parts.join('；'):'返回森林深处，决定要不要利用传闻回家。';
+ goal.innerHTML='<b>当前目标</b><br>'+expEsc(suffix)+'<br><span style="color:#a9a08c">探索 '+EXP.completed.size+'/6 地点 · 传闻 '+count+' 条 · 留下奇怪的痕迹 '+EXP.effects.length+' 次</span>';
+};
+EXP.canPrepare=function(){return EXP.rumors.length>=4&&EXP.completed.has('shrine')&&EXP.completed.has('forest')};
+EXP.adjRumor=function(loc){
+ const out=EXP.rumors.filter(r=>(EXP.graph[r.loc]||[]).includes(loc));
+ if(!out.length)return '';
+ const r=out.at(-1);
+ return '\n\n有人正向旁边的人复述从'+EXP.names[r.loc]+'听来的话：\n“'+r.sentence+'”\n\n你们记得这句话，但它原先只是几个人拼出来的碎片。';
+};
+EXP.visit=function(loc){
+ EXP.started=true;EXP.mode='explore';EXP.current=loc;EXP.active=null;EXP.chosen={};
+ EXP.visited.add(loc);EXP.syncMap();EXP.goal();
+ map.classList.add('show');visual.classList.remove('white-tokyo','return-town');
+ wordArea.innerHTML='';
+ if(loc==='grass'){
+  setStory('荒草地 · 原来的终点站','地上的草又长回了原处。你们曾在这里下过电车，可现在连一截铁轨也没有。<br><br>这里没有新的居民，也没有可供造句的线索。<br><br>点击地图上其他已经发现的地点，继续寻找回家的办法。','');
+  return;
+ }
+ if(loc==='forest'&&EXP.canPrepare())return EXP.prepareStation();
+ const q=EXP.quests[loc];const completed=EXP.completed.has(loc);
+ const header='<span class="small-pill">'+EXP.names[loc]+'</span>'+(completed?'<span class="small-pill">已记录传闻</span>':'<span class="small-pill">可调查</span>');
+ const actions=completed?'<button onclick="EXP.revisit(\''+loc+'\')">查看这里的变化</button><button class="ghost" onclick="EXP.showOverview()">查看探索地图</button>':
+  '<button onclick="EXP.startWords(\''+loc+'\')">听完线索，一起造句</button><button class="ghost" onclick="EXP.showOverview()">先去别处看看</button>';
+ setStory(EXP.names[loc]+' · '+q.npc,header+'<br>'+expBr(q.intro+EXP.adjRumor(loc)),actions);
+};
+EXP.showOverview=function(){EXP.active=null;wordArea.innerHTML='';map.classList.add('show');EXP.syncMap();EXP.goal();
+ setStory('言叶町 · 自由探索','地图里亮起来的地点可以直接点击。<br><br>不同的住处让你们从不同的方向认识这座镇子；已经调查过的地方可以返回，也许会看见先前那句话造成的变化。','');
+};
+EXP.startWords=function(loc){
+ EXP.active=loc;EXP.chosen={};const q=EXP.quests[loc];
+ setStory('整理听见的话 · '+EXP.names[loc],expBr('你们都看见了同一个场面，却注意到不同的细节。\n\n'+q.npc+'正在等你们解释。先选各自记住的碎片，最后再一起看这句话会变成什么。'),'<button class="ghost" onclick="EXP.visit(\''+loc+'\')">暂时不说，返回地图</button>');
+ EXP.wordUI();
+};
+EXP.optionSet=function(loc,key){
+ const quest=EXP.quests[loc];let options=quest.options[key].map(text=>({text,odd:false}));
+ for(const alt of quest.odd){if(alt.slot===key&&EXP.rumors.length>=alt.level){options.push({text:alt.text,odd:true,detail:alt.effect})}}
+ return options;
+};
+EXP.wordUI=function(){
+ const loc=EXP.active;if(!loc)return;
+ const labels={subject:'主语',verb:'谓语',object:'宾语',time:'时间'};
+ wordArea.innerHTML='<h3 style="margin-top:17px">四人记住的碎片</h3><div class="choice-help">先正常交流。随着传闻改变小镇，也许会听见一些比从前更离奇的说法。</div>';
+ for(const [key,label] of Object.entries(labels)){
+  const h=document.createElement('div');h.style.cssText='font-size:12px;color:#ddd0b4;margin:13px 0 7px';h.textContent=label;wordArea.appendChild(h);
+  const grid=document.createElement('div');grid.className='cardpick';wordArea.appendChild(grid);
+  for(const opt of EXP.optionSet(loc,key)){
+   const b=document.createElement('button');b.type='button';b.className='word'+(opt.odd?' odd':'');b.innerHTML=expEsc(opt.text);
+   b.onclick=()=>{EXP.chosen[key]=opt;[...grid.children].forEach(x=>x.classList.remove('sel'));b.classList.add('sel');EXP.updateSentenceButton()};grid.appendChild(b);
+  }
+ }
+ const info=document.createElement('div');info.id='sentencePreview';info.className='choice-help';info.style.marginTop='12px';info.textContent='还差四个碎片。';wordArea.appendChild(info);
+ const confirm=document.createElement('button');confirm.id='expMakeBtn';confirm.textContent='把大家的话拼成一句';confirm.disabled=true;confirm.onclick=EXP.complete;wordArea.appendChild(confirm);
+};
+EXP.sentence=function(){const a=EXP.chosen;return a.time.text+'，'+a.subject.text+a.verb.text+a.object.text+'。'};
+EXP.updateSentenceButton=function(){
+ const n=Object.keys(EXP.chosen).length;const complete=n===4;expGet('expMakeBtn').disabled=!complete;
+ expGet('sentencePreview').textContent=complete?'碎片已收集：点击后组成完整句子，并让附近的人听见。':'还差 '+(4-n)+' 个碎片。';
+};
+EXP.unlockMore=function(loc){
+ const fresh=[];
+ for(const n of EXP.graph[loc]||[]){if(!EXP.unlocked.has(n)){EXP.unlocked.add(n);fresh.push(EXP.names[n]);}}
+ EXP.syncMap();return fresh;
+};
+EXP.effectCoordinates={school:[21,19],market:[76,23],home:[80,71],river:[22,75],shrine:[45,11],forest:[81,10]};
+EXP.complete=function(){
+ const loc=EXP.active;if(!loc||EXP.completed.has(loc))return;
+ if(Object.keys(EXP.chosen).length<4)return;
+ const q=EXP.quests[loc],s=EXP.sentence(),anomalies=Object.values(EXP.chosen).filter(o=>o.odd);
+ const rumor={loc,sentence:s,odd:anomalies.length>0,at:EXP.rumors.length+1};
+ EXP.rumors.push(rumor);EXP.completed.add(loc);EXP.total++;
+ const unlocks=EXP.unlockMore(loc);
+ let response=q.npc+'把你们拼出来的话重复了一遍。\n“'+s+'”\n\n“原来是这么回事……”\n\n她没接着问，只是把那几个词在嘴里轻声念了一遍。';
+ if(anomalies.length){
+  const coord=EXP.effectCoordinates[loc];
+  for(let i=0;i<anomalies.length;i++){EXP.effects.push({loc,x:coord[0]+i*3,y:coord[1]+i*6,caption:anomalies[i].text});}
+  response+='\n\n第二天有人在路边看见了怪事：\n'+anomalies.map(x=>x.detail).join('\n');
+  response+='\n\nMio眨了眨眼，悄悄把笔记本往怀里藏了藏。';
+ } else {
+  response+='\n\n附近的人一边听一边补上自己理解的细节。这句话开始有了第二个版本。';
+ }
+ response+='\n\n'+q.clue;
+ if(unlocks.length)response+='\n\n新发现的地点：'+unlocks.join('、')+'。';
+ if(EXP.canPrepare())response+='\n\n已有足够多的故事在镇子里传开。森林深处现在可能会听见新的声音。';
+ EXP.active=null;EXP.chosen={};EXP.syncMap();EXP.goal();
+ wordArea.innerHTML='<div class="sentence-card">'+expEsc(s)+'</div><div class="choice-help">这句话已经留在镇上的人之间。你下次遇到他们时，他们可能会再讲一遍。</div>';
+ const last=EXP.rumors.slice(-3).reverse();
+ wordArea.innerHTML+='<div class="sentences">'+last.map(r=>'<div class="sentence-log"><b>'+EXP.names[r.loc]+'</b> · '+expEsc(r.sentence)+'</div>').join('')+'</div>';
+ rumorText.textContent='“'+s+'”';
+ addLog('【'+EXP.names[loc]+'】'+s+(anomalies.length?'（异常成真）':''));
+ setStory('传闻已被留下',expBr(response),'<button onclick="EXP.showOverview()">打开地图，继续探索</button>'+(EXP.canPrepare()?'<button onclick="EXP.visit(\'forest\')">去森林深处看看</button>':''));
+};
+EXP.revisit=function(loc){
+ const related=EXP.rumors.find(r=>r.loc===loc),odd=EXP.effects.filter(e=>{
+  const c=EXP.effectCoordinates[loc];return c&&Math.abs(c[0]-e.x)<=6&&Math.abs(c[1]-e.y)<=7;
+ });
+ let msg='你们又来到'+EXP.names[loc]+'。\n\n'+EXP.quests[loc].npc+'记得你们那句话：\n“'+related.sentence+'”';
+ if(odd.length)msg+='\n\n这里的异常仍然存在。'+odd.map(e=>e.caption).join('、')+'并没有恢复原状。';
+ else msg+='\n\n人们还在讨论这句话。它正在变成小镇的常识。';
+ setStory('重新走过 · '+EXP.names[loc],expBr(msg),'<button onclick="EXP.showOverview()">返回地图</button>');
+};
+EXP.prepareStation=function(){
+ EXP.mode='station-decision';EXP.syncMap();EXP.goal();wordArea.innerHTML='';
+ const text='你们回到森林深处。人们在树下讨论着不同版本的传闻。\n\n有人拿出纸笔说：“如果这里真的能有一个车站，那是不是也能有一辆去东京的电车？”\n\nMio低声提醒你们：“我们已经看到了，自己说出的话会影响这里。可是我们甚至不知道他们想象的东京是什么样的。”\n\n为了回家，你们要不要告诉镇民：午夜的列车可以去东京？';
+ setStory('森林深处 · 一个不该轻易说出的决定',expBr(text),'<button onclick="EXP.questionRail()">先去核实有无铁轨</button><button onclick="EXP.finalWords()">利用传闻，制造午夜电车</button><button class="ghost" onclick="EXP.showOverview()">先不决定，继续探索</button>');
+};
+EXP.questionRail=function(){
+ setStory('核实之后','你们沿着林间走了一圈。泥土上根本没有轨枕，树林也没有被砍开的痕迹。<br><br>眼前没有任何证据能证明午夜真的有电车。<br><br>如果你们现在告诉居民“电车一定会来”，那就是一次有意识的传闻制造。','<button onclick="EXP.finalWords()">还是决定说出那句话</button><button class="ghost" onclick="EXP.showOverview()">继续探索，不说这句话</button>');
+};
+EXP.finalWords=function(){
+ EXP.mode='final-words';EXP.finalChosen={};
+ setStory('最后一次造句 · 午夜电车','为了离开小镇，你们开始故意拼出一条还没有人亲眼证实的传闻。<br><br>这一次，你们已经知道，<strong>说出口的话可能会变成现实。</strong>','<button class="ghost" onclick="EXP.prepareStation()">再想一想</button>');
+ const opt={subject:['那辆银色电车','大家口中的午夜列车','森林深处的车站','没有司机的末班车'],verb:['会开往','可以抵达','将带我们去','被认为通往'],object:['镇民想象的东京','谁也没亲眼见过的东京','传闻里灯火通明的东京','只有名字的东京'],time:['午夜','所有人相信时','钟声响起以后','在不存在的第十三个小时']};
+ wordArea.innerHTML='<h3 style="margin-top:16px">拼出一趟不存在的列车</h3><div class="choice-help">这些词并不是镇民亲眼见过的证据。你们在决定怎样把一条传闻说得可信。</div>';
+ for(const [key,label] of Object.entries({subject:'主语',verb:'谓语',object:'宾语',time:'时间'})){
+  const h=document.createElement('div');h.style.cssText='font-size:12px;color:#ddd0b4;margin:12px 0 7px';h.textContent=label;wordArea.appendChild(h);
+  const div=document.createElement('div');div.className='cardpick';wordArea.appendChild(div);
+  opt[key].forEach((val,i)=>{const b=document.createElement('button');b.className='word'+(key==='time'&&i===3?' odd':'');b.innerHTML=expEsc(val);
+   b.onclick=()=>{EXP.finalChosen[key]=val;[...div.children].forEach(x=>x.classList.remove('sel'));b.classList.add('sel');expGet('finalSay').disabled=Object.keys(EXP.finalChosen).length<4};div.appendChild(b)})
+ }
+ const btn=document.createElement('button');btn.id='finalSay';btn.disabled=true;btn.textContent='让镇民听见这句话';btn.style.marginTop='15px';btn.onclick=EXP.sayFinal;wordArea.appendChild(btn);
+};
+EXP.sayFinal=function(){
+ if(Object.keys(EXP.finalChosen).length!==4)return;
+ const c=EXP.finalChosen;EXP.finalStatement=c.time+'，'+c.subject+c.verb+c.object+'。';
+ EXP.rumors.push({loc:'forest',sentence:EXP.finalStatement,odd:c.time.includes('第十三'),at:EXP.rumors.length+1});
+ if(c.time.includes('第十三')){EXP.effects.push({loc:'forest',x:67,y:15,caption:'第十三个小时'});}
+ EXP.mode='station-found';EXP.syncMap();EXP.goal();
+ wordArea.innerHTML='<div class="sentence-card">'+expEsc(EXP.finalStatement)+'</div>';
+ rumorText.textContent='“'+EXP.finalStatement+'”';
+ addLog('有意识地制造了一条关于午夜电车的传闻：'+EXP.finalStatement);
+ const msg='你们告诉了围在森林里的居民：\n“'+EXP.finalStatement+'”\n\n最初大家愣了几秒。接着有人说：“我也听过那趟电车！”\n\n另一人接话：“对，我小时候就听人提过东京。”\n\n雾气从树缝里漫出来。先是一块站牌，然后是一排台阶，最后连铁轨都从泥土里冒了出来。\n\n它不是你们原先乘坐的车站。它是小镇上所有人拼凑出的——午夜车站。';
+ setStory('午夜车站 · 传闻变成现实',expBr(msg),'<button onclick="EXP.boardTrain()">乘上午夜电车，前往东京</button>');
+};
+EXP.boardTrain=function(){
+ EXP.mode='tokyo';document.querySelector('.phase').textContent='ACT 01 · 东京 / 空白';EXP.syncMap();EXP.goal();wordArea.innerHTML='';
+ map.classList.remove('show');visual.classList.add('white-tokyo');
+ setStory('终点：东京？','电车终于停下。<br><br>广播说：“终点站，东京。”<br><br>可车门外什么也没有。没有街道、没有人群，也没有人们传说中的高楼。<br><br>这里甚至没有能让你确认方向的地平线。<br><br>小镇的人知道有一个叫“东京”的地方，却不知道真正的东京究竟是什么样。<br><br><strong>传闻可以为列车创造一个目的地，却无法创造人们从未认识过的具体世界。</strong>','<button onclick="EXP.returnTown()">返回言叶町</button>');
+};
+EXP.returnTown=function(){
+ EXP.mode='returned';document.querySelector('.phase').textContent='ACT 02 · 第二阶段 / 序幕';EXP.current='grass';map.classList.add('show');visual.classList.remove('white-tokyo');visual.classList.add('return-town');EXP.syncMap();EXP.goal();
+ const anomaly=EXP.effects.length?EXP.effects.map(e=>e.caption).slice(0,3).join('、'):'那些被大家反复讲述的句子';
+ setStory('第一阶段结束 · 第二阶段的开始','你们坐着银色电车返回言叶町。<br><br>可是，这座镇子已经不是刚来时的样子了。<br><br>学校、市场、居民家、河边和森林都有人在讲述你们说过的话。<br><br>你们认得出一些变化：<strong>'+expEsc(anomaly)+'</strong>。<br><br>没人记得这些变化最初是从哪里来的。镇民们只说：“这里一直就是这样。”<br><br><strong>第一阶段，你们制造了传闻。第二阶段，你们必须生活在自己制造的传闻里。</strong>','<button onclick="location.reload()">重新开始</button>');
+ addLog('第一阶段结束：回到被传闻改变的小镇。');
+};
+// 保留原 V3 序章，但地图直到选定住处才展开；探索期间才逐渐出现异端。
+EXP.syncMap();EXP.goal();
+
+</script><script>
+/* V5: quietly immersive story, editable atlas, restrained interactive notebook. */
+const UI={
+ page:'',
+ open(name,content){
+  document.getElementById('sheetTitle').textContent=name;
+  document.getElementById('sheetContent').innerHTML=content;
+  document.getElementById('bookOverlay').hidden=false;
+  this.page=name;
+ },
+ close(){document.getElementById('bookOverlay').hidden=true;this.page=''},
+ map(){this.close();if(EXP.started&&EXP.mode!=='tokyo'&&EXP.mode!=='returned')EXP.showOverview();else if(step>=3 && step<=8){map.classList.add('show');if(step<8)setStory('荒草地','刚才明明还有站台。这一带的草长得太高，地上什么都看不出来。','<button onclick="showNpc()">找那边的人问问</button>');}else this.help()},
+ journal(){
+  let content='<p class="sheet-help">有些话只是听着好玩。等想起来时，已经不知道是谁先说的了。</p>';
+  if(window.firstRumor)content+='<div class="note-entry"><small>荒草地 · 最初</small>'+expEsc(window.firstRumor.sentence)+'</div>';
+  if(typeof lodging!=='undefined' && lodging)content+='<div class="note-entry"><small>星期五 · 傍晚</small>今晚落脚：'+(lodging==='school'?'学校':'老板家')+'</div>';
+  for(const [i,r] of EXP.rumors.entries())content+='<div class="note-entry"><small>'+String(i+1).padStart(2,'0')+'　·　'+expEsc(EXP.names[r.loc]||'森林')+'</small>'+expEsc(r.sentence)+'</div>';
+  if(!EXP.rumors.length&&!window.firstRumor)content+='<p>还没有写进笔记的话。</p>';
+  if(EXP.effects.length)content+='<h3 style="margin-top:24px;font-size:14px">翻回去看时</h3>'+EXP.effects.map(e=>'<div class="note-entry"><small>'+expEsc(EXP.names[e.loc])+'</small>'+expEsc(e.detail||e.caption)+'</div>').join('');
+  this.open('行路手记',content);
+ },
+ places(){
+  const found=[...EXP.unlocked];let body='<p class="sheet-help">地图上看得清的地方，总比传闻里说的少。</p>';
+  for(const id of found){body+='<div class="note-entry"><small>'+expEsc(EXP.names[id])+(EXP.visited.has(id)?' · 去过':' · 还没走到')+'</small>'+(id==='grass'?'那片草地上，原先站着车站。':EXP.quests[id]?.clue?expEsc(EXP.quests[id].clue):'')+'</div>'}
+  this.open('走过的地方',body);
+ },
+ help(){this.open('游戏方法',`<div class="sheet-help">
+  <p>周五傍晚，你们坐错了一辆电车，在一个没有车站的小镇下了车。</p>
+  <p>点击书页上的地点前往探索。地图会随着你们走过的路慢慢清晰；已走过的地方也可以重新造访。</p>
+  <p>听完居民的话，选择<strong>时间、主语、谓语和宾语</strong>，把彼此记下的片段拼成一句。句子的每一部分都可以由不同的朋友决定。单人试玩时，也可以依次替他们选择。</p>
+  <p>传闻会被记在行路手记里。有些变化要等你再次走到那个地点才看得见。</p>
+  <p>如果不知道下一步去哪儿，可以先去河边、神社，或者问问森林里的人。</p></div>`)},
+};
+window.addEventListener('keydown',e=>{if(e.key==='Escape')UI.close()});
+document.getElementById('bookOverlay').addEventListener('click',e=>{if(e.target.id==='bookOverlay')UI.close()});
+// Repurpose decorative right-hand bookmark as a functional atlas index.
+const lookupTab=document.getElementById('soundSwitch');lookupTab.textContent='⌑';lookupTab.title='走过的地方';lookupTab.setAttribute('aria-label','走过的地方');lookupTab.setAttribute('onclick','UI.places()');
+
+// A light novel, not a mechanism explanation. Prologue choices and lodging branches remain intact.
+arrive=function(){step=1;train.classList.add('hide');setStory('下错站了','车门刚开，外面的风就灌了进来。<br><br>“怎么连一个人都没有？”<br><br>大家走下站台，脚下的碎石踩起来咔咔作响。银色电车在身后关上了门。','<button onclick="lookBack()">回头找站牌</button>');addLog('银色电车开走了。')};
+lookBack=function(){step=2;station.classList.add('hide');setTimeout(()=>{station.style.display='none';track.style.opacity='0'},900);setStory('站台呢？','“喂！等——”<br><br>电车已经进了雾。有人回头看了一眼，愣住了。<br><br>刚才的站牌不见了。那排浅色的站台边缘也不见了。<br><br>草一直长到脚边，连铁轨都看不出来。','<button onclick="openMap()">看看四周</button>');addLog('原地只剩下一片草。')};
+openMap=function(){step=3;map.classList.add('show');EXP.syncMap();setStory('荒草地','“我们刚才是从这里下来的吧？”<br><br>没有人接话。附近看不到路牌，也没有能问路的站务员。<br><br>草地尽头，一个提着篮子的人正慢慢走过。','<button onclick="showNpc()">过去问问</button>');addLog('草地旁有人经过。')};
+showNpc=function(){map.classList.remove('show');npc.classList.add('show');setStory('提着菜篮的人','她正弯腰把掉出来的葱塞回篮子里。<br><br>听见脚步声，她抬头扫了你们一眼。<br><br>“你们是来找谁的？”','<button onclick="npcClick()">问她有没有见过电车</button>')};
+npcClick=function(){npc.onclick=null;step=4;setStory('“坐电车来的？”','“电车？”她直起腰，又朝你们身后看看。<br><br>“这儿连铁轨都没有，哪来的电车？”<br><br>大家一下子都说起话来。有的记得车厢里很冷，有的只顾着说站名，还有人说自己下车时看见了一只猫。<br><br>“哎哎，等会儿，一个一个说。”','<button onclick="startWords()">想想刚才到底发生了什么</button>');addLog('遇见提着菜篮的女人。')};
+startWords=function(){step=5;setStory('你记得的是哪一段？','她把篮子放在脚边，等着你们开口。<br><br>四个人说的并不是同一件事。把各自记住的那一小段挑出来，听听凑在一起会是什么样。','');renderWords()};
+makeRumor=function(){
+ step=6;const sentence=`${selected.time}，${selected.subject}${selected.verb}${selected.object}。`;
+ window.firstRumor={...selected,sentence};rumorText.textContent='“'+sentence+'”';wordArea.innerHTML='';
+ const object=selected.object;let reaction='“我怎么听着……越听越糊涂了？”';
+ if(object==='电车')reaction='“电车？咱们镇可没有铁轨。”';
+ else if(object==='车站')reaction='“车站？你们再仔细看看，这儿哪有车站？”';
+ else if(object==='回东京的路')reaction='“东京……这个地名我倒听人说过。是你们要回去的地方？”';
+ else if(object==='同车的乘客')reaction='“还有别人？可刚才我只看见你们。”';
+ setStory('“你刚才说什么来着？”','有人说快了些，她没听清。<br><br>你们又七嘴八舌地补了几句，最后她只记住了这一句：<br><br><b>“'+expEsc(sentence)+'”</b><br><br>'+reaction+'<br><br>她把篮子重新挎好。<br><br>“别在这里站着了。先跟我走，店里有电话。”','<button onclick="shop()">跟着她去店里</button>');
+ addLog('她记下了一句话：“'+sentence+'”');
+};
+shop=function(){step=7;const r=window.firstRumor;
+ const daughter=({电车:'“电车？不是说咱们镇没那东西吗？”',车站:'“车站？妈妈，你不是一直说镇里没有车站吗？”',回东京的路:'“东京？我在书里看到过！那儿是不是到处都亮着灯？”',同车的乘客:'“那后来呢？那个乘客也下车了吗？”'})[r.object]||'“真的？”';
+ setStory('市场口的杂货店','女人把纸袋搁到柜台上。屋里一个扎头发的女孩正趴着写作业。<br><br>“Mio，帮我拿个杯子。来了几个迷路的孩子。”<br><br>她一边放下篮子，一边把刚才听来的话讲了一遍。<br><br>“'+expEsc(r.sentence)+'”<br><br>女孩抬起头。'+daughter+'<br><br>女人指指柜台后的小电话：“先跟家里说一声吧。”','<button onclick="townInfo()">问问今晚能不能留下</button>');
+ addLog('老板把那句话讲给了 Mio。')
+};
+townInfo=function(){const r=window.firstRumor;
+ const snippet=r.object==='回东京的路'?'Mio想了想：“东京我只听说过。真有那么远吗？”':'Mio把铅笔塞进笔袋：“反正天都快黑了，你们现在往哪儿走？”';
+ setStory('今晚怎么办？','电话没有拨通。屏幕上连一格信号都没有。<br><br>老板看了看门外：“楼上还有间空房，挤一晚没问题。要是嫌地方小，我去问问学校的老师，也许宿舍还能借住。”<br><br>'+snippet+'<br><br>你们低头商量了几句。有人想住得近，有人想顺路去学校打听消息。','<button onclick="startLodgingWords()">商量好去哪儿过夜</button>')};
+// Preserve the exact original lodging choices, but never show rules in a character's voice.
+const v4StartLodging=startLodgingWords;
+startLodgingWords=function(){v4StartLodging();setStory('今晚去哪里？','老板已经拿出两条备用毛巾。<br><br>“住哪儿都行，早点定。我还得收拾店。”<br><br>Mio把两个地址写在纸上，放到你们面前。','')};
+const v4ConfirmLodging=confirmLodging;
+confirmLodging=function(){v4ConfirmLodging();const sentence=selected.time+'，'+selected.subject+selected.verb+selected.object+'。';
+ setStory('决定了','“'+expEsc(sentence)+'”<br><br>'+(lodging==='school'?'老板拿起电话拨给学校。响了三声，那边终于有人接了。<br><br>“好。能借住一晚。我让 Mio 领你们过去。”':'老板从柜台抽屉里翻出一串钥匙：“楼上有个小房间，窗子不太好关，你们将就一下。”')+'<br><br>Mio先一步走到门口：“走吧，天马上就黑了。”','<button onclick="unlockTown()">跟 Mio 出门</button>');};
+unlockTown=function(){step=8;EXP.mode='new-area';EXP.unlocked.add(lodging);EXP.syncMap();map.classList.add('show');
+ const destination=lodging==='school'?'学校':'市场';
+ setStory('天色暗了下来','Mio带你们拐过两个路口。<br><br>'+(lodging==='school'?'学校的走廊还亮着一盏灯。一个老师拿着钥匙在门口等。':'市场里只剩两三家摊位没收。老板从后门领你们上了楼。')+'<br><br>“先把东西放下吧。”Mio指着窗外，“明天想去哪儿转转？我可以带路。”','<button onclick="finishPrologue()">走出去看看</button>');
+ addLog('今晚住在'+destination+'。')};
+
+// All six location stories are authored as situations, rather than tutorial prompts.
+Object.assign(EXP.quests.school,{
+ npc:'值班老师',intro:'学校走廊里一股粉笔灰的味道。<br><br>“怎么还没走？”值班老师把一扇教室门锁上，看见你们又把钥匙拔出来。<br><br>他带你们经过教室。黑板上留着一道歪歪扭扭的白线，擦了一半。<br><br>“下午小孩乱画的，怎么擦都擦不干净。”',
+ clue:'老师把校门边的地图指给你们看：“顺着围墙往南走，能到河边。那条路晚上也有人走。”',
+ odd:[{slot:'object',text:'明天才会响起的铃声',level:1,effect:'走廊尽头传来一串清脆的铃声。老师停在半开的门前。<br><br>“……奇怪。”他看了看手表，“这是明天早上第一节课的铃。”'},{slot:'subject',text:'写着明天日期的黑板',level:3,effect:'黑板上的日期变成了明天。粉笔还在讲台上滚，没人碰过它。老师走过去用手指擦了一下，白灰沾了满手。'}]
+});
+Object.assign(EXP.quests.market,{
+ npc:'可乐饼摊主',intro:'市场的铁卷帘一扇接着一扇放下。空气里还有炸东西的香味。<br><br>一只三花猫蹲在纸箱上，盯着摊主手里的可乐饼。<br><br>“不许再要了。”摊主把最后一个装进纸袋，看到你们，又抬了抬下巴，“要买什么？”',
+ clue:'摊主指了指店后：“从那条小巷穿过去就是居民区，往左拐还能走到河边。”',
+ odd:[{slot:'object',text:'自己会收钱的影子',level:1,effect:'纸袋旁的影子忽然动了一下。<br><br>摊主低头看去，一枚硬币正慢慢沿着桌面滑进空钱盒。她的两只手明明都拿着东西。'},{slot:'subject',text:'还没开门的明天的摊位',level:3,effect:'隔壁本来空着的摊位，忽然挂上了写着明天价格的纸牌。连货都摆得整整齐齐。摊主眯着眼瞧了好久。'}]
+});
+Object.assign(EXP.quests.home,{
+ npc:'贴门条的老奶奶',intro:'这条居民街很窄，电线从屋檐下交错过去。<br><br>一位老奶奶踮着脚，把一张纸条贴到门上。<br><br>“门铃坏啦。找我就敲门。”她看见你们停下，“哎，你们是新搬来的？”<br><br>纸条上只有两个字：有人。',
+ clue:'“去神社的话走前面那条石阶。”老奶奶指给你们看，“小时候孩子们老从那儿钻进林子。”',
+ odd:[{slot:'object',text:'通往昨天的房门',level:1,effect:'门被风吹开了一掌宽。里面照出来的不是灯光，而是下午的太阳。<br><br>老奶奶伸手把门拉回来，又试着推开。门后只剩黑漆漆的玄关。'},{slot:'subject',text:'还没出生的邻居',level:3,effect:'门外有人轻声说“打扰了”。老奶奶侧过头，好像认得那个声音。她把眼镜摘下来擦了擦，却没看见走廊里有人。'}]
+});
+Object.assign(EXP.quests.river,{
+ npc:'钓鱼人',intro:'桥下的河水很浅，水里能看见碎石。<br><br>一个钓鱼人坐在折叠椅上，钓线放得很长。<br><br>“别踩那儿，”他指了指岸边的石头，“上午有人滑下去过。”<br><br>你们顺着他指的方向看，石头旁卡着几张被水泡软的纸。',
+ clue:'“沿着水走，能绕到神社后头。森林那边的路也在那儿。”钓鱼人把鱼竿往回收了收。',
+ odd:[{slot:'object',text:'倒着流的时间',level:1,effect:'一片落叶贴着水面往上游飘。<br><br>钓鱼人眯了眯眼，用竿尖碰它。叶子绕过竿尖，仍旧逆着水流往前走。'},{slot:'subject',text:'学会替人回答的河水',level:3,effect:'有人刚开口问“几点了”，桥洞下就传来一声回答。<br><br>那声音湿漉漉的，跟你们谁都不像。'}]
+});
+Object.assign(EXP.quests.shrine,{
+ npc:'守神社的老人',intro:'石阶两边的青苔被踩出了一道浅浅的路。<br><br>神社门口挂着一排木牌。有的写考试合格，有的写家人平安。最边上那块写着：想去东京。<br><br>老人扫完落叶，发现你们盯着那块木牌。<br><br>“东京啊……听过。小孩都想去。可镇上还真没谁说得清那儿是什么样。”',
+ clue:'老人收起扫帚：“神社后面就是森林。晚一点别一个人往里走，最近总有人跑进去找什么站台。”',
+ odd:[{slot:'object',text:'能回答问题的神社铃',level:1,effect:'没有人拉铃绳，铃却叮当响了两下。<br><br>老人把扫帚放下，朝空荡荡的拜殿望了一眼：“谁在里面？”'},{slot:'subject',text:'写着未来的木牌',level:3,effect:'一块原本空白的木牌上慢慢浮出字迹。老人摘下来，拿到夕阳底下看了好几遍。上面写着明天的日期。'}]
+});
+Object.assign(EXP.quests.forest,{
+ npc:'打着手电的居民',intro:'林子里比你想的热闹。远处几束手电筒晃来晃去，有人踩断枯枝，又骂了一声。<br><br>“你们也来找车站？”一个男人举起手电照向路边，“我都绕两圈了。这鬼地方哪来的铁轨？”<br><br>树上的乌鸦忽然叫了一声，听着有点像“エキ”。<br><br>男人抬头：“刚才是鸟在说话吗？”',
+ clue:'那人把手电光往深处一打：“那边有块没长树的空地。找不到的话，去那儿碰碰运气。”',
+ odd:[{slot:'object',text:'会替乘客检票的乌鸦',level:1,effect:'乌鸦落在一块石头上，歪着脑袋等人靠近。<br><br>有人开玩笑似的递出一张废纸。它叼走了，像真的要检查车票。'},{slot:'subject',text:'从未铺设的铁轨',level:3,effect:'树下有两条笔直的金属线，从潮湿的泥地里延伸出来。一个居民蹲下摸了摸：“这又是什么时候铺的？”'}]
+});
+// A place is discovered by travel, and a rumor can revisit it without explaining what it means.
+const v4Sync=EXP.syncMap;
+EXP.syncMap=function(){v4Sync();
+ map.classList.toggle('has-station',EXP.mode==='station-found'||EXP.mode==='returned');
+ const tab=document.getElementById('folioPage');if(tab)tab.textContent=(EXP.started?'0'+Math.min(7,EXP.unlocked.size):'01')+' — 07';
+ const marker={school:'◷',market:'✦',home:'▯',river:'〰',shrine:'❀',forest:'╳'};
+ expGet('mapEffects').innerHTML=EXP.effects.reduce((html,e,i)=>html+'<span class="map-effect" aria-hidden="true" style="left:'+e.x+'%;top:'+e.y+'%">'+(marker[e.loc]||'〰')+'</span>','');
+ const art=map.querySelector('.town-art');if(!art)return;
+ let rail=art.querySelector('#midnightTrack');
+ if(!rail){rail=document.createElementNS('http://www.w3.org/2000/svg','g');rail.setAttribute('id','midnightTrack');rail.innerHTML='<path d="M774 84L938 248" stroke="#594f44" stroke-width="10" fill="none"/><path d="M774 84L938 248" stroke="#e9dfc8" stroke-width="6" fill="none"/><path d="M774 84L938 248" stroke="#5b5145" stroke-width="2" stroke-dasharray="4 12" fill="none"/><g transform="translate(868 182)"><rect x="-18" y="-14" width="36" height="20" fill="#eee5d0" stroke="#665744"/><path d="M-16 -14L0 -26L18 -14Z" fill="#8d7868" stroke="#665744"/></g>';
+ art.appendChild(rail)}rail.style.display=EXP.mode==='station-found'||EXP.mode==='returned'?'block':'none';
+};
+EXP.goal=function(){
+ let el=expGet('exploreGoal');if(!el){el=document.createElement('div');el.id='exploreGoal';el.className='goal';expGet('wordArea').before(el)}
+ if(!EXP.started){el.style.display='none';return}el.style.display='block';
+ let n=EXP.rumors.length,msg='到别处走走，问问有没有人见过电车。';
+ if(EXP.mode==='tokyo')msg='车门开着。外面安静得出奇。';
+ else if(EXP.mode==='returned')msg='天还没亮。镇上却有人已经开始出门。';
+ else if(EXP.canPrepare())msg='森林里的铃声越来越清楚。也许该回去看看。';
+ else if(!EXP.completed.has('shrine'))msg='听说神社那边有人提起过“东京”。';
+ else if(!EXP.completed.has('forest'))msg='去森林找找，看看有没有人真的见过那座车站。';
+ el.innerHTML='<b>下一步</b><br>'+expEsc(msg);
+};
+EXP.adjRumor=function(loc){
+ const r=EXP.rumors.filter(x=>(EXP.graph[x.loc]||[]).includes(loc)).at(-1);if(!r)return '';
+ return '\n\n不远处两个人正聊着天。一个说：“刚刚有人在'+EXP.names[r.loc]+'提起'+r.sentence.replace(/[。]+$/,'')+'……”\n\n另一个听得直点头：“我好像也听过。”';
+};
+EXP.visit=function(loc){
+ EXP.started=true;EXP.mode='explore';EXP.current=loc;EXP.active=null;EXP.chosen={};EXP.visited.add(loc);
+ EXP.syncMap();EXP.goal();map.classList.add('show');visual.classList.remove('white-tokyo','return-town');wordArea.innerHTML='';
+ if(loc==='grass'){setStory('荒草地','草长得跟刚才一样高。有人蹲下翻了翻泥土，手指上全是湿泥。<br><br>“还是没有铁轨。”<br><br>你们在风里站了一会儿，听见远处市场那边有收摊的声音。','');return}
+ if(loc==='forest'&&EXP.canPrepare())return EXP.prepareStation();
+ const q=EXP.quests[loc],completed=EXP.completed.has(loc);
+ const actions=completed?'<button onclick="EXP.revisit(\''+loc+'\')">再仔细看看</button><button class="ghost" onclick="EXP.showOverview()">先去别处</button>':'<button onclick="EXP.startWords(\''+loc+'\')">接着问问</button><button class="ghost" onclick="EXP.showOverview()">先去别处</button>';
+ setStory(EXP.names[loc]+' · '+q.npc,expBr(q.intro.replaceAll(/<br>/g,'\n')+EXP.adjRumor(loc)),actions);
+};
+EXP.showOverview=function(){EXP.active=null;wordArea.innerHTML='';map.classList.add('show');EXP.syncMap();EXP.goal();setStory('言叶町','书页摊在你们面前。路还是那几条路，但上面有些笔迹像是刚添上去的。<br><br>去过的地方，总能再走一遍。','')};
+EXP.startWords=function(loc){EXP.active=loc;EXP.chosen={};const q=EXP.quests[loc];
+ setStory('“等等，你刚说什么？”','你们围着'+q.npc+'问了半天。Mio看了看自己的笔记，又看向你们。<br><br>“我记的跟你记的怎么不一样？”<br><br>几个人都说自己没有记错。','<button class="ghost" onclick="EXP.visit(\''+loc+'\')">先不说了</button>');EXP.wordUI();
+};
+EXP.wordUI=function(){
+ const loc=EXP.active;if(!loc)return;
+ const labels={subject:'主语',verb:'谓语',object:'宾语',time:'时间'};
+ wordArea.innerHTML='<h3>每个人记住的一小段</h3><p class="choice-help">可以让朋友分别负责不同部分。选好以后，看看合起来会变成什么。</p>';
+ for(const [key,label] of Object.entries(labels)){
+  const head=document.createElement('div');head.style.cssText='font-size:11px;letter-spacing:.12em;color:#cfcbb9;margin:16px 0 8px';head.textContent=label;
+  const grid=document.createElement('div');grid.className='cardpick';wordArea.append(head,grid);
+  for(const opt of EXP.optionSet(loc,key)){
+   const b=document.createElement('button');b.type='button';b.className='word';b.textContent=opt.text;
+   b.onclick=()=>{EXP.chosen[key]=opt;[...grid.children].forEach(x=>x.classList.remove('sel'));b.classList.add('sel');EXP.updateSentenceButton()};grid.appendChild(b)
+  }
+ }
+ const preview=document.createElement('p');preview.id='sentencePreview';preview.className='choice-help';preview.style.marginTop='13px';preview.textContent='还差四个部分。';wordArea.appendChild(preview);
+ const confirm=document.createElement('button');confirm.id='expMakeBtn';confirm.textContent='把这句话说出来';confirm.disabled=true;confirm.onclick=EXP.complete;wordArea.appendChild(confirm);
+};
+EXP.updateSentenceButton=function(){const n=Object.keys(EXP.chosen).length;expGet('expMakeBtn').disabled=n!==4;expGet('sentencePreview').textContent=n===4?'话凑齐了。':'还差'+(4-n)+'个部分。'};
+const characterReactions={
+ school:(a)=>'老师停住脚：“'+a.object.text+'？”\n\n他把钥匙从锁孔里抽出来，朝走廊那头看了一眼。',
+ market:(a)=>'摊主把纸袋往柜台上一放：“'+a.object.text+'？你们从哪儿听来的？”\n\n旁边卖菜的大叔也探过头来。',
+ home:(a)=>'老奶奶听到“'+a.object.text+'”，扶了扶眼镜。\n\n“你们等等，我好像在哪里听过……”',
+ river:(a)=>'钓鱼人捏着那张湿纸，嘴里念了一遍“'+a.object.text+'”。\n\n“有点意思。”他又把钓线扔进河里。',
+ shrine:(a)=>'老人一边听，一边低声重复：“'+a.object.text+'……”\n\n石阶下路过的人停了一下脚步。',
+ forest:(a)=>'打手电的男人重复了一遍“'+a.object.text+'”。\n\n“你们确定？我刚才还没听谁这么讲。”'
+};
+EXP.complete=function(){
+ const loc=EXP.active;if(!loc||EXP.completed.has(loc)||Object.keys(EXP.chosen).length<4)return;
+ const q=EXP.quests[loc],a=EXP.chosen,s=EXP.sentence(),anomalies=Object.values(a).filter(v=>v.odd);
+ EXP.rumors.push({loc,sentence:s,odd:anomalies.length>0,at:EXP.rumors.length+1});EXP.completed.add(loc);EXP.total++;
+ const unlocks=EXP.unlockMore(loc);
+ const npcResponse=characterReactions[loc](a);
+ let response='“'+s+'”\n\n'+npcResponse;
+ if(anomalies.length){
+  for(let i=0;i<anomalies.length;i++){
+   const coord=EXP.effectCoordinates[loc],v=anomalies[i];EXP.effects.push({loc,x:coord[0]+i*3,y:coord[1]+i*6,caption:v.text,detail:v.detail});
+   response+='\n\n'+v.detail.replace(/<br\s*\/?\s*>/g,'\n');
+  }
+  response+='\n\nMio扯了扯你们的衣角。“……先别说了。再看看。”';
+ }else{
+  response+='\n\n一个路过的居民听到后，回头问：“刚才你们说的是'+a.object.text+'吗？”\n\n'+q.npc+'点点头：“他们自己说的。”';
+ }
+ response+='\n\n'+q.clue;
+ if(unlocks.length){const hint=loc==='school'?'出了校门，河边那条小路还亮着路灯。':loc==='market'?'摊位后面的巷子通向别处，Mio走在前面认路。':'Mio在地图上画了一条浅浅的铅笔线。';response+='\n\n'+hint}
+ if(EXP.canPrepare())response+='\n\n树林那边传来了短短一声铃。人群有人停了下来，似乎都听见了。';
+ EXP.active=null;EXP.chosen={};EXP.syncMap();EXP.goal();
+ wordArea.innerHTML='<div class="sentence-card">'+expEsc(s)+'</div>';
+ rumorText.textContent='“'+s+'”';
+ addLog(EXP.names[loc]+'：“'+s+'”');
+ setStory(EXP.names[loc]+' · '+q.npc,expBr(response),'<button onclick="EXP.showOverview()">继续走走</button>'+(EXP.canPrepare()?'<button onclick="EXP.visit(\'forest\')">回森林看看</button>':''));
+};
+EXP.revisit=function(loc){
+ const r=EXP.rumors.find(t=>t.loc===loc),changes=EXP.effects.filter(e=>e.loc===loc);
+ let msg='你们又走到'+EXP.names[loc]+'。\n\n'+EXP.quests[loc].npc+'还认得你们。\n\n“又来啦？上回你们说的那个……'+r.sentence+'”';
+ if(changes.length){msg+='\n\n'+changes.map(e=>e.detail.replace(/<br\s*\/?\s*>/g,'\n')).join('\n\n');msg+='\n\nMio没说话，只把笔记翻到先前的那一页。'}
+ else msg+='\n\n说话间又有人经过，听见那句话就跟着重复了一遍。意思已经跟你们最初说的不太一样。';
+ setStory('再走一遍 · '+EXP.names[loc],expBr(msg),'<button onclick="EXP.showOverview()">翻回地图</button>');
+};
+EXP.prepareStation=function(){EXP.mode='station-decision';EXP.syncMap();EXP.goal();wordArea.innerHTML='';
+ setStory('树林里的空地','森林里聚了不少人，手电光全照向同一片空地。可那里还是只有泥土和树根。<br><br>“我听说这儿晚上有站台。”<br><br>“什么站台？不是说列车能到东京吗？”<br><br>“谁说的？”<br><br>大家互相看着，谁也答不上来。<br><br>Mio握紧了手电：“要是真想回家……我们是不是也可以告诉他们，午夜有趟车？”<br><br>她说完又摇了摇头：“可是没人真的见过。”','<button onclick="EXP.questionRail()">先在树林里找找铁轨</button><button onclick="EXP.finalWords()">把午夜电车的事说出去</button><button class="ghost" onclick="EXP.showOverview()">先离开</button>');
+};
+EXP.questionRail=function(){
+ setStory('找不到的铁轨','你们拿着手电，在空地边缘仔细走了一圈。<br><br>鞋底沾满了湿泥。一个同行的朋友把树叶拨开，下面还是泥土。<br><br>“什么都没有。”<br><br>Mio回头看着那些还在等车的居民：“那我们还要跟他们说吗？”','<button onclick="EXP.finalWords()">还是告诉大家午夜有车</button><button class="ghost" onclick="EXP.showOverview()">先不说</button>');
+};
+EXP.finalWords=function(){EXP.mode='final-words';EXP.finalChosen={};
+ setStory('午夜前','有个居民拿来一块木板和一支笔：“如果真的有车，终点该写哪里？”<br><br>“东京！”人群里立刻有人说。<br><br>“你去过？”<br><br>“没有。可谁不知道东京啊。”<br><br>Mio看着你们：“……怎么办？总得有人写。”','<button class="ghost" onclick="EXP.prepareStation()">再想想</button>');
+ const opts={subject:['那辆银色电车','大家说的末班车','森林里的小站','没有司机的列车'],verb:['会开往','可以抵达','将带我们去','就停在了'],object:['镇民想象的东京','谁也没亲眼见过的东京','传闻里灯火通明的东京','只有名字的东京'],time:['午夜','钟声响起的时候','所有人都等在这里时','不存在的第十三个小时']};
+ wordArea.innerHTML='<h3>木板上要写什么？</h3><p class="choice-help">大家等着你们把这趟车的事说清楚。</p>';
+ for(const [key,label] of Object.entries({subject:'主语',verb:'谓语',object:'宾语',time:'时间'})){
+  const h=document.createElement('div');h.style.cssText='font-size:11px;letter-spacing:.12em;color:#cfcbb9;margin:16px 0 8px';h.textContent=label;wordArea.appendChild(h);
+  const div=document.createElement('div');div.className='cardpick';wordArea.appendChild(div);
+  for(const val of opts[key]){const b=document.createElement('button');b.type='button';b.className='word';b.textContent=val;
+   b.onclick=()=>{EXP.finalChosen[key]=val;[...div.children].forEach(x=>x.classList.remove('sel'));b.classList.add('sel');expGet('finalSay').disabled=Object.keys(EXP.finalChosen).length<4};div.appendChild(b)}
+ }
+ const btn=document.createElement('button');btn.id='finalSay';btn.disabled=true;btn.textContent='把木板交给居民';btn.onclick=EXP.sayFinal;wordArea.appendChild(btn);
+};
+EXP.sayFinal=function(){if(Object.keys(EXP.finalChosen).length!==4)return;
+ const c=EXP.finalChosen;EXP.finalStatement=c.time+'，'+c.subject+c.verb+c.object+'。';
+ EXP.rumors.push({loc:'forest',sentence:EXP.finalStatement,odd:c.time.includes('第十三'),at:EXP.rumors.length+1});
+ if(c.time.includes('第十三'))EXP.effects.push({loc:'forest',x:71,y:18,caption:'第十三个小时',detail:'站台上的钟多出了一格。秒针绕了一圈，却没回到原来的地方。'});
+ EXP.mode='station-found';EXP.syncMap();EXP.goal();wordArea.innerHTML='<div class="sentence-card">'+expEsc(EXP.finalStatement)+'</div>';rumorText.textContent='“'+EXP.finalStatement+'”';
+ addLog('木板上写着：“'+EXP.finalStatement+'”');
+ setStory('午夜车站','写好的木板被钉在两棵树之间。<br><br>有人凑上来看：“哦，原来十二点有车。”<br><br>“我就说嘛，我奶奶以前也讲过。”<br><br>“快！让后面的人也过来！”<br><br>林子里一下热闹起来。<br><br>你们挤出人群时，脚下多了一条不知从哪儿伸来的铁轨。那两棵树之间，不知什么时候竖起了站牌。<br><br>车头灯在雾里亮了。<br><br>Mio的声音很小：“……真的来了。”','<button onclick="EXP.boardTrain()">上车</button>');
+};
+EXP.boardTrain=function(){EXP.mode='tokyo';document.querySelector('.phase').textContent='ACT 01　·　终点';EXP.syncMap();EXP.goal();wordArea.innerHTML='';map.classList.remove('show');visual.classList.add('white-tokyo');
+ setStory('东京','“终点，东京。终点，东京。”<br><br>车门打开了。<br><br>没人下车。<br><br>眼前是白色的。没有街道，没有广告牌，甚至连影子都看不见。<br><br>“……东京呢？”<br><br>Mio往前探出半只脚，又收回来。<br><br>“不是说有好多大楼吗？”<br><br>车厢里的人面面相觑。有人拿出手机，对着门外拍了一张。照片里什么也没有。<br><br>车门还开着。','<button onclick="EXP.returnTown()">坐回去</button>');
+};
+EXP.returnTown=function(){EXP.mode='returned';document.querySelector('.phase').textContent='ACT 02　·　返程';EXP.current='grass';map.classList.add('show');visual.classList.remove('white-tokyo');visual.classList.add('return-town');EXP.syncMap();EXP.goal();
+ const details=EXP.effects.slice(0,2);let seen='';if(details.length){seen='你们走过'+details.map(e=>EXP.names[e.loc]).join('和')+'时，发现那里留下了先前见过的变化。'}else{seen='路边的几个居民正在谈论你们最先说过的话，连语气都学得一模一样。'}
+ setStory('还是那个小镇吗？','返程电车停下时，天刚蒙蒙亮。<br><br>草地边多了一段铁轨。市场口有人排队，神社的铃声从远处断断续续传来。<br><br>'+expEsc(seen)+'<br><br>Mio在路口停住。<br><br>“你们看那边。”<br><br>几个人沿着她指的方向望过去。<br><br>原本空荡荡的街口，多了一块写着“言叶町站”的路牌。<br><br>“……这下怎么办？”','<button onclick="UI.journal()">翻开手记</button><button class="ghost" onclick="location.reload()">重新开始</button>');
+ addLog('回到言叶町。')
+};
+// Keep explanatory copy out of the HUD, and refresh layout only after overrides.
+EXP.syncMap();EXP.goal();
+
+</script><script>
+renderWords=function(){
+ wordArea.innerHTML='<h3 style="margin-top:18px">每个人记住的碎片</h3><p class="choice-help">不同的朋友可以分别选一部分。先别商量答案，选完再看看整句话。</p>';
+ for(const [key,arr] of Object.entries(sets)){
+  const label=document.createElement('div');label.style.cssText='font-size:11px;letter-spacing:.1em;color:#c9c7b7;margin:15px 0 8px';label.textContent=({subject:'主语',verb:'谓语',object:'宾语',time:'时间'})[key];
+  const grid=document.createElement('div');grid.className='cardpick';wordArea.append(label,grid);
+  for(const item of arr){const b=document.createElement('button');b.type='button';b.className='word';b.textContent=item;
+   b.onclick=()=>{selected[key]=item;[...grid.children].forEach(x=>x.classList.remove('sel'));b.classList.add('sel');checkWords()};grid.appendChild(b)}
+ }
+};
+const v5Sync=EXP.syncMap;
+EXP.syncMap=function(){v5Sync();for(const id of ['school','market','home','river','shrine','forest']){
+ const fog=document.getElementById('fog-'+id);if(fog)fog.style.opacity=EXP.unlocked.has(id)?'0':'.9';
+ }};
+const v5Visit=EXP.visit;
+EXP.visit=function(loc){npc.classList.remove('show');v5Visit(loc)};
+const v5FinishPrologue=finishPrologue;
+finishPrologue=function(){npc.classList.remove('show');v5FinishPrologue()};
+const v5UnlockTown=unlockTown;
+unlockTown=function(){npc.classList.remove('show');v5UnlockTown()};
+UI.map=function(){
+ this.close();
+ if(EXP.started && EXP.mode!=='tokyo' && EXP.mode!=='returned'){EXP.showOverview();return}
+ if(step===3){map.classList.add('show');return}
+ this.open('地图册','<p class="sheet-help">这本小册子暂时只画得出荒草地。等找到今晚落脚的地方，再仔细看看镇上还有什么路。</p>');
+};
+const v5Journal=UI.journal;
+UI.journal=function(){v5Journal.call(UI);const target=document.getElementById('sheetContent');if(target)target.querySelectorAll('.note-entry').forEach(el=>{el.innerHTML=el.innerHTML.replace(/&lt;br\s*\/?&gt;/g,'　')})};
+EXP.syncMap();
+
+/* Subtle new strokes appear directly in the map illustration after an impossible rumor. */
+const inkGlyphs={
+ school:`<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="30" r="21" fill="#e3ddca" stroke="#705d4e" stroke-width="2"/><path d="M32 14v16l-11 8m-7-20 5 7m-7 4-2 7m16 13-5 3" fill="none" stroke="#746555" stroke-width="2.5" stroke-linecap="round"/><path d="M45 18q-10-9-20-4M27 10l-4 4 5 4" fill="none" stroke="#866a59" stroke-width="2"/></svg>`,
+ market:`<svg viewBox="0 0 64 64" aria-hidden="true"><rect x="9" y="17" width="48" height="30" rx="2" fill="#e7dac2" stroke="#685943" stroke-width="2"/><path d="M13 17V9h38v8M16 27h34M16 36h34" stroke="#80705b" stroke-width="1.5" fill="none"/><circle cx="31" cy="32" r="11" fill="#dfccaa" stroke="#846b51" stroke-width="2"/><path d="m27 29 5 5 5-5m-5 5v7m-6-4h12" fill="none" stroke="#7b654d" stroke-width="2"/></svg>`,
+ home:`<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M13 56V11h38v45M22 56V20h20v36" fill="#d5c6ac" stroke="#796550" stroke-width="2"/><path d="M42 20 56 13v39L42 56M51 33v8" fill="#ece1ce" stroke="#796550" stroke-width="2"/><path d="M17 55h43" stroke="#796550" stroke-width="2"/></svg>`,
+ river:`<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M4 43q12-11 24 0t32 0M4 51q12-11 24 0t32 0M9 59q10-7 22 0" fill="none" stroke="#6d8a85" stroke-width="2.5"/><path d="M37 16Q20 15 15 29q13 2 22-13ZM37 16q5 9-3 19" fill="#bf9e75" stroke="#74634c" stroke-width="1.6"/><path d="M51 34q-7-12-20-6m0 0 7-6m-7 6 8 5" stroke="#8e6f5b" fill="none" stroke-width="1.6"/></svg>`,
+ shrine:`<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M22 10h20l5 9v24H17V19Z" fill="#e4d4b5" stroke="#78614c" stroke-width="2"/><path d="M17 20h30M31 15v-7M28 42l4 10 5-10" stroke="#78614c" stroke-width="2" fill="none"/><path d="M10 20q-6 11 0 23m44-23q6 11 0 23" fill="none" stroke="#8d7562" stroke-width="1.5"/></svg>`,
+ forest:`<svg viewBox="0 0 64 64" aria-hidden="true"><path d="M6 57 20 7M58 57 44 7M10 47h44M13 37h39M16 27h31M19 17h25" stroke="#6f6858" stroke-width="2.8" fill="none"/><path d="M32 6q8 0 9 5-5 5-11 3-7 5-12 1 4-8 14-9Z" fill="#8e977b" stroke="#5d6655" stroke-width="1.6"/></svg>`
+};
+const inkPos={school:[27,26],market:[70,45],home:[69,67],river:[20,66],shrine:[56,34],forest:[82,30]};
+const atlasSync=EXP.syncMap;
+EXP.syncMap=function(){
+ atlasSync();
+ const paper=document.getElementById('mapInkChanges');if(!paper)return;
+ const locations=[...new Set(EXP.effects.map(e=>e.loc))].filter(loc=>inkGlyphs[loc]);
+ paper.innerHTML=locations.map(loc=>`<div class="ink-mutation" style="left:${inkPos[loc][0]}%;top:${inkPos[loc][1]}%" title="${expEsc(EXP.names[loc])}的地图悄悄发生了变化">${inkGlyphs[loc]}</div>`).join('');
+};
+EXP.syncMap();
 </script></body></html>
